@@ -12,12 +12,12 @@ export class OrganizerModel implements IOrganizerModel {
     if (typeof obj !== "object" || obj === null) {
       return false;
     }
-    const { organizerId, username, password, email } = obj as IOrganizerModel;
+    const model: OrganizerModel = obj as IOrganizerModel;
     return (
-      typeof organizerId === "number" &&
-      typeof username === "string" &&
-      typeof password === "string" &&
-      typeof email === "string"
+      typeof model.organizerId === "number" &&
+      typeof model.username === "string" &&
+      typeof model.password === "string" &&
+      typeof model.email === "string"
     );
   }
 }

@@ -5,6 +5,7 @@ import { CatcherMiddleware } from "./middlewares/CatcherMiddleware";
 import { FailureMiddleware } from "./middlewares/FailureMiddleware";
 import { LoggerMiddleware } from "./middlewares/LoggerMiddleware";
 import { LoginRoute } from "./routes/LoginRoute";
+import { SignupRoute } from "./routes/SignupRoute";
 
 // App
 const app: Express = express();
@@ -19,6 +20,7 @@ app.use(LoggerMiddleware.log);
 
 // Routes
 app.use(`${API_PREFIX}`, new LoginRoute().router);
+app.use(`${API_PREFIX}`, new SignupRoute().router);
 
 // Post-Middlewares
 app.use("*", CatcherMiddleware.resourceNotFound);

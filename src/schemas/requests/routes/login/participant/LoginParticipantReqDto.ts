@@ -7,8 +7,10 @@ export class LoginParticipantReqDto implements ILoginParticipantReqDto {
   ) {}
 
   public static isValidDto(obj: unknown): obj is ILoginParticipantReqDto {
+    if (typeof obj !== "object" || obj === null) {
+      return false;
+    }
     const dto: LoginParticipantReqDto = obj as ILoginParticipantReqDto;
-
     return typeof dto.username === "string" && typeof dto.password === "string";
   }
 }

@@ -1,8 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { ClientErrorCode } from "../interfaces/schemas/responses/common/IClientError";
 import { HttpStatusCode } from "../interfaces/schemas/responses/common/IHttpStatus";
 import { GenericResponse } from "../schemas/responses/GenericResponse";
-import { ClientError } from "../schemas/responses/common/ClientError";
 import { HttpStatus } from "../schemas/responses/common/HttpStatus";
 import { ServerError } from "../schemas/responses/common/ServerError";
 
@@ -26,7 +24,7 @@ export class FailureMiddleware {
         new GenericResponse<null>(
           httpStatus,
           new ServerError(error),
-          [new ClientError(ClientErrorCode.RESOURCE_NOT_FOUND)],
+          [],
           null,
           null,
         ),

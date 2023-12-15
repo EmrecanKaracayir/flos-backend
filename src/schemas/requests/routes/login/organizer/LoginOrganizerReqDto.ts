@@ -7,8 +7,10 @@ export class LoginOrganizerReqDto implements ILoginOrganizerReqDto {
   ) {}
 
   public static isValidDto(obj: unknown): obj is ILoginOrganizerReqDto {
+    if (typeof obj !== "object" || obj === null) {
+      return false;
+    }
     const dto: LoginOrganizerReqDto = obj as ILoginOrganizerReqDto;
-
     return typeof dto.username === "string" && typeof dto.password === "string";
   }
 }

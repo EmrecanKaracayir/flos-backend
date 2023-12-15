@@ -18,14 +18,14 @@ export class LoginProvider implements ILoginProvider {
       LoginQueries.GET_ORGANIZER_MODEL_BY_$USERNAME,
       [username],
     );
-    const model: unknown = result.rows[0];
-    if (!model) {
+    const record: unknown = result.rows[0];
+    if (!record) {
       return null;
     }
-    if (!OrganizerModel.isValidModel(model)) {
-      throw new ModelMismatchError(model);
+    if (!OrganizerModel.isValidModel(record)) {
+      throw new ModelMismatchError(record);
     }
-    return model as IOrganizerModel;
+    return record as IOrganizerModel;
   }
 
   public async getParticipantModelByUsername(
@@ -35,13 +35,13 @@ export class LoginProvider implements ILoginProvider {
       LoginQueries.GET_PARTICIPANT_MODEL_BY_$USERNAME,
       [username],
     );
-    const model: unknown = result.rows[0];
-    if (!model) {
+    const record: unknown = result.rows[0];
+    if (!record) {
       return null;
     }
-    if (!ParticipantModel.isValidModel(model)) {
-      throw new ModelMismatchError(model);
+    if (!ParticipantModel.isValidModel(record)) {
+      throw new ModelMismatchError(record);
     }
-    return model as ParticipantModel;
+    return record as ParticipantModel;
   }
 }

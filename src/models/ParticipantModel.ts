@@ -12,13 +12,12 @@ export class ParticipantModel implements IParticipantModel {
     if (typeof obj !== "object" || obj === null) {
       return false;
     }
-    const { participantId, username, password, email } =
-      obj as IParticipantModel;
+    const model: ParticipantModel = obj as IParticipantModel;
     return (
-      typeof participantId === "number" &&
-      typeof username === "string" &&
-      typeof password === "string" &&
-      typeof email === "string"
+      typeof model.participantId === "number" &&
+      typeof model.username === "string" &&
+      typeof model.password === "string" &&
+      typeof model.email === "string"
     );
   }
 }

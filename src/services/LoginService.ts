@@ -65,7 +65,6 @@ export class LoginService implements ILoginService {
         organizerModel.organizerId,
         organizerModel.username,
         organizerModel.email,
-        "organizer",
       ),
       null,
     );
@@ -109,7 +108,6 @@ export class LoginService implements ILoginService {
         participantModel.participantId,
         participantModel.username,
         participantModel.email,
-        "participant",
       ),
       null,
     );

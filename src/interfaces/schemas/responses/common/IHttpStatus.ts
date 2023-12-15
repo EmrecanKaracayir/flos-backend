@@ -10,6 +10,7 @@ export enum HttpStatusCode {
   UNAUTHORIZED = 401,
   FORBIDDEN = 403,
   NOT_FOUND = 404,
+  CONFLICT = 409,
   INTERNAL_SERVER_ERROR = 500,
 }
 
@@ -24,5 +25,6 @@ export const httpStatusMessages: HttpStatusMessages = {
   [HttpStatusCode.UNAUTHORIZED]: "Unauthorized",
   [HttpStatusCode.FORBIDDEN]: "Forbidden",
   [HttpStatusCode.NOT_FOUND]: "Not Found",
+  [HttpStatusCode.CONFLICT]: "Conflict",
   [HttpStatusCode.INTERNAL_SERVER_ERROR]: "Internal Server Error",
 };

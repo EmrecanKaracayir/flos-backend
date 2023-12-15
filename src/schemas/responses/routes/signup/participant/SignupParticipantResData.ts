@@ -1,7 +1,7 @@
 import { UserRole } from "../../../../../core/@types/helpers/authPayloadRules";
-import { ILoginParticipantResData } from "../../../../../interfaces/schemas/responses/routes/login/participant/ILoginParticipantResData";
+import { ISignupParticipantResData } from "../../../../../interfaces/schemas/responses/routes/signup/participant/ISignupParticipantResData";
 
-export class LoginParticipantResData implements ILoginParticipantResData {
+export class SignupParticipantResData implements ISignupParticipantResData {
   public readonly role: UserRole;
 
   constructor(
