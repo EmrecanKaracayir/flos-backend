@@ -1,4 +1,4 @@
-export interface ILoginParticipant {
+export interface ILoginOrganizerReqDto {
   readonly username: string;
   readonly password: string;
 }

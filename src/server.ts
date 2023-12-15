@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import express, { Express } from "express";
 import { API_PREFIX } from "./core/utils/constants";
+import { CatcherMiddleware } from "./middlewares/CatcherMiddleware";
 import { FailureMiddleware } from "./middlewares/FailureMiddleware";
 import { LoggerMiddleware } from "./middlewares/LoggerMiddleware";
 import { LoginRoute } from "./routes/LoginRoute";
@@ -20,7 +21,8 @@ app.use(LoggerMiddleware.log);
 app.use(`${API_PREFIX}`, new LoginRoute().router);
 
 // Post-Middlewares
-app.use(FailureMiddleware.failure);
+app.use("*", CatcherMiddleware.resourceNotFound);
+app.use(FailureMiddleware.serverFailure);
 
 // Server
 app.listen(port, (): void => {

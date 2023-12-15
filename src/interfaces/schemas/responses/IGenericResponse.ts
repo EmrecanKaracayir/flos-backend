@@ -7,4 +7,5 @@ export interface IGenericResponse<T> {
   readonly serverError: IServerError | null;
   readonly clientErrors: Array<IClientError>;
   readonly data: T | null;
+  readonly token: string | null;
 }

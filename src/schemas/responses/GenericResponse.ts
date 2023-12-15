@@ -9,10 +9,6 @@ export class GenericResponse<T> implements IGenericResponse<T> {
     public readonly serverError: IServerError | null,
     public readonly clientErrors: IClientError[],
     public readonly data: T | null,
-  ) {
-    this.httpStatus = httpStatus;
-    this.serverError = serverError;
-    this.clientErrors = clientErrors;
-    this.data = data;
-  }
+    public readonly token: string | null,
+  ) {}
 }
