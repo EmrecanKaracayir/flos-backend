@@ -42,6 +42,6 @@ export class LoginProvider implements ILoginProvider {
     if (!ParticipantModel.isValidModel(record)) {
       throw new ModelMismatchError(record);
     }
-    return record as ParticipantModel;
+    return record as IParticipantModel;
   }
 }

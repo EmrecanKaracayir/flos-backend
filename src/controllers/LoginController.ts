@@ -29,7 +29,7 @@ export class LoginController implements ILoginController {
     this.loginService = new LoginService();
   }
 
-  public async loginOrganizer(
+  public async postLoginOrganizer(
     req: Request,
     res: Response,
     next: NextFunction,
@@ -44,19 +44,27 @@ export class LoginController implements ILoginController {
         clientErrors.push(
           new ClientError(ClientErrorCode.INVALID_REQUEST_BODY),
         );
-        return res.send(
-          new GenericResponse<null>(httpStatus, null, clientErrors, null, null),
-        );
+        return res
+          .status(httpStatus.code)
+          .send(
+            new GenericResponse<null>(
+              httpStatus,
+              null,
+              clientErrors,
+              null,
+              null,
+            ),
+          );
       }
       // Hand over to service
       const serviceRes: IGenericResponse<ILoginOrganizerResData> =
-        await this.loginService.loginOrganizer(
+        await this.loginService.postLoginOrganizer(
           req.body as ILoginOrganizerReqDto,
           clientErrors,
         );
       if (!serviceRes.data) {
         // Respond without token
-        return res.send(serviceRes);
+        return res.status(serviceRes.httpStatus.code).send(serviceRes);
       }
       // Generate token
       const token: string = AuthHelper.generateToken({
@@ -64,21 +72,23 @@ export class LoginController implements ILoginController {
         userRole: serviceRes.data.role,
       });
       // Respond with token
-      return res.send(
-        new GenericResponse<ILoginOrganizerResData>(
-          serviceRes.httpStatus,
-          serviceRes.serverError,
-          serviceRes.clientErrors,
-          serviceRes.data,
-          token,
-        ),
-      );
+      return res
+        .status(serviceRes.httpStatus.code)
+        .send(
+          new GenericResponse<ILoginOrganizerResData>(
+            serviceRes.httpStatus,
+            serviceRes.serverError,
+            serviceRes.clientErrors,
+            serviceRes.data,
+            token,
+          ),
+        );
     } catch (error) {
       return next(error);
     }
   }
 
-  public async loginParticipant(
+  public async postLoginParticipant(
     req: Request,
     res: Response,
     next: NextFunction,
@@ -93,19 +103,27 @@ export class LoginController implements ILoginController {
         clientErrors.push(
           new ClientError(ClientErrorCode.INVALID_REQUEST_BODY),
         );
-        return res.send(
-          new GenericResponse<null>(httpStatus, null, clientErrors, null, null),
-        );
+        return res
+          .status(httpStatus.code)
+          .send(
+            new GenericResponse<null>(
+              httpStatus,
+              null,
+              clientErrors,
+              null,
+              null,
+            ),
+          );
       }
       // Hand over to service
       const serviceRes: IGenericResponse<ILoginParticipantResData> =
-        await this.loginService.loginParticipant(
+        await this.loginService.postLoginParticipant(
           req.body as ILoginParticipantReqDto,
           clientErrors,
         );
       if (!serviceRes.data) {
         // Respond without token
-        return res.send(serviceRes);
+        return res.status(serviceRes.httpStatus.code).send(serviceRes);
       }
       // Generate token
       const token: string = AuthHelper.generateToken({
@@ -113,15 +131,17 @@ export class LoginController implements ILoginController {
         userRole: serviceRes.data.role,
       });
       // Respond with token
-      return res.send(
-        new GenericResponse<ILoginParticipantResData>(
-          serviceRes.httpStatus,
-          serviceRes.serverError,
-          serviceRes.clientErrors,
-          serviceRes.data,
-          token,
-        ),
-      );
+      return res
+        .status(serviceRes.httpStatus.code)
+        .send(
+          new GenericResponse<ILoginParticipantResData>(
+            serviceRes.httpStatus,
+            serviceRes.serverError,
+            serviceRes.clientErrors,
+            serviceRes.data,
+            token,
+          ),
+        );
     } catch (error) {
       return next(error);
     }

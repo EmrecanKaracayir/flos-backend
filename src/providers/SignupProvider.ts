@@ -30,7 +30,7 @@ export class SignupProvider implements ISignupProvider {
     if (!RecordExists.isValidModel(record)) {
       throw new ModelMismatchError(record);
     }
-    return record;
+    return record as IRecordExistsModel;
   }
 
   public async doesOrganizerByEmailExist(
@@ -47,7 +47,7 @@ export class SignupProvider implements ISignupProvider {
     if (!RecordExists.isValidModel(record)) {
       throw new ModelMismatchError(record);
     }
-    return record;
+    return record as IRecordExistsModel;
   }
 
   public async createOrganizer(
@@ -83,7 +83,7 @@ export class SignupProvider implements ISignupProvider {
     if (!RecordExists.isValidModel(record)) {
       throw new ModelMismatchError(record);
     }
-    return record;
+    return record as IRecordExistsModel;
   }
 
   public async doesParticipantByEmailExist(
@@ -100,7 +100,7 @@ export class SignupProvider implements ISignupProvider {
     if (!RecordExists.isValidModel(record)) {
       throw new ModelMismatchError(record);
     }
-    return record;
+    return record as IRecordExistsModel;
   }
 
   public async createParticipant(

@@ -15,3 +15,10 @@ export function isStringMatchingRegex(str: string, regex: RegExp): boolean {
   }
   return true;
 }
+
+export function canParseToInt(str: string): boolean {
+  if (isNaN(parseInt(str))) {
+    return false;
+  }
+  return true;
+}

@@ -36,6 +36,14 @@ export enum ClientErrorCode {
   INVALID_EMAIL_LENGTH = 70105,
   INVALID_EMAIL_CONTENT = 70106,
   EMAIL_ALREADY_EXISTS = 70107,
+  // - - 702XX: /referees errors
+  MISSING_PARAMETER_$REFEREE_ID = 70200,
+  INVALID_PARAMETER_$REFEREE_ID = 70201,
+  NO_REFEREE_FOUND_IN_REFEREES = 70202,
+  // - - 703XX: /venues errors
+  MISSING_PARAMETER_$VENUE_ID = 70300,
+  INVALID_PARAMETER_$VENUE_ID = 70301,
+  NO_VENUE_FOUND_IN_VENUES = 70302,
   // - - 799XX: /* error
   RESOURCE_NOT_FOUND = 79900,
 }
@@ -68,6 +76,18 @@ export const clientErrorMessages: ClientErrorMessages = {
   [ClientErrorCode.INVALID_EMAIL_CONTENT]:
     "Provided email was not in the valid format.",
   [ClientErrorCode.EMAIL_ALREADY_EXISTS]: "Provided email already exists.",
+  [ClientErrorCode.MISSING_PARAMETER_$REFEREE_ID]:
+    "Parameter 'refereeId' was missing.",
+  [ClientErrorCode.INVALID_PARAMETER_$REFEREE_ID]:
+    "Parameter 'refereeId' was invalid.",
+  [ClientErrorCode.NO_REFEREE_FOUND_IN_REFEREES]:
+    "No referee was found with the provided id.",
+  [ClientErrorCode.MISSING_PARAMETER_$VENUE_ID]:
+    "Parameter 'venueId' was missing.",
+  [ClientErrorCode.INVALID_PARAMETER_$VENUE_ID]:
+    "Parameter 'venueId' was invalid.",
+  [ClientErrorCode.NO_VENUE_FOUND_IN_VENUES]:
+    "No venue was found with the provided id.",
   [ClientErrorCode.RESOURCE_NOT_FOUND]:
     "The requested resource couldn't be found.",
 };

@@ -27,7 +27,7 @@ export class LoginService implements ILoginService {
     this.loginProvider = new LoginProvider();
   }
 
-  public async loginOrganizer(
+  public async postLoginOrganizer(
     dto: ILoginOrganizerReqDto,
     clientErrors: IClientError[],
   ): Promise<IGenericResponse<ILoginOrganizerResData>> {
@@ -70,7 +70,7 @@ export class LoginService implements ILoginService {
     );
   }
 
-  public async loginParticipant(
+  public async postLoginParticipant(
     dto: ILoginParticipantReqDto,
     clientErrors: IClientError[],
   ): Promise<IGenericResponse<ILoginParticipantResData>> {

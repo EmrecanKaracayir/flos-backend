@@ -1,7 +1,7 @@
 import { Router } from "express";
+import { SignupController } from "../controllers/SignupController";
 import { ISignupController } from "../interfaces/controllers/ISignupController";
 import { IRoute } from "../interfaces/routes/IRoute";
-import { SignupController } from "../controllers/SignupController";
 
 export class SignupRoute implements IRoute {
   public readonly router: Router;
@@ -20,11 +20,11 @@ export class SignupRoute implements IRoute {
   private initializeRoutes(): void {
     this.router.post(
       this.organizerPath,
-      this.signupController.signupOrganizer.bind(this.signupController),
+      this.signupController.postSignupOrganizer.bind(this.signupController),
     );
     this.router.post(
       this.participantPath,
-      this.signupController.signupParticipant.bind(this.signupController),
+      this.signupController.postSignupParticipant.bind(this.signupController),
     );
   }
 }

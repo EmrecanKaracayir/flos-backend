@@ -9,12 +9,12 @@ import { ISignupParticipantResData } from "../schemas/responses/routes/signup/pa
 export interface ISignupService {
   readonly signupProvider: ISignupProvider;
 
-  signupOrganizer: (
+  postSignupOrganizer: (
     dto: ISignupOrganizerReqDto,
     clientErrors: IClientError[],
   ) => Promise<IGenericResponse<ISignupOrganizerResData>>;
 
-  signupParticipant: (
+  postSignupParticipant: (
     dto: ISignupParticipantReqDto,
     clientErrors: IClientError[],
   ) => Promise<IGenericResponse<ISignupParticipantResData>>;

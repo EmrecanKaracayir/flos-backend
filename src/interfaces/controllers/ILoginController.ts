@@ -4,13 +4,13 @@ import { ILoginService } from "../services/ILoginService";
 export interface ILoginController {
   readonly loginService: ILoginService;
 
-  loginOrganizer: (
+  postLoginOrganizer: (
     req: Request,
     res: Response,
     next: NextFunction,
   ) => Promise<Response | void>;
 
-  loginParticipant: (
+  postLoginParticipant: (
     req: Request,
     res: Response,
     next: NextFunction,

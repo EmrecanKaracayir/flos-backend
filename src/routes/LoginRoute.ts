@@ -20,11 +20,11 @@ export class LoginRoute implements IRoute {
   private initializeRoutes(): void {
     this.router.post(
       this.organizerPath,
-      this.loginController.loginOrganizer.bind(this.loginController),
+      this.loginController.postLoginOrganizer.bind(this.loginController),
     );
     this.router.post(
       this.participantPath,
-      this.loginController.loginParticipant.bind(this.loginController),
+      this.loginController.postLoginParticipant.bind(this.loginController),
     );
   }
 }

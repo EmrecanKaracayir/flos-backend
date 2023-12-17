@@ -9,12 +9,12 @@ import { ILoginParticipantResData } from "../schemas/responses/routes/login/part
 export interface ILoginService {
   readonly loginProvider: ILoginProvider;
 
-  loginOrganizer: (
+  postLoginOrganizer: (
     dto: ILoginOrganizerReqDto,
     clientErrors: IClientError[],
   ) => Promise<IGenericResponse<ILoginOrganizerResData>>;
 
-  loginParticipant: (
+  postLoginParticipant: (
     dto: ILoginParticipantReqDto,
     clientErrors: IClientError[],
   ) => Promise<IGenericResponse<ILoginParticipantResData>>;

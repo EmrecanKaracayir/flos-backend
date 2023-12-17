@@ -42,7 +42,7 @@ export class SignupService implements ISignupService {
     this.signupProvider = new SignupProvider();
   }
 
-  public async signupOrganizer(
+  public async postSignupOrganizer(
     dto: ISignupOrganizerReqDto,
     clientErrors: IClientError[],
   ): Promise<IGenericResponse<ISignupOrganizerResData>> {
@@ -102,7 +102,7 @@ export class SignupService implements ISignupService {
     );
   }
 
-  public async signupParticipant(
+  public async postSignupParticipant(
     dto: ISignupParticipantReqDto,
     clientErrors: IClientError[],
   ): Promise<IGenericResponse<ISignupParticipantResData>> {

@@ -1,16 +1,16 @@
 import { NextFunction, Request, Response } from "express";
-import { ISignupService } from "../services/ISignupService";
+import { IVenuesService } from "../services/IVenuesService";
 
-export interface ISignupController {
-  readonly signupService: ISignupService;
+export interface IVenuesController {
+  readonly venuesService: IVenuesService;
 
-  postSignupOrganizer: (
+  getVenues: (
     req: Request,
     res: Response,
     next: NextFunction,
   ) => Promise<Response | void>;
 
-  postSignupParticipant: (
+  getVenues$venueId: (
     req: Request,
     res: Response,
     next: NextFunction,
