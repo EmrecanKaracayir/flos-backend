@@ -3,5 +3,6 @@ export interface IVenueModel {
   readonly name: string;
   readonly capacity: number;
   readonly address: string;
+  readonly email: string;
   readonly imgPath: string;
 }

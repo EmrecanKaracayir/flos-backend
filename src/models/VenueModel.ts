@@ -6,6 +6,7 @@ export class VenueModel implements IVenueModel {
     public readonly name: string,
     public readonly capacity: number,
     public readonly address: string,
+    public readonly email: string,
     public readonly imgPath: string,
   ) {}
 
@@ -19,6 +20,7 @@ export class VenueModel implements IVenueModel {
       typeof model.name === "string" &&
       typeof model.capacity === "number" &&
       typeof model.address === "string" &&
+      typeof model.email === "string" &&
       typeof model.imgPath === "string"
     );
   }

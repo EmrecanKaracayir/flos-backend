@@ -7,6 +7,7 @@ export class VenuesResData implements IVenuesResData {
     public readonly name: string,
     public readonly capacity: number,
     public readonly address: string,
+    public readonly email: string,
     public readonly imgPath: string,
   ) {}
 
@@ -16,6 +17,7 @@ export class VenuesResData implements IVenuesResData {
       venueModel.name,
       venueModel.capacity,
       venueModel.address,
+      venueModel.email,
       venueModel.imgPath,
     );
   }
