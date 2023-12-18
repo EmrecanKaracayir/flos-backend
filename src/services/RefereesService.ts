@@ -15,17 +15,17 @@ import { HttpStatus } from "../schemas/responses/common/HttpStatus";
 import { RefereesResData } from "../schemas/responses/routes/referees/RefereesResData";
 
 export class RefereesService implements IRefereesService {
-  public readonly venuesProvider: IRefereesProvider;
+  public readonly refereesProvider: IRefereesProvider;
 
   constructor() {
-    this.venuesProvider = new RefereesProvider();
+    this.refereesProvider = new RefereesProvider();
   }
 
   public async getReferees(
     clientErrors: IClientError[],
   ): Promise<IGenericResponse<IRefereesResData[]>> {
     const refereeModels: IRefereeModel[] =
-      await this.venuesProvider.getRefereeModels();
+      await this.refereesProvider.getRefereeModels();
     return new GenericResponse<IRefereesResData[]>(
       new HttpStatus(HttpStatusCode.OK),
       null,
@@ -40,7 +40,7 @@ export class RefereesService implements IRefereesService {
     clientErrors: IClientError[],
   ): Promise<IGenericResponse<IRefereesResData>> {
     const refereeModel: IRefereeModel | null =
-      await this.venuesProvider.getRefereeModelById(refereeId);
+      await this.refereesProvider.getRefereeModelById(refereeId);
     if (!refereeModel) {
       clientErrors.push(
         new ClientError(ClientErrorCode.NO_REFEREE_FOUND_IN_REFEREES),

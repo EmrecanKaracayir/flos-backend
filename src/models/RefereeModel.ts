@@ -7,7 +7,7 @@ export class RefereeModel implements IRefereeModel {
   constructor(
     public readonly refereeId: number,
     public readonly fullName: string,
-    public readonly birthday: Date,
+    public readonly age: number,
     public readonly licenseType: RefereeLicenseType,
     public readonly email: string,
     public readonly imgPath: string,
@@ -21,7 +21,7 @@ export class RefereeModel implements IRefereeModel {
     return (
       typeof model.refereeId === "number" &&
       typeof model.fullName === "string" &&
-      model.birthday instanceof Date &&
+      typeof model.age === "number" &&
       Object.values(RefereeLicenseType).includes(model.licenseType) &&
       typeof model.email === "string" &&
       typeof model.imgPath === "string"

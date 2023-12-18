@@ -21,3 +21,12 @@ export class UnexpectedQueryResultError extends Error {
     this.name = "UnexpectedQueryResultError";
   }
 }
+
+export class PrecisionLossError extends Error {
+  constructor(sourceDataType: string, targetDataType: string) {
+    super(
+      `Cannot safely cast from '${sourceDataType}' to '${targetDataType}'.`,
+    );
+    this.name = "PrecisionLossError";
+  }
+}

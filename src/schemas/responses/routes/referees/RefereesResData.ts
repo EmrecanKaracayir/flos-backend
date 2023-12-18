@@ -1,4 +1,3 @@
-import { ageFromBirthday } from "../../../../core/utils/dates";
 import {
   IRefereeModel,
   RefereeLicenseType,
@@ -19,7 +18,7 @@ export class RefereesResData implements IRefereesResData {
     return new RefereesResData(
       refereeModel.refereeId,
       refereeModel.fullName,
-      ageFromBirthday(refereeModel.birthday),
+      refereeModel.age,
       refereeModel.licenseType,
       refereeModel.email,
       refereeModel.imgPath,

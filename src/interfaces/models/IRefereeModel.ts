@@ -1,7 +1,7 @@
 export interface IRefereeModel {
   readonly refereeId: number;
   readonly fullName: string;
-  readonly birthday: Date;
+  readonly age: number;
   readonly licenseType: RefereeLicenseType;
   readonly email: string;
   readonly imgPath: string;

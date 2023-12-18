@@ -4,7 +4,7 @@ import { IClientError } from "../schemas/responses/common/IClientError";
 import { IRefereesResData } from "../schemas/responses/routes/referees/IRefereesResData";
 
 export interface IRefereesService {
-  readonly venuesProvider: IRefereesProvider;
+  readonly refereesProvider: IRefereesProvider;
 
   getReferees: (
     clientErrors: IClientError[],
