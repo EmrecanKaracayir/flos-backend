@@ -8,5 +8,5 @@ export interface IRefereesProvider {
 
 export enum RefereesQueries {
   GET_REFEREE_MODELS = `SELECT * FROM "Referee"`,
-  GET_REFEREE_MODEL_BY_$ID = `SELECT * FROM "Referee" WHERE "refereeId" = $1`,
+  GET_REFEREE_MODEL_BY_$ID = `${GET_REFEREE_MODELS} WHERE "refereeId" = $1`,
 }

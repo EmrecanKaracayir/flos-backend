@@ -8,5 +8,5 @@ export interface IVenuesProvider {
 
 export enum VenuesQueries {
   GET_VENUE_MODELS = `SELECT * FROM "Venue"`,
-  GET_VENUE_MODEL_BY_$ID = `SELECT * FROM "Venue" WHERE "venueId" = $1`,
+  GET_VENUE_MODEL_BY_$ID = `${GET_VENUE_MODELS} WHERE "venueId" = $1`,
 }

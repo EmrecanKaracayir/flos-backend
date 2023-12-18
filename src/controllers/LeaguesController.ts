@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { canParseToInt } from "../core/utils/strings";
-import { IVenuesController } from "../interfaces/controllers/IVenuesController";
+import { ILeaguesController } from "../interfaces/controllers/ILeaguesController";
 import { IGenericResponse } from "../interfaces/schemas/responses/IGenericResponse";
 import {
   ClientErrorCode,
@@ -10,21 +10,21 @@ import {
   HttpStatusCode,
   IHttpStatus,
 } from "../interfaces/schemas/responses/common/IHttpStatus";
-import { IVenuesResData } from "../interfaces/schemas/responses/routes/venues/IVenuesResData";
-import { IVenuesService } from "../interfaces/services/IVenuesService";
+import { ILeaguesResData } from "../interfaces/schemas/responses/routes/leagues/ILeaguesResData";
+import { ILeaguesService } from "../interfaces/services/ILeaguesService";
 import { GenericResponse } from "../schemas/responses/GenericResponse";
 import { ClientError } from "../schemas/responses/common/ClientError";
 import { HttpStatus } from "../schemas/responses/common/HttpStatus";
-import { VenuesService } from "../services/VenuesService";
+import { LeaguesService } from "../services/LeaguesService";
 
-export class VenuesController implements IVenuesController {
-  public readonly venuesService: IVenuesService;
+export class LeaguesController implements ILeaguesController {
+  public readonly leaguesService: ILeaguesService;
 
   constructor() {
-    this.venuesService = new VenuesService();
+    this.leaguesService = new LeaguesService();
   }
 
-  public async getVenues(
+  public async getLeagues(
     _: Request,
     res: Response,
     next: NextFunction,
@@ -34,15 +34,15 @@ export class VenuesController implements IVenuesController {
     // Logic
     try {
       // Hand over to service
-      const serviceRes: IGenericResponse<IVenuesResData[]> =
-        await this.venuesService.getVenues(clientErrors);
+      const serviceRes: IGenericResponse<ILeaguesResData[]> =
+        await this.leaguesService.getLeagues(clientErrors);
       return res.status(serviceRes.httpStatus.code).send(serviceRes);
     } catch (error) {
       return next(error);
     }
   }
 
-  public async getVenues$venueId(
+  public async getLeagues$leagueId(
     req: Request,
     res: Response,
     next: NextFunction,
@@ -52,10 +52,10 @@ export class VenuesController implements IVenuesController {
     const clientErrors: Array<IClientError> = [];
     // Logic
     try {
-      if (!req.params.venueId) {
+      if (!req.params.leagueId) {
         httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
         clientErrors.push(
-          new ClientError(ClientErrorCode.MISSING_PARAMETER_$VENUE_ID),
+          new ClientError(ClientErrorCode.MISSING_PARAMETER_$LEAGUE_ID),
         );
         return res
           .status(httpStatus.code)
@@ -69,10 +69,10 @@ export class VenuesController implements IVenuesController {
             ),
           );
       }
-      if (!canParseToInt(req.params.venueId)) {
+      if (!canParseToInt(req.params.leagueId)) {
         httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
         clientErrors.push(
-          new ClientError(ClientErrorCode.INVALID_PARAMETER_$VENUE_ID),
+          new ClientError(ClientErrorCode.INVALID_PARAMETER_$LEAGUE_ID),
         );
         return res
           .status(httpStatus.code)
@@ -87,9 +87,9 @@ export class VenuesController implements IVenuesController {
           );
       }
       // Hand over to service
-      const serviceRes: IGenericResponse<IVenuesResData> =
-        await this.venuesService.getVenues$venueId(
-          parseInt(req.params.venueId),
+      const serviceRes: IGenericResponse<ILeaguesResData> =
+        await this.leaguesService.getLeagues$leagueId(
+          parseInt(req.params.leagueId),
           clientErrors,
         );
       return res.status(serviceRes.httpStatus.code).send(serviceRes);

@@ -44,6 +44,10 @@ export enum ClientErrorCode {
   MISSING_PARAMETER_$VENUE_ID = 70300,
   INVALID_PARAMETER_$VENUE_ID = 70301,
   NO_VENUE_FOUND_IN_VENUES = 70302,
+  // - - 704XX: /leagues errors
+  MISSING_PARAMETER_$LEAGUE_ID = 70400,
+  INVALID_PARAMETER_$LEAGUE_ID = 70401,
+  NO_LEAGUE_FOUND_IN_LEAGUES = 70402,
   // - - 799XX: /* error
   RESOURCE_NOT_FOUND = 79900,
 }
@@ -88,6 +92,12 @@ export const clientErrorMessages: ClientErrorMessages = {
     "Parameter 'venueId' was invalid.",
   [ClientErrorCode.NO_VENUE_FOUND_IN_VENUES]:
     "No venue was found with the provided id.",
+  [ClientErrorCode.MISSING_PARAMETER_$LEAGUE_ID]:
+    "Parameter 'leagueId' was missing.",
+  [ClientErrorCode.INVALID_PARAMETER_$LEAGUE_ID]:
+    "Parameter 'leagueId' was invalid.",
+  [ClientErrorCode.NO_LEAGUE_FOUND_IN_LEAGUES]:
+    "No league was found with the provided id.",
   [ClientErrorCode.RESOURCE_NOT_FOUND]:
     "The requested resource couldn't be found.",
 };

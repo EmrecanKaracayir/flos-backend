@@ -23,6 +23,7 @@ export class RefereesController implements IRefereesController {
   constructor() {
     this.refereesService = new RefereesService();
   }
+
   public async getReferees(
     _: Request,
     res: Response,

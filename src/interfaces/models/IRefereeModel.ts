@@ -8,9 +8,9 @@ export interface IRefereeModel {
 }
 
 export enum RefereeLicenseType {
-  X_CLASS = "X Class",
-  S_CLASS = "S Class",
-  A_CLASS = "A Class",
-  B_CLASS = "B Class",
-  C_CLASS = "C Class",
+  CATEGORY_FIFA = "Category FIFA",
+  CATEGORY_S = "Category S",
+  CATEGORY_A = "Category A",
+  CATEGORY_B = "Category B",
+  CATEGORY_C = "Category C",
 }

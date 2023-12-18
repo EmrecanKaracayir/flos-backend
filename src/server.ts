@@ -4,6 +4,7 @@ import { API_PREFIX } from "./core/utils/constants";
 import { CatcherMiddleware } from "./middlewares/CatcherMiddleware";
 import { FailureMiddleware } from "./middlewares/FailureMiddleware";
 import { LoggerMiddleware } from "./middlewares/LoggerMiddleware";
+import { LeaguesRoute } from "./routes/LeaguesRoute";
 import { LoginRoute } from "./routes/LoginRoute";
 import { RefereesRoute } from "./routes/RefereesRoute";
 import { SignupRoute } from "./routes/SignupRoute";
@@ -25,6 +26,7 @@ app.use(`${API_PREFIX}`, new LoginRoute().router);
 app.use(`${API_PREFIX}`, new SignupRoute().router);
 app.use(`${API_PREFIX}`, new RefereesRoute().router);
 app.use(`${API_PREFIX}`, new VenuesRoute().router);
+app.use(`${API_PREFIX}`, new LeaguesRoute().router);
 
 // Post-Middlewares
 app.use("*", CatcherMiddleware.resourceNotFound);
