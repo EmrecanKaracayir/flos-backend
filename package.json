@@ -8,8 +8,11 @@
     "clean": "rm -rf ./dist",
     "prebuild": "npm run clean && npm run format && npm run lint",
     "build": "tsc",
-    "start": "npm run build && node ./dist/server.js",
-    "dev": "tsc --watch"
+    "dev": "tsc --watch",
+    "prepareDevEnv": "cp -rf ./environments/dev/* ./ && npm run build",
+    "prepareLiveEnv": "cp -rf ./environments/live/* ./ && npm run build",
+    "startDev": "npm run prepareDevEnv && node ./dist/server.js",
+    "startLive": "npm run prepareLiveEnv && node  ./dist/server.js"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
