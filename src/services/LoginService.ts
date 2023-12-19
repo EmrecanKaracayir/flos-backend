@@ -61,11 +61,7 @@ export class LoginService implements ILoginService {
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      new LoginOrganizerResData(
-        organizerModel.organizerId,
-        organizerModel.username,
-        organizerModel.email,
-      ),
+      LoginOrganizerResData.fromModel(organizerModel),
       null,
     );
   }
@@ -104,11 +100,7 @@ export class LoginService implements ILoginService {
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      new LoginParticipantResData(
-        participantModel.participantId,
-        participantModel.username,
-        participantModel.email,
-      ),
+      LoginParticipantResData.fromModel(participantModel),
       null,
     );
   }

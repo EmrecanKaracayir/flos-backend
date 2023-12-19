@@ -6,6 +6,8 @@ export class ParticipantModel implements IParticipantModel {
     public readonly username: string,
     public readonly password: string,
     public readonly email: string,
+    public readonly playerId: number | null,
+    readonly clubId: number | null,
   ) {}
 
   public static isValidModel(obj: unknown): obj is IParticipantModel {
@@ -17,7 +19,9 @@ export class ParticipantModel implements IParticipantModel {
       typeof model.participantId === "number" &&
       typeof model.username === "string" &&
       typeof model.password === "string" &&
-      typeof model.email === "string"
+      typeof model.email === "string" &&
+      (typeof model.playerId === "number" || model.playerId === null) &&
+      (typeof model.clubId === "number" || model.clubId === null)
     );
   }
 }

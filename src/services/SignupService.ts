@@ -93,11 +93,7 @@ export class SignupService implements ISignupService {
       new HttpStatus(HttpStatusCode.CREATED),
       null,
       clientErrors,
-      new SignupOrganizerResData(
-        organizerModel.organizerId,
-        organizerModel.username,
-        organizerModel.email,
-      ),
+      SignupOrganizerResData.fromModel(organizerModel),
       null,
     );
   }
@@ -154,11 +150,7 @@ export class SignupService implements ISignupService {
       new HttpStatus(HttpStatusCode.CREATED),
       null,
       clientErrors,
-      new SignupParticipantResData(
-        participantModel.participantId,
-        participantModel.username,
-        participantModel.email,
-      ),
+      SignupParticipantResData.fromModel(participantModel),
       null,
     );
   }
