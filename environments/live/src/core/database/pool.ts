@@ -6,4 +6,7 @@ export const pool: Pool = new Pool({
   database: "flos",
   password: "password",
   port: 5432,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
