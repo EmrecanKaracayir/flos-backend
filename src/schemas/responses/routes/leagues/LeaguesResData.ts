@@ -15,21 +15,21 @@ export class LeaguesResData implements ILeaguesResData {
     public readonly logoPath: string,
   ) {}
 
-  public static fromModel(leagueModel: ILeagueModel): ILeaguesResData {
+  public static fromModel(model: ILeagueModel): ILeaguesResData {
     return new LeaguesResData(
-      leagueModel.leagueId,
-      leagueModel.name,
-      leagueModel.state,
-      leagueModel.prize,
-      leagueModel.organizerEmail,
-      leagueModel.description,
-      leagueModel.logoPath,
+      model.leagueId,
+      model.name,
+      model.state,
+      model.prize,
+      model.organizerEmail,
+      model.description,
+      model.logoPath,
     );
   }
 
-  public static fromModels(leagueModels: ILeagueModel[]): ILeaguesResData[] {
-    return leagueModels.map(
-      (leagueModel): ILeaguesResData => LeaguesResData.fromModel(leagueModel),
+  public static fromModels(models: ILeagueModel[]): ILeaguesResData[] {
+    return models.map(
+      (model): ILeaguesResData => LeaguesResData.fromModel(model),
     );
   }
 }

@@ -15,7 +15,7 @@ export class LeagueModel implements ILeagueModel {
     if (typeof obj !== "object" || obj === null) {
       return false;
     }
-    const model: LeagueModel = obj as ILeagueModel;
+    const model: ILeagueModel = obj as ILeagueModel;
     return (
       typeof model.leagueId === "number" &&
       typeof model.name === "string" &&

@@ -10,7 +10,7 @@ export interface IClubModel {
 }
 
 export enum ClubState {
-  NOT_STARTED = "Not ready",
-  IN_PROGRESS = "Ready",
-  FINISHED = "In a league",
+  NOT_READY = "Not ready",
+  READY = "Ready",
+  IN_A_LEAGUE = "In a league",
 }

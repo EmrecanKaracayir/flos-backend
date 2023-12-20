@@ -15,7 +15,7 @@ export class VenueModel implements IVenueModel {
     if (typeof obj !== "object" || obj === null) {
       return false;
     }
-    const model: VenueModel = obj as IVenueModel;
+    const model: IVenueModel = obj as IVenueModel;
     return (
       typeof model.venueId === "number" &&
       typeof model.name === "string" &&

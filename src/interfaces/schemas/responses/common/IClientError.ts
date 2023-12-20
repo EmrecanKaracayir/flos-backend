@@ -48,10 +48,14 @@ export enum ClientErrorCode {
   MISSING_PARAMETER_$LEAGUE_ID = 70400,
   INVALID_PARAMETER_$LEAGUE_ID = 70401,
   NO_LEAGUE_FOUND_IN_LEAGUES = 70402,
-  // - - 704XX: /clubs errors
+  // - - 705XX: /clubs errors
   MISSING_PARAMETER_$CLUB_ID = 70500,
   INVALID_PARAMETER_$CLUB_ID = 70501,
   NO_CLUB_FOUND_IN_CLUBS = 70502,
+  // - - 706XX: /players errors
+  MISSING_PARAMETER_$PLAYER_ID = 70600,
+  INVALID_PARAMETER_$PLAYER_ID = 70601,
+  NO_PLAYER_FOUND_IN_PLAYERS = 70602,
   // - - 799XX: /* error
   RESOURCE_NOT_FOUND = 79900,
 }
@@ -108,6 +112,12 @@ export const clientErrorMessages: ClientErrorMessages = {
     "Parameter 'clubId' was invalid.",
   [ClientErrorCode.NO_CLUB_FOUND_IN_CLUBS]:
     "No club was found with the provided id.",
+  [ClientErrorCode.MISSING_PARAMETER_$PLAYER_ID]:
+    "Parameter 'playerId' was missing.",
+  [ClientErrorCode.INVALID_PARAMETER_$PLAYER_ID]:
+    "Parameter 'playerId' was invalid.",
+  [ClientErrorCode.NO_PLAYER_FOUND_IN_PLAYERS]:
+    "No player was found with the provided id.",
   [ClientErrorCode.RESOURCE_NOT_FOUND]:
     "The requested resource couldn't be found.",
 };

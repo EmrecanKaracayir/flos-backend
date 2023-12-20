@@ -14,7 +14,7 @@ export class ParticipantModel implements IParticipantModel {
     if (typeof obj !== "object" || obj === null) {
       return false;
     }
-    const model: ParticipantModel = obj as IParticipantModel;
+    const model: IParticipantModel = obj as IParticipantModel;
     return (
       typeof model.participantId === "number" &&
       typeof model.username === "string" &&

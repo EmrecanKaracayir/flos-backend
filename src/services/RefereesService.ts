@@ -24,13 +24,13 @@ export class RefereesService implements IRefereesService {
   public async getReferees(
     clientErrors: IClientError[],
   ): Promise<IGenericResponse<IRefereesResData[]>> {
-    const refereeModels: IRefereeModel[] =
+    const models: IRefereeModel[] =
       await this.refereesProvider.getRefereeModels();
     return new GenericResponse<IRefereesResData[]>(
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      RefereesResData.fromModels(refereeModels),
+      RefereesResData.fromModels(models),
       null,
     );
   }
@@ -39,9 +39,9 @@ export class RefereesService implements IRefereesService {
     refereeId: number,
     clientErrors: IClientError[],
   ): Promise<IGenericResponse<IRefereesResData>> {
-    const refereeModel: IRefereeModel | null =
+    const model: IRefereeModel | null =
       await this.refereesProvider.getRefereeModelById(refereeId);
-    if (!refereeModel) {
+    if (!model) {
       clientErrors.push(
         new ClientError(ClientErrorCode.NO_REFEREE_FOUND_IN_REFEREES),
       );
@@ -57,7 +57,7 @@ export class RefereesService implements IRefereesService {
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      RefereesResData.fromModel(refereeModel),
+      RefereesResData.fromModel(model),
       null,
     );
   }

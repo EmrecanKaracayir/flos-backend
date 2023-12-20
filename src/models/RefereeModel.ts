@@ -17,7 +17,7 @@ export class RefereeModel implements IRefereeModel {
     if (typeof obj !== "object" || obj === null) {
       return false;
     }
-    const model: RefereeModel = obj as IRefereeModel;
+    const model: IRefereeModel = obj as IRefereeModel;
     return (
       typeof model.refereeId === "number" &&
       typeof model.fullName === "string" &&

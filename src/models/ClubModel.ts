@@ -16,7 +16,7 @@ export class ClubModel implements IClubModel {
     if (typeof obj !== "object" || obj === null) {
       return false;
     }
-    const model: ClubModel = obj as IClubModel;
+    const model: IClubModel = obj as IClubModel;
     return (
       typeof model.clubId === "number" &&
       typeof model.name === "string" &&

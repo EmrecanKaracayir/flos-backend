@@ -13,13 +13,11 @@ export class LoginParticipantResData implements ILoginParticipantResData {
     this.role = "participant";
   }
 
-  public static fromModel(
-    participantModel: IParticipantModel,
-  ): ILoginParticipantResData {
+  public static fromModel(model: IParticipantModel): ILoginParticipantResData {
     return new LoginParticipantResData(
-      participantModel.participantId,
-      participantModel.username,
-      participantModel.email,
+      model.participantId,
+      model.username,
+      model.email,
     );
   }
 }

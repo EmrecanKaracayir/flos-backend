@@ -13,7 +13,7 @@ import {
 } from "../interfaces/schemas/responses/common/IServerError";
 import { OrganizerModel } from "../models/OrganizerModel";
 import { ParticipantModel } from "../models/ParticipantModel";
-import { RecordExists } from "../models/RecordExistsModel";
+import { RecordExistsModel } from "../models/RecordExistsModel";
 
 export class SignupProvider implements ISignupProvider {
   public async doesOrganizerByUsernameExist(
@@ -27,7 +27,7 @@ export class SignupProvider implements ISignupProvider {
     if (!record) {
       throw new UnexpectedQueryResultError();
     }
-    if (!RecordExists.isValidModel(record)) {
+    if (!RecordExistsModel.isValidModel(record)) {
       throw new ModelMismatchError(record);
     }
     return record as IRecordExistsModel;
@@ -44,7 +44,7 @@ export class SignupProvider implements ISignupProvider {
     if (!record) {
       throw new UnexpectedQueryResultError();
     }
-    if (!RecordExists.isValidModel(record)) {
+    if (!RecordExistsModel.isValidModel(record)) {
       throw new ModelMismatchError(record);
     }
     return record as IRecordExistsModel;
@@ -80,7 +80,7 @@ export class SignupProvider implements ISignupProvider {
     if (!record) {
       throw new UnexpectedQueryResultError();
     }
-    if (!RecordExists.isValidModel(record)) {
+    if (!RecordExistsModel.isValidModel(record)) {
       throw new ModelMismatchError(record);
     }
     return record as IRecordExistsModel;
@@ -97,7 +97,7 @@ export class SignupProvider implements ISignupProvider {
     if (!record) {
       throw new UnexpectedQueryResultError();
     }
-    if (!RecordExists.isValidModel(record)) {
+    if (!RecordExistsModel.isValidModel(record)) {
       throw new ModelMismatchError(record);
     }
     return record as IRecordExistsModel;

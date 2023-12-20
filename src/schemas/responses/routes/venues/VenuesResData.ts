@@ -13,24 +13,24 @@ export class VenuesResData implements IVenuesResData {
     public readonly imgPath: string,
   ) {}
 
-  public static fromModel(venueModel: IVenueModel): IVenuesResData {
-    if (!Number.isSafeInteger(Number(venueModel.capacityRank))) {
+  public static fromModel(model: IVenueModel): IVenuesResData {
+    if (!Number.isSafeInteger(Number(model.capacityRank))) {
       throw new PrecisionLossError("bigint", "number");
     }
     return new VenuesResData(
-      venueModel.venueId,
-      venueModel.name,
-      venueModel.capacity,
-      Number(venueModel.capacityRank),
-      venueModel.email,
-      venueModel.address,
-      venueModel.imgPath,
+      model.venueId,
+      model.name,
+      model.capacity,
+      Number(model.capacityRank),
+      model.email,
+      model.address,
+      model.imgPath,
     );
   }
 
-  public static fromModels(venueModels: IVenueModel[]): IVenuesResData[] {
-    return venueModels.map(
-      (venueModel): IVenuesResData => VenuesResData.fromModel(venueModel),
+  public static fromModels(models: IVenueModel[]): IVenuesResData[] {
+    return models.map(
+      (model): IVenuesResData => VenuesResData.fromModel(model),
     );
   }
 }

@@ -17,25 +17,23 @@ export class ClubsResData implements IClubsResData {
     public readonly logoPath: string,
   ) {}
 
-  public static fromModel(clubModel: IClubModel): IClubsResData {
-    if (!Number.isSafeInteger(Number(clubModel.playerCount))) {
+  public static fromModel(model: IClubModel): IClubsResData {
+    if (!Number.isSafeInteger(Number(model.playerCount))) {
       throw new PrecisionLossError("bigint", "number");
     }
     return new ClubsResData(
-      clubModel.clubId,
-      clubModel.name,
-      clubModel.state,
-      Number(clubModel.playerCount),
-      clubModel.cupCount,
-      clubModel.participantEmail,
-      clubModel.description,
-      clubModel.logoPath,
+      model.clubId,
+      model.name,
+      model.state,
+      Number(model.playerCount),
+      model.cupCount,
+      model.participantEmail,
+      model.description,
+      model.logoPath,
     );
   }
 
-  public static fromModels(clubModels: IClubModel[]): IClubsResData[] {
-    return clubModels.map(
-      (clubModels): IClubsResData => ClubsResData.fromModel(clubModels),
-    );
+  public static fromModels(models: IClubModel[]): IClubsResData[] {
+    return models.map((model): IClubsResData => ClubsResData.fromModel(model));
   }
 }

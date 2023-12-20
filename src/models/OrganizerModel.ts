@@ -12,7 +12,7 @@ export class OrganizerModel implements IOrganizerModel {
     if (typeof obj !== "object" || obj === null) {
       return false;
     }
-    const model: OrganizerModel = obj as IOrganizerModel;
+    const model: IOrganizerModel = obj as IOrganizerModel;
     return (
       typeof model.organizerId === "number" &&
       typeof model.username === "string" &&

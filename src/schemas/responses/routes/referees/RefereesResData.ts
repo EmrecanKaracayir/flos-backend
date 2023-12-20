@@ -14,21 +14,20 @@ export class RefereesResData implements IRefereesResData {
     public readonly imgPath: string,
   ) {}
 
-  public static fromModel(refereeModel: IRefereeModel): IRefereesResData {
+  public static fromModel(model: IRefereeModel): IRefereesResData {
     return new RefereesResData(
-      refereeModel.refereeId,
-      refereeModel.fullName,
-      refereeModel.age,
-      refereeModel.licenseType,
-      refereeModel.email,
-      refereeModel.imgPath,
+      model.refereeId,
+      model.fullName,
+      model.age,
+      model.licenseType,
+      model.email,
+      model.imgPath,
     );
   }
 
-  public static fromModels(refereeModels: IRefereeModel[]): IRefereesResData[] {
-    return refereeModels.map(
-      (refereeModel): IRefereesResData =>
-        RefereesResData.fromModel(refereeModel),
+  public static fromModels(models: IRefereeModel[]): IRefereesResData[] {
+    return models.map(
+      (model): IRefereesResData => RefereesResData.fromModel(model),
     );
   }
 }

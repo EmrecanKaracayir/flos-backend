@@ -24,13 +24,12 @@ export class LeaguesService implements ILeaguesService {
   public async getLeagues(
     clientErrors: IClientError[],
   ): Promise<IGenericResponse<ILeaguesResData[]>> {
-    const leagueModels: ILeagueModel[] =
-      await this.leaguesProvider.getLeagueModels();
+    const models: ILeagueModel[] = await this.leaguesProvider.getLeagueModels();
     return new GenericResponse<ILeaguesResData[]>(
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      LeaguesResData.fromModels(leagueModels),
+      LeaguesResData.fromModels(models),
       null,
     );
   }
@@ -39,9 +38,9 @@ export class LeaguesService implements ILeaguesService {
     leagueId: number,
     clientErrors: IClientError[],
   ): Promise<IGenericResponse<ILeaguesResData>> {
-    const leagueModel: ILeagueModel | null =
+    const model: ILeagueModel | null =
       await this.leaguesProvider.getLeagueModelById(leagueId);
-    if (!leagueModel) {
+    if (!model) {
       clientErrors.push(
         new ClientError(ClientErrorCode.NO_LEAGUE_FOUND_IN_LEAGUES),
       );
@@ -57,7 +56,7 @@ export class LeaguesService implements ILeaguesService {
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      LeaguesResData.fromModel(leagueModel),
+      LeaguesResData.fromModel(model),
       null,
     );
   }

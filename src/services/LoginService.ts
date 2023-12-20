@@ -31,9 +31,9 @@ export class LoginService implements ILoginService {
     dto: ILoginOrganizerReqDto,
     clientErrors: IClientError[],
   ): Promise<IGenericResponse<ILoginOrganizerResData>> {
-    const organizerModel: IOrganizerModel | null =
+    const model: IOrganizerModel | null =
       await this.loginProvider.getOrganizerModelByUsername(dto.username);
-    if (!organizerModel) {
+    if (!model) {
       clientErrors.push(
         new ClientError(ClientErrorCode.NO_ACCOUNT_FOUND_IN_ORGANIZERS),
       );
@@ -45,9 +45,7 @@ export class LoginService implements ILoginService {
         null,
       );
     }
-    if (
-      !(await EncryptionHelper.compare(dto.password, organizerModel.password))
-    ) {
+    if (!(await EncryptionHelper.compare(dto.password, model.password))) {
       clientErrors.push(new ClientError(ClientErrorCode.INCORRECT_PASSWORD));
       return new GenericResponse<null>(
         new HttpStatus(HttpStatusCode.UNAUTHORIZED),
@@ -61,7 +59,7 @@ export class LoginService implements ILoginService {
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      LoginOrganizerResData.fromModel(organizerModel),
+      LoginOrganizerResData.fromModel(model),
       null,
     );
   }
@@ -70,9 +68,9 @@ export class LoginService implements ILoginService {
     dto: ILoginParticipantReqDto,
     clientErrors: IClientError[],
   ): Promise<IGenericResponse<ILoginParticipantResData>> {
-    const participantModel: IParticipantModel | null =
+    const model: IParticipantModel | null =
       await this.loginProvider.getParticipantModelByUsername(dto.username);
-    if (!participantModel) {
+    if (!model) {
       clientErrors.push(
         new ClientError(ClientErrorCode.NO_ACCOUNT_FOUND_IN_PARTICIPANTS),
       );
@@ -84,9 +82,7 @@ export class LoginService implements ILoginService {
         null,
       );
     }
-    if (
-      !(await EncryptionHelper.compare(dto.password, participantModel.password))
-    ) {
+    if (!(await EncryptionHelper.compare(dto.password, model.password))) {
       clientErrors.push(new ClientError(ClientErrorCode.INCORRECT_PASSWORD));
       return new GenericResponse<null>(
         new HttpStatus(HttpStatusCode.UNAUTHORIZED),
@@ -100,7 +96,7 @@ export class LoginService implements ILoginService {
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      LoginParticipantResData.fromModel(participantModel),
+      LoginParticipantResData.fromModel(model),
       null,
     );
   }

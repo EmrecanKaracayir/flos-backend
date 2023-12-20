@@ -24,13 +24,12 @@ export class VenuesService implements IVenuesService {
   public async getVenues(
     clientErrors: IClientError[],
   ): Promise<IGenericResponse<IVenuesResData[]>> {
-    const venueModels: IVenueModel[] =
-      await this.venuesProvider.getVenueModels();
+    const models: IVenueModel[] = await this.venuesProvider.getVenueModels();
     return new GenericResponse<IVenuesResData[]>(
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      VenuesResData.fromModels(venueModels),
+      VenuesResData.fromModels(models),
       null,
     );
   }
@@ -39,9 +38,9 @@ export class VenuesService implements IVenuesService {
     venueId: number,
     clientErrors: IClientError[],
   ): Promise<IGenericResponse<IVenuesResData>> {
-    const venueModel: IVenueModel | null =
+    const model: IVenueModel | null =
       await this.venuesProvider.getVenueModelById(venueId);
-    if (!venueModel) {
+    if (!model) {
       clientErrors.push(
         new ClientError(ClientErrorCode.NO_VENUE_FOUND_IN_VENUES),
       );
@@ -57,7 +56,7 @@ export class VenuesService implements IVenuesService {
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      VenuesResData.fromModel(venueModel),
+      VenuesResData.fromModel(model),
       null,
     );
   }

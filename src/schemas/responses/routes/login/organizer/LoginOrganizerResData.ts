@@ -13,13 +13,11 @@ export class LoginOrganizerResData implements ILoginOrganizerResData {
     this.role = "organizer";
   }
 
-  public static fromModel(
-    organizerModel: IOrganizerModel,
-  ): ILoginOrganizerResData {
+  public static fromModel(model: IOrganizerModel): ILoginOrganizerResData {
     return new LoginOrganizerResData(
-      organizerModel.organizerId,
-      organizerModel.username,
-      organizerModel.email,
+      model.organizerId,
+      model.username,
+      model.email,
     );
   }
 }
