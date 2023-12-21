@@ -1,4 +1,4 @@
-import { LeagueState } from "../../../../models/ILeagueModel";
+import { LeagueState } from "../../../../../core/enums/leagueState";
 
 export interface ILeaguesResData {
   readonly leagueId: number;

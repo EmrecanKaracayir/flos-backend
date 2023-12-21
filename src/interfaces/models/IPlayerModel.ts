@@ -1,3 +1,5 @@
+import { PlayerState } from "../../core/enums/playerState";
+
 export interface IPlayerModel {
   readonly playerId: number;
   readonly clubName: string | null;
@@ -9,9 +11,4 @@ export interface IPlayerModel {
   readonly participantEmail: string;
   readonly biography: string;
   readonly imgPath: string;
-}
-
-export enum PlayerState {
-  AVAILABLE = "Available",
-  IN_A_CLUB = "In a club",
 }

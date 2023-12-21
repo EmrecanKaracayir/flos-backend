@@ -1,4 +1,5 @@
-import { IPlayerModel, PlayerState } from "../interfaces/models/IPlayerModel";
+import { PlayerState } from "../core/enums/playerState";
+import { IPlayerModel } from "../interfaces/models/IPlayerModel";
 
 export class PlayerModel implements IPlayerModel {
   constructor(

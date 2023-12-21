@@ -24,12 +24,12 @@ export class ClubsService implements IClubsService {
   public async getClubs(
     clientErrors: IClientError[],
   ): Promise<IGenericResponse<IClubsResData[]>> {
-    const clubModels: IClubModel[] = await this.clubsProvider.getClubModels();
+    const models: IClubModel[] = await this.clubsProvider.getClubModels();
     return new GenericResponse<IClubsResData[]>(
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      ClubsResData.fromModels(clubModels),
+      ClubsResData.fromModels(models),
       null,
     );
   }
@@ -38,9 +38,9 @@ export class ClubsService implements IClubsService {
     clubId: number,
     clientErrors: IClientError[],
   ): Promise<IGenericResponse<IClubsResData>> {
-    const clubModel: IClubModel | null =
+    const model: IClubModel | null =
       await this.clubsProvider.getClubModelById(clubId);
-    if (!clubModel) {
+    if (!model) {
       clientErrors.push(
         new ClientError(ClientErrorCode.NO_CLUB_FOUND_IN_CLUBS),
       );
@@ -56,7 +56,7 @@ export class ClubsService implements IClubsService {
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      ClubsResData.fromModel(clubModel),
+      ClubsResData.fromModel(model),
       null,
     );
   }

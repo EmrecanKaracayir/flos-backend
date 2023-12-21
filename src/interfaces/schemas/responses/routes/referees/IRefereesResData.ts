@@ -1,4 +1,4 @@
-import { RefereeLicenseType } from "../../../../models/IRefereeModel";
+import { RefereeLicenseType } from "../../../../../core/enums/refereeLicenseType";
 
 export interface IRefereesResData {
   readonly refereeId: number;

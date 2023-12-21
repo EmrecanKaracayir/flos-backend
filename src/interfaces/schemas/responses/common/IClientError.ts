@@ -5,6 +5,13 @@ import {
   USERNAME_MAX_LENGTH,
   USERNAME_MIN_LENGTH,
 } from "../../../../core/rules/accountRules";
+import {
+  LEAGUE_DESCRIPTION_MAX_LENGTH,
+  LEAGUE_DESCRIPTION_MIN_LENGTH,
+  LEAGUE_NAME_MAX_LENGTH,
+  LEAGUE_NAME_MIN_LENGTH,
+} from "../../../../core/rules/leagueRules";
+import { QUERY_MIN_LENGTH } from "../../../../core/rules/searchRules";
 
 export interface IClientError {
   readonly code: number;
@@ -15,7 +22,7 @@ export enum ClientErrorCode {
   // NON-USER RELATED (1XXXX - 5XXXX)
   // - 1XXXX: Contract errors
   INVALID_REQUEST_BODY = 10000,
-  NO_TOKEN_FOUND = 10001,
+  MISSING_TOKEN = 10001,
   //
   // USER RELATED ERRORS (6XXXX - 9XXXX)
   // - 6XXXX: Authorization errors
@@ -56,6 +63,18 @@ export enum ClientErrorCode {
   MISSING_PARAMETER_$PLAYER_ID = 70600,
   INVALID_PARAMETER_$PLAYER_ID = 70601,
   NO_PLAYER_FOUND_IN_PLAYERS = 70602,
+  // - - 707XX: /search errors
+  MISSING_QUERY_$Q = 70700,
+  INVALID_QUERY_$Q = 70701,
+  INVALID_QUERY_LENGTH_$Q = 70702,
+  // - - 708XX: /my/leagues errors
+  MISSING_PARAMETER_$MY_LEAGUE_ID = 70800,
+  INVALID_PARAMETER_$MY_LEAGUE_ID = 70801,
+  NO_LEAGUE_FOUND_IN_MY_LEAGUES = 70802,
+  INVALID_LEAGUE_NAME_LENGTH = 70803,
+  INVALID_LEAGUE_PRIZE_VALUE = 70804,
+  INVALID_LEAGUE_DESCRIPTION_LENGTH = 70805,
+  INVALID_LOGO_PATH_CONTENT = 70806,
   // - - 799XX: /* error
   RESOURCE_NOT_FOUND = 79900,
 }
@@ -66,7 +85,7 @@ export type ClientErrorMessages = {
 
 export const clientErrorMessages: ClientErrorMessages = {
   [ClientErrorCode.INVALID_REQUEST_BODY]: "Provided request body was invalid.",
-  [ClientErrorCode.NO_TOKEN_FOUND]: "Token was not provided.",
+  [ClientErrorCode.MISSING_TOKEN]: "Token was missing.",
   [ClientErrorCode.INVALID_TOKEN]: "Provided token was invalid.",
   [ClientErrorCode.EXPIRED_TOKEN]: "Provided token has expired.",
   [ClientErrorCode.FORBIDDEN_ACCESS]:
@@ -91,33 +110,48 @@ export const clientErrorMessages: ClientErrorMessages = {
   [ClientErrorCode.MISSING_PARAMETER_$REFEREE_ID]:
     "Parameter 'refereeId' was missing.",
   [ClientErrorCode.INVALID_PARAMETER_$REFEREE_ID]:
-    "Parameter 'refereeId' was invalid.",
+    "Provided parameter 'refereeId' was invalid.",
   [ClientErrorCode.NO_REFEREE_FOUND_IN_REFEREES]:
     "No referee was found with the provided id.",
   [ClientErrorCode.MISSING_PARAMETER_$VENUE_ID]:
     "Parameter 'venueId' was missing.",
   [ClientErrorCode.INVALID_PARAMETER_$VENUE_ID]:
-    "Parameter 'venueId' was invalid.",
+    "Provided parameter 'venueId' was invalid.",
   [ClientErrorCode.NO_VENUE_FOUND_IN_VENUES]:
     "No venue was found with the provided id.",
   [ClientErrorCode.MISSING_PARAMETER_$LEAGUE_ID]:
     "Parameter 'leagueId' was missing.",
   [ClientErrorCode.INVALID_PARAMETER_$LEAGUE_ID]:
-    "Parameter 'leagueId' was invalid.",
+    "Provided parameter 'leagueId' was invalid.",
   [ClientErrorCode.NO_LEAGUE_FOUND_IN_LEAGUES]:
     "No league was found with the provided id.",
   [ClientErrorCode.MISSING_PARAMETER_$CLUB_ID]:
     "Parameter 'clubId' was missing.",
   [ClientErrorCode.INVALID_PARAMETER_$CLUB_ID]:
-    "Parameter 'clubId' was invalid.",
+    "Provided parameter 'clubId' was invalid.",
   [ClientErrorCode.NO_CLUB_FOUND_IN_CLUBS]:
     "No club was found with the provided id.",
   [ClientErrorCode.MISSING_PARAMETER_$PLAYER_ID]:
     "Parameter 'playerId' was missing.",
   [ClientErrorCode.INVALID_PARAMETER_$PLAYER_ID]:
-    "Parameter 'playerId' was invalid.",
+    "Provided parameter 'playerId' was invalid.",
   [ClientErrorCode.NO_PLAYER_FOUND_IN_PLAYERS]:
     "No player was found with the provided id.",
+  [ClientErrorCode.MISSING_QUERY_$Q]: "Query 'q' was missing.",
+  [ClientErrorCode.INVALID_QUERY_$Q]: "Provided query 'q' was invalid.",
+  [ClientErrorCode.INVALID_QUERY_LENGTH_$Q]: `Provided query 'q' was too short. Search query must be at least ${QUERY_MIN_LENGTH} characters long.`,
+  [ClientErrorCode.MISSING_PARAMETER_$MY_LEAGUE_ID]:
+    "Parameter 'leagueId' was missing.",
+  [ClientErrorCode.INVALID_PARAMETER_$MY_LEAGUE_ID]:
+    "Provided parameter 'leagueId' was invalid.",
+  [ClientErrorCode.NO_LEAGUE_FOUND_IN_MY_LEAGUES]:
+    "No league was found with the provided id.",
+  [ClientErrorCode.INVALID_LEAGUE_NAME_LENGTH]: `Provided name wasn't in the length range of ${LEAGUE_NAME_MIN_LENGTH} to ${LEAGUE_NAME_MAX_LENGTH}.`,
+  [ClientErrorCode.INVALID_LEAGUE_PRIZE_VALUE]:
+    "Provided prize value was invalid. Must be a safe positive integer.",
+  [ClientErrorCode.INVALID_LEAGUE_DESCRIPTION_LENGTH]: `Provided description wasn't in the length range of ${LEAGUE_DESCRIPTION_MIN_LENGTH} to ${LEAGUE_DESCRIPTION_MAX_LENGTH}.`,
+  [ClientErrorCode.INVALID_LOGO_PATH_CONTENT]:
+    "Provided logo path was not in the valid format.",
   [ClientErrorCode.RESOURCE_NOT_FOUND]:
     "The requested resource couldn't be found.",
 };

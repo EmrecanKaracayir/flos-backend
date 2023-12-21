@@ -49,7 +49,7 @@ export class SignupService implements ISignupService {
     const username: string = dto.username.toLowerCase();
     const password: string = dto.password;
     const email: string = dto.email.toLowerCase();
-    await this.validateFields(username, password, email, clientErrors);
+    this.validateFields(username, password, email, clientErrors);
     if (clientErrors.length > 0) {
       return new GenericResponse<ISignupOrganizerResData>(
         new HttpStatus(HttpStatusCode.BAD_REQUEST),
@@ -83,17 +83,16 @@ export class SignupService implements ISignupService {
       );
     }
     const hashedPassword: string = await EncryptionHelper.encrypt(password);
-    const organizerModel: IOrganizerModel =
-      await this.signupProvider.createOrganizer(
-        username,
-        hashedPassword,
-        email,
-      );
+    const model: IOrganizerModel = await this.signupProvider.createOrganizer(
+      username,
+      hashedPassword,
+      email,
+    );
     return new GenericResponse<ISignupOrganizerResData>(
       new HttpStatus(HttpStatusCode.CREATED),
       null,
       clientErrors,
-      SignupOrganizerResData.fromModel(organizerModel),
+      SignupOrganizerResData.fromModel(model),
       null,
     );
   }
@@ -105,7 +104,7 @@ export class SignupService implements ISignupService {
     const username: string = dto.username.toLowerCase();
     const password: string = dto.password;
     const email: string = dto.email.toLowerCase();
-    await this.validateFields(username, password, email, clientErrors);
+    this.validateFields(username, password, email, clientErrors);
     if (clientErrors.length > 0) {
       return new GenericResponse<ISignupParticipantResData>(
         new HttpStatus(HttpStatusCode.BAD_REQUEST),
@@ -140,7 +139,7 @@ export class SignupService implements ISignupService {
       );
     }
     const hashedPassword: string = await EncryptionHelper.encrypt(password);
-    const participantModel: IParticipantModel =
+    const model: IParticipantModel =
       await this.signupProvider.createParticipant(
         username,
         hashedPassword,
@@ -150,17 +149,17 @@ export class SignupService implements ISignupService {
       new HttpStatus(HttpStatusCode.CREATED),
       null,
       clientErrors,
-      SignupParticipantResData.fromModel(participantModel),
+      SignupParticipantResData.fromModel(model),
       null,
     );
   }
 
-  private async validateFields(
+  private validateFields(
     usernameLowercased: string,
     password: string,
     emailLowercased: string,
     clientErrors: IClientError[],
-  ): Promise<void> {
+  ): void {
     // Username validation
     if (
       !isStringInLengthBetween(

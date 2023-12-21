@@ -1,7 +1,5 @@
-import {
-  IRefereeModel,
-  RefereeLicenseType,
-} from "../interfaces/models/IRefereeModel";
+import { RefereeLicenseType } from "../core/enums/refereeLicenseType";
+import { IRefereeModel } from "../interfaces/models/IRefereeModel";
 
 export class RefereeModel implements IRefereeModel {
   constructor(

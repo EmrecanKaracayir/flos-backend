@@ -1,3 +1,5 @@
+import { LeagueState } from "../../core/enums/leagueState";
+
 export interface ILeagueModel {
   readonly leagueId: number;
   readonly name: string;
@@ -6,10 +8,4 @@ export interface ILeagueModel {
   readonly organizerEmail: string;
   readonly description: string;
   readonly logoPath: string;
-}
-
-export enum LeagueState {
-  NOT_STARTED = "Not started",
-  IN_PROGRESS = "In progress",
-  FINISHED = "Finished",
 }

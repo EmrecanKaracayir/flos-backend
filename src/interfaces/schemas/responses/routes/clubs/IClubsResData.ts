@@ -1,4 +1,4 @@
-import { ClubState } from "../../../../models/IClubModel";
+import { ClubState } from "../../../../../core/enums/clubState";
 
 export interface IClubsResData {
   readonly clubId: number;

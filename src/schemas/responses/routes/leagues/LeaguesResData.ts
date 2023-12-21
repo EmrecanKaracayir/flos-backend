@@ -1,7 +1,5 @@
-import {
-  ILeagueModel,
-  LeagueState,
-} from "../../../../interfaces/models/ILeagueModel";
+import { LeagueState } from "../../../../core/enums/leagueState";
+import { ILeagueModel } from "../../../../interfaces/models/ILeagueModel";
 import { ILeaguesResData } from "../../../../interfaces/schemas/responses/routes/leagues/ILeaguesResData";
 
 export class LeaguesResData implements ILeaguesResData {

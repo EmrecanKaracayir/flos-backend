@@ -1,3 +1,5 @@
+import { ClubState } from "../../core/enums/clubState";
+
 export interface IClubModel {
   readonly clubId: number;
   readonly name: string;
@@ -7,10 +9,4 @@ export interface IClubModel {
   readonly participantEmail: string;
   readonly description: string;
   readonly logoPath: string;
-}
-
-export enum ClubState {
-  NOT_READY = "Not ready",
-  READY = "Ready",
-  IN_A_LEAGUE = "In a league",
 }

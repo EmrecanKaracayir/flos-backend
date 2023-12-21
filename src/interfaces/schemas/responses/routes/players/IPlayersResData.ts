@@ -1,4 +1,4 @@
-import { PlayerState } from "../../../../models/IPlayerModel";
+import { PlayerState } from "../../../../../core/enums/playerState";
 
 export interface IPlayersResData {
   readonly playerId: number;

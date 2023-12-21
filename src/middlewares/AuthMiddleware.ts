@@ -22,7 +22,7 @@ export class AuthMiddleware {
       const authHeader: string | undefined = req.headers.authorization;
       if (!authHeader || !authHeader.startsWith("Bearer ")) {
         httpStatus = new HttpStatus(HttpStatusCode.UNAUTHORIZED);
-        clientErrors.push(new ClientError(ClientErrorCode.NO_TOKEN_FOUND));
+        clientErrors.push(new ClientError(ClientErrorCode.MISSING_TOKEN));
         return res
           .status(httpStatus.code)
           .send(

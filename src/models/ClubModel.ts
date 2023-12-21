@@ -1,4 +1,5 @@
-import { ClubState, IClubModel } from "../interfaces/models/IClubModel";
+import { ClubState } from "../core/enums/clubState";
+import { IClubModel } from "../interfaces/models/IClubModel";
 
 export class ClubModel implements IClubModel {
   constructor(

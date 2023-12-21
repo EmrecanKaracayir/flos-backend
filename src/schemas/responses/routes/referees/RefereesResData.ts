@@ -1,7 +1,5 @@
-import {
-  IRefereeModel,
-  RefereeLicenseType,
-} from "../../../../interfaces/models/IRefereeModel";
+import { RefereeLicenseType } from "../../../../core/enums/refereeLicenseType";
+import { IRefereeModel } from "../../../../interfaces/models/IRefereeModel";
 import { IRefereesResData } from "../../../../interfaces/schemas/responses/routes/referees/IRefereesResData";
 
 export class RefereesResData implements IRefereesResData {

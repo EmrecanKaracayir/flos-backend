@@ -1,7 +1,5 @@
-import {
-  IPlayerModel,
-  PlayerState,
-} from "../../../../interfaces/models/IPlayerModel";
+import { PlayerState } from "../../../../core/enums/playerState";
+import { IPlayerModel } from "../../../../interfaces/models/IPlayerModel";
 import { IPlayersResData } from "../../../../interfaces/schemas/responses/routes/players/IPlayersResData";
 
 export class PlayersResData implements IPlayersResData {

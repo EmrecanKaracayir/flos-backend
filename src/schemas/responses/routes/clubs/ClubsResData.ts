@@ -1,7 +1,5 @@
-import {
-  ClubState,
-  IClubModel,
-} from "../../../../interfaces/models/IClubModel";
+import { ClubState } from "../../../../core/enums/clubState";
+import { IClubModel } from "../../../../interfaces/models/IClubModel";
 import { PrecisionLossError } from "../../../../interfaces/schemas/responses/common/IServerError";
 import { IClubsResData } from "../../../../interfaces/schemas/responses/routes/clubs/IClubsResData";
 
