@@ -1,5 +1,5 @@
 {
-  "cSpell.words": ["codepaths", "Emrecan", "FIFA", "flos", "ILIKE"],
+  "cSpell.words": ["codepaths", "dbname", "Emrecan", "FIFA", "flos", "ILIKE"],
   "inlineSQL.enableDBIntegration": true,
   "inlineSQL.dbDriver": "postgres",
   "inlineSQL.dbHost": "localhost",

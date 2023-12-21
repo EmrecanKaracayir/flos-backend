@@ -9,8 +9,10 @@
     "prebuild": "npm run clean && npm run format && npm run lint",
     "build": "tsc",
     "dev": "tsc --watch",
-    "prepareDevEnv": "cp -rf ./environments/dev/* ./ && npm run build",
-    "prepareLiveEnv": "cp -rf ./environments/live/* ./ && npm run build",
+    "dbOut": "pg_dump --host=localhost --port=5432 --username=Emrecan --no-password --verbose --dbname=flos --format=plain --blobs --file=./dumps/db/db_dump.sql",
+    "prepareDevEnv": "npm run dbOut && cp -rf ./environments/dev/* ./ && npm run build",
+    "dbIn": "psql --host=rds-pg-flos.czggso0ksewe.eu-central-1.rds.amazonaws.com --port=5432 --username=Emrecan --dbname=postgres --command=\"DROP DATABASE IF EXISTS flos; CREATE DATABASE flos;\" && psql --host=rds-pg-flos.czggso0ksewe.eu-central-1.rds.amazonaws.com --port=5432 --username=Emrecan --dbname=flos --file=./dumps/db/db_dump.sql",
+    "prepareLiveEnv": "npm run dbIn && cp -rf ./environments/live/* ./ && npm run build",
     "startDev": "npm run prepareDevEnv && node ./dist/server.js",
     "startLive": "npm run prepareLiveEnv && pm2 start  ./dist/server.js",
     "stopLive": "pm2 stop ./dist/server.js"

@@ -5,28 +5,7 @@
 -- Dumped from database version 16.1
 -- Dumped by pg_dump version 16.1
 
-SET statement_timeout = 0;
-SET lock_timeout = 0;
-SET idle_in_transaction_session_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SELECT pg_catalog.set_config('search_path', '', false);
-SET check_function_bodies = false;
-SET xmloption = content;
-SET client_min_messages = warning;
-SET row_security = off;
-
-DROP DATABASE flos;
---
--- Name: flos; Type: DATABASE; Schema: -; Owner: Emrecan
---
-
-CREATE DATABASE flos WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = icu LOCALE = 'en_US.UTF-8' ICU_LOCALE = 'en-US';
-
-
-ALTER DATABASE flos OWNER TO "Emrecan";
-
-\connect flos
+-- Started on 2023-12-22 00:56:18 +03
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -40,6 +19,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
+-- TOC entry 915 (class 1247 OID 16792)
 -- Name: clubStateType; Type: TYPE; Schema: public; Owner: Emrecan
 --
 
@@ -54,6 +34,7 @@ CREATE TYPE public."clubStateType" AS ENUM (
 ALTER TYPE public."clubStateType" OWNER TO "Emrecan";
 
 --
+-- TOC entry 882 (class 1247 OID 16607)
 -- Name: leagueStateType; Type: TYPE; Schema: public; Owner: Emrecan
 --
 
@@ -67,6 +48,7 @@ CREATE TYPE public."leagueStateType" AS ENUM (
 ALTER TYPE public."leagueStateType" OWNER TO "Emrecan";
 
 --
+-- TOC entry 885 (class 1247 OID 16615)
 -- Name: playerStateType; Type: TYPE; Schema: public; Owner: Emrecan
 --
 
@@ -79,6 +61,7 @@ CREATE TYPE public."playerStateType" AS ENUM (
 ALTER TYPE public."playerStateType" OWNER TO "Emrecan";
 
 --
+-- TOC entry 879 (class 1247 OID 16595)
 -- Name: refereeLicenseType; Type: TYPE; Schema: public; Owner: Emrecan
 --
 
@@ -98,6 +81,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
+-- TOC entry 232 (class 1259 OID 16674)
 -- Name: Club; Type: TABLE; Schema: public; Owner: Emrecan
 --
 
@@ -114,6 +98,7 @@ CREATE TABLE public."Club" (
 ALTER TABLE public."Club" OWNER TO "Emrecan";
 
 --
+-- TOC entry 225 (class 1259 OID 16573)
 -- Name: League; Type: TABLE; Schema: public; Owner: Emrecan
 --
 
@@ -131,6 +116,7 @@ CREATE TABLE public."League" (
 ALTER TABLE public."League" OWNER TO "Emrecan";
 
 --
+-- TOC entry 218 (class 1259 OID 16436)
 -- Name: Participant; Type: TABLE; Schema: public; Owner: Emrecan
 --
 
@@ -147,6 +133,7 @@ CREATE TABLE public."Participant" (
 ALTER TABLE public."Participant" OWNER TO "Emrecan";
 
 --
+-- TOC entry 227 (class 1259 OID 16620)
 -- Name: Player; Type: TABLE; Schema: public; Owner: Emrecan
 --
 
@@ -165,6 +152,7 @@ CREATE TABLE public."Player" (
 ALTER TABLE public."Player" OWNER TO "Emrecan";
 
 --
+-- TOC entry 238 (class 1259 OID 16801)
 -- Name: ClubView; Type: VIEW; Schema: public; Owner: Emrecan
 --
 
@@ -194,6 +182,7 @@ CREATE VIEW public."ClubView" AS
 ALTER VIEW public."ClubView" OWNER TO "Emrecan";
 
 --
+-- TOC entry 231 (class 1259 OID 16673)
 -- Name: Club_clubId_seq; Type: SEQUENCE; Schema: public; Owner: Emrecan
 --
 
@@ -209,6 +198,8 @@ CREATE SEQUENCE public."Club_clubId_seq"
 ALTER SEQUENCE public."Club_clubId_seq" OWNER TO "Emrecan";
 
 --
+-- TOC entry 3780 (class 0 OID 0)
+-- Dependencies: 231
 -- Name: Club_clubId_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Emrecan
 --
 
@@ -216,6 +207,7 @@ ALTER SEQUENCE public."Club_clubId_seq" OWNED BY public."Club"."clubId";
 
 
 --
+-- TOC entry 235 (class 1259 OID 16714)
 -- Name: Fixture; Type: TABLE; Schema: public; Owner: Emrecan
 --
 
@@ -235,6 +227,7 @@ CREATE TABLE public."Fixture" (
 ALTER TABLE public."Fixture" OWNER TO "Emrecan";
 
 --
+-- TOC entry 234 (class 1259 OID 16713)
 -- Name: Fixture_fixtureId_seq; Type: SEQUENCE; Schema: public; Owner: Emrecan
 --
 
@@ -250,6 +243,8 @@ CREATE SEQUENCE public."Fixture_fixtureId_seq"
 ALTER SEQUENCE public."Fixture_fixtureId_seq" OWNER TO "Emrecan";
 
 --
+-- TOC entry 3781 (class 0 OID 0)
+-- Dependencies: 234
 -- Name: Fixture_fixtureId_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Emrecan
 --
 
@@ -257,6 +252,7 @@ ALTER SEQUENCE public."Fixture_fixtureId_seq" OWNED BY public."Fixture"."fixture
 
 
 --
+-- TOC entry 215 (class 1259 OID 16392)
 -- Name: Organizer; Type: TABLE; Schema: public; Owner: Emrecan
 --
 
@@ -271,6 +267,7 @@ CREATE TABLE public."Organizer" (
 ALTER TABLE public."Organizer" OWNER TO "Emrecan";
 
 --
+-- TOC entry 230 (class 1259 OID 16664)
 -- Name: LeagueView; Type: VIEW; Schema: public; Owner: Emrecan
 --
 
@@ -289,6 +286,7 @@ CREATE VIEW public."LeagueView" AS
 ALTER VIEW public."LeagueView" OWNER TO "Emrecan";
 
 --
+-- TOC entry 223 (class 1259 OID 16571)
 -- Name: League_leagueId_seq; Type: SEQUENCE; Schema: public; Owner: Emrecan
 --
 
@@ -304,6 +302,8 @@ CREATE SEQUENCE public."League_leagueId_seq"
 ALTER SEQUENCE public."League_leagueId_seq" OWNER TO "Emrecan";
 
 --
+-- TOC entry 3782 (class 0 OID 0)
+-- Dependencies: 223
 -- Name: League_leagueId_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Emrecan
 --
 
@@ -311,6 +311,7 @@ ALTER SEQUENCE public."League_leagueId_seq" OWNED BY public."League"."leagueId";
 
 
 --
+-- TOC entry 224 (class 1259 OID 16572)
 -- Name: League_organizerId_seq; Type: SEQUENCE; Schema: public; Owner: Emrecan
 --
 
@@ -326,6 +327,8 @@ CREATE SEQUENCE public."League_organizerId_seq"
 ALTER SEQUENCE public."League_organizerId_seq" OWNER TO "Emrecan";
 
 --
+-- TOC entry 3783 (class 0 OID 0)
+-- Dependencies: 224
 -- Name: League_organizerId_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Emrecan
 --
 
@@ -333,6 +336,7 @@ ALTER SEQUENCE public."League_organizerId_seq" OWNED BY public."League"."organiz
 
 
 --
+-- TOC entry 239 (class 1259 OID 16810)
 -- Name: MyLeagueView; Type: VIEW; Schema: public; Owner: Emrecan
 --
 
@@ -352,6 +356,7 @@ CREATE VIEW public."MyLeagueView" AS
 ALTER VIEW public."MyLeagueView" OWNER TO "Emrecan";
 
 --
+-- TOC entry 216 (class 1259 OID 16419)
 -- Name: Organizer_organizerId_seq; Type: SEQUENCE; Schema: public; Owner: Emrecan
 --
 
@@ -367,6 +372,8 @@ CREATE SEQUENCE public."Organizer_organizerId_seq"
 ALTER SEQUENCE public."Organizer_organizerId_seq" OWNER TO "Emrecan";
 
 --
+-- TOC entry 3784 (class 0 OID 0)
+-- Dependencies: 216
 -- Name: Organizer_organizerId_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Emrecan
 --
 
@@ -374,6 +381,7 @@ ALTER SEQUENCE public."Organizer_organizerId_seq" OWNED BY public."Organizer"."o
 
 
 --
+-- TOC entry 217 (class 1259 OID 16435)
 -- Name: Participant_participantId_seq; Type: SEQUENCE; Schema: public; Owner: Emrecan
 --
 
@@ -389,6 +397,8 @@ CREATE SEQUENCE public."Participant_participantId_seq"
 ALTER SEQUENCE public."Participant_participantId_seq" OWNER TO "Emrecan";
 
 --
+-- TOC entry 3785 (class 0 OID 0)
+-- Dependencies: 217
 -- Name: Participant_participantId_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Emrecan
 --
 
@@ -396,6 +406,7 @@ ALTER SEQUENCE public."Participant_participantId_seq" OWNED BY public."Participa
 
 
 --
+-- TOC entry 236 (class 1259 OID 16745)
 -- Name: Performance; Type: TABLE; Schema: public; Owner: Emrecan
 --
 
@@ -410,6 +421,7 @@ CREATE TABLE public."Performance" (
 ALTER TABLE public."Performance" OWNER TO "Emrecan";
 
 --
+-- TOC entry 237 (class 1259 OID 16786)
 -- Name: PlayerView; Type: VIEW; Schema: public; Owner: Emrecan
 --
 
@@ -435,6 +447,7 @@ CREATE VIEW public."PlayerView" AS
 ALTER VIEW public."PlayerView" OWNER TO "Emrecan";
 
 --
+-- TOC entry 226 (class 1259 OID 16619)
 -- Name: Player_playerId_seq; Type: SEQUENCE; Schema: public; Owner: Emrecan
 --
 
@@ -450,6 +463,8 @@ CREATE SEQUENCE public."Player_playerId_seq"
 ALTER SEQUENCE public."Player_playerId_seq" OWNER TO "Emrecan";
 
 --
+-- TOC entry 3786 (class 0 OID 0)
+-- Dependencies: 226
 -- Name: Player_playerId_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Emrecan
 --
 
@@ -457,6 +472,7 @@ ALTER SEQUENCE public."Player_playerId_seq" OWNED BY public."Player"."playerId";
 
 
 --
+-- TOC entry 220 (class 1259 OID 16522)
 -- Name: Referee; Type: TABLE; Schema: public; Owner: Emrecan
 --
 
@@ -473,6 +489,7 @@ CREATE TABLE public."Referee" (
 ALTER TABLE public."Referee" OWNER TO "Emrecan";
 
 --
+-- TOC entry 228 (class 1259 OID 16643)
 -- Name: RefereeView; Type: VIEW; Schema: public; Owner: Emrecan
 --
 
@@ -489,6 +506,7 @@ CREATE VIEW public."RefereeView" AS
 ALTER VIEW public."RefereeView" OWNER TO "Emrecan";
 
 --
+-- TOC entry 219 (class 1259 OID 16521)
 -- Name: Referee_refereeId_seq; Type: SEQUENCE; Schema: public; Owner: Emrecan
 --
 
@@ -504,6 +522,8 @@ CREATE SEQUENCE public."Referee_refereeId_seq"
 ALTER SEQUENCE public."Referee_refereeId_seq" OWNER TO "Emrecan";
 
 --
+-- TOC entry 3787 (class 0 OID 0)
+-- Dependencies: 219
 -- Name: Referee_refereeId_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Emrecan
 --
 
@@ -511,6 +531,7 @@ ALTER SEQUENCE public."Referee_refereeId_seq" OWNED BY public."Referee"."referee
 
 
 --
+-- TOC entry 233 (class 1259 OID 16693)
 -- Name: Statistics; Type: TABLE; Schema: public; Owner: Emrecan
 --
 
@@ -528,6 +549,7 @@ CREATE TABLE public."Statistics" (
 ALTER TABLE public."Statistics" OWNER TO "Emrecan";
 
 --
+-- TOC entry 222 (class 1259 OID 16533)
 -- Name: Venue; Type: TABLE; Schema: public; Owner: Emrecan
 --
 
@@ -544,6 +566,7 @@ CREATE TABLE public."Venue" (
 ALTER TABLE public."Venue" OWNER TO "Emrecan";
 
 --
+-- TOC entry 229 (class 1259 OID 16660)
 -- Name: VenueView; Type: VIEW; Schema: public; Owner: Emrecan
 --
 
@@ -561,6 +584,7 @@ CREATE VIEW public."VenueView" AS
 ALTER VIEW public."VenueView" OWNER TO "Emrecan";
 
 --
+-- TOC entry 221 (class 1259 OID 16532)
 -- Name: Venue_venueId_seq; Type: SEQUENCE; Schema: public; Owner: Emrecan
 --
 
@@ -576,6 +600,8 @@ CREATE SEQUENCE public."Venue_venueId_seq"
 ALTER SEQUENCE public."Venue_venueId_seq" OWNER TO "Emrecan";
 
 --
+-- TOC entry 3788 (class 0 OID 0)
+-- Dependencies: 221
 -- Name: Venue_venueId_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Emrecan
 --
 
@@ -583,6 +609,7 @@ ALTER SEQUENCE public."Venue_venueId_seq" OWNED BY public."Venue"."venueId";
 
 
 --
+-- TOC entry 3554 (class 2604 OID 16677)
 -- Name: Club clubId; Type: DEFAULT; Schema: public; Owner: Emrecan
 --
 
@@ -590,6 +617,7 @@ ALTER TABLE ONLY public."Club" ALTER COLUMN "clubId" SET DEFAULT nextval('public
 
 
 --
+-- TOC entry 3561 (class 2604 OID 16717)
 -- Name: Fixture fixtureId; Type: DEFAULT; Schema: public; Owner: Emrecan
 --
 
@@ -597,6 +625,7 @@ ALTER TABLE ONLY public."Fixture" ALTER COLUMN "fixtureId" SET DEFAULT nextval('
 
 
 --
+-- TOC entry 3549 (class 2604 OID 16576)
 -- Name: League leagueId; Type: DEFAULT; Schema: public; Owner: Emrecan
 --
 
@@ -604,6 +633,7 @@ ALTER TABLE ONLY public."League" ALTER COLUMN "leagueId" SET DEFAULT nextval('pu
 
 
 --
+-- TOC entry 3545 (class 2604 OID 16455)
 -- Name: Organizer organizerId; Type: DEFAULT; Schema: public; Owner: Emrecan
 --
 
@@ -611,6 +641,7 @@ ALTER TABLE ONLY public."Organizer" ALTER COLUMN "organizerId" SET DEFAULT nextv
 
 
 --
+-- TOC entry 3546 (class 2604 OID 16446)
 -- Name: Participant participantId; Type: DEFAULT; Schema: public; Owner: Emrecan
 --
 
@@ -618,6 +649,7 @@ ALTER TABLE ONLY public."Participant" ALTER COLUMN "participantId" SET DEFAULT n
 
 
 --
+-- TOC entry 3551 (class 2604 OID 16623)
 -- Name: Player playerId; Type: DEFAULT; Schema: public; Owner: Emrecan
 --
 
@@ -625,6 +657,7 @@ ALTER TABLE ONLY public."Player" ALTER COLUMN "playerId" SET DEFAULT nextval('pu
 
 
 --
+-- TOC entry 3547 (class 2604 OID 16525)
 -- Name: Referee refereeId; Type: DEFAULT; Schema: public; Owner: Emrecan
 --
 
@@ -632,6 +665,7 @@ ALTER TABLE ONLY public."Referee" ALTER COLUMN "refereeId" SET DEFAULT nextval('
 
 
 --
+-- TOC entry 3548 (class 2604 OID 16536)
 -- Name: Venue venueId; Type: DEFAULT; Schema: public; Owner: Emrecan
 --
 
@@ -639,6 +673,8 @@ ALTER TABLE ONLY public."Venue" ALTER COLUMN "venueId" SET DEFAULT nextval('publ
 
 
 --
+-- TOC entry 3770 (class 0 OID 16674)
+-- Dependencies: 232
 -- Data for Name: Club; Type: TABLE DATA; Schema: public; Owner: Emrecan
 --
 
@@ -650,6 +686,8 @@ COPY public."Club" ("clubId", name, description, "logoPath", "leagueId", "cupCou
 
 
 --
+-- TOC entry 3773 (class 0 OID 16714)
+-- Dependencies: 235
 -- Data for Name: Fixture; Type: TABLE DATA; Schema: public; Owner: Emrecan
 --
 
@@ -658,6 +696,8 @@ COPY public."Fixture" ("fixtureId", "leagueId", "homeClubId", "awayClubId", "hom
 
 
 --
+-- TOC entry 3766 (class 0 OID 16573)
+-- Dependencies: 225
 -- Data for Name: League; Type: TABLE DATA; Schema: public; Owner: Emrecan
 --
 
@@ -670,6 +710,8 @@ COPY public."League" ("leagueId", "organizerId", name, prize, description, "logo
 
 
 --
+-- TOC entry 3756 (class 0 OID 16392)
+-- Dependencies: 215
 -- Data for Name: Organizer; Type: TABLE DATA; Schema: public; Owner: Emrecan
 --
 
@@ -682,6 +724,8 @@ COPY public."Organizer" ("organizerId", username, password, email) FROM stdin;
 
 
 --
+-- TOC entry 3759 (class 0 OID 16436)
+-- Dependencies: 218
 -- Data for Name: Participant; Type: TABLE DATA; Schema: public; Owner: Emrecan
 --
 
@@ -693,6 +737,8 @@ COPY public."Participant" ("participantId", username, password, email, "playerId
 
 
 --
+-- TOC entry 3774 (class 0 OID 16745)
+-- Dependencies: 236
 -- Data for Name: Performance; Type: TABLE DATA; Schema: public; Owner: Emrecan
 --
 
@@ -701,6 +747,8 @@ COPY public."Performance" ("playerId", "fixtureId", "goalCount", "assistCount") 
 
 
 --
+-- TOC entry 3768 (class 0 OID 16620)
+-- Dependencies: 227
 -- Data for Name: Player; Type: TABLE DATA; Schema: public; Owner: Emrecan
 --
 
@@ -712,6 +760,8 @@ COPY public."Player" ("playerId", "clubId", "fullName", birthday, "imgPath", goa
 
 
 --
+-- TOC entry 3761 (class 0 OID 16522)
+-- Dependencies: 220
 -- Data for Name: Referee; Type: TABLE DATA; Schema: public; Owner: Emrecan
 --
 
@@ -725,6 +775,8 @@ COPY public."Referee" ("refereeId", "fullName", birthday, email, "imgPath", "lic
 
 
 --
+-- TOC entry 3771 (class 0 OID 16693)
+-- Dependencies: 233
 -- Data for Name: Statistics; Type: TABLE DATA; Schema: public; Owner: Emrecan
 --
 
@@ -733,6 +785,8 @@ COPY public."Statistics" ("clubId", "leagueId", "winCount", "drawCount", "loseCo
 
 
 --
+-- TOC entry 3763 (class 0 OID 16533)
+-- Dependencies: 222
 -- Data for Name: Venue; Type: TABLE DATA; Schema: public; Owner: Emrecan
 --
 
@@ -746,6 +800,8 @@ COPY public."Venue" ("venueId", name, capacity, address, "imgPath", email) FROM 
 
 
 --
+-- TOC entry 3789 (class 0 OID 0)
+-- Dependencies: 231
 -- Name: Club_clubId_seq; Type: SEQUENCE SET; Schema: public; Owner: Emrecan
 --
 
@@ -753,6 +809,8 @@ SELECT pg_catalog.setval('public."Club_clubId_seq"', 3, true);
 
 
 --
+-- TOC entry 3790 (class 0 OID 0)
+-- Dependencies: 234
 -- Name: Fixture_fixtureId_seq; Type: SEQUENCE SET; Schema: public; Owner: Emrecan
 --
 
@@ -760,6 +818,8 @@ SELECT pg_catalog.setval('public."Fixture_fixtureId_seq"', 1, false);
 
 
 --
+-- TOC entry 3791 (class 0 OID 0)
+-- Dependencies: 223
 -- Name: League_leagueId_seq; Type: SEQUENCE SET; Schema: public; Owner: Emrecan
 --
 
@@ -767,6 +827,8 @@ SELECT pg_catalog.setval('public."League_leagueId_seq"', 6, true);
 
 
 --
+-- TOC entry 3792 (class 0 OID 0)
+-- Dependencies: 224
 -- Name: League_organizerId_seq; Type: SEQUENCE SET; Schema: public; Owner: Emrecan
 --
 
@@ -774,6 +836,8 @@ SELECT pg_catalog.setval('public."League_organizerId_seq"', 1, false);
 
 
 --
+-- TOC entry 3793 (class 0 OID 0)
+-- Dependencies: 216
 -- Name: Organizer_organizerId_seq; Type: SEQUENCE SET; Schema: public; Owner: Emrecan
 --
 
@@ -781,6 +845,8 @@ SELECT pg_catalog.setval('public."Organizer_organizerId_seq"', 17, true);
 
 
 --
+-- TOC entry 3794 (class 0 OID 0)
+-- Dependencies: 217
 -- Name: Participant_participantId_seq; Type: SEQUENCE SET; Schema: public; Owner: Emrecan
 --
 
@@ -788,6 +854,8 @@ SELECT pg_catalog.setval('public."Participant_participantId_seq"', 6, true);
 
 
 --
+-- TOC entry 3795 (class 0 OID 0)
+-- Dependencies: 226
 -- Name: Player_playerId_seq; Type: SEQUENCE SET; Schema: public; Owner: Emrecan
 --
 
@@ -795,6 +863,8 @@ SELECT pg_catalog.setval('public."Player_playerId_seq"', 4, true);
 
 
 --
+-- TOC entry 3796 (class 0 OID 0)
+-- Dependencies: 219
 -- Name: Referee_refereeId_seq; Type: SEQUENCE SET; Schema: public; Owner: Emrecan
 --
 
@@ -802,6 +872,8 @@ SELECT pg_catalog.setval('public."Referee_refereeId_seq"', 5, true);
 
 
 --
+-- TOC entry 3797 (class 0 OID 0)
+-- Dependencies: 221
 -- Name: Venue_venueId_seq; Type: SEQUENCE SET; Schema: public; Owner: Emrecan
 --
 
@@ -809,6 +881,7 @@ SELECT pg_catalog.setval('public."Venue_venueId_seq"', 6, true);
 
 
 --
+-- TOC entry 3587 (class 2606 OID 16681)
 -- Name: Club club_pk; Type: CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -817,6 +890,7 @@ ALTER TABLE ONLY public."Club"
 
 
 --
+-- TOC entry 3591 (class 2606 OID 16719)
 -- Name: Fixture fixture_pk; Type: CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -825,6 +899,7 @@ ALTER TABLE ONLY public."Fixture"
 
 
 --
+-- TOC entry 3583 (class 2606 OID 16581)
 -- Name: League league_pk; Type: CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -833,6 +908,7 @@ ALTER TABLE ONLY public."League"
 
 
 --
+-- TOC entry 3565 (class 2606 OID 16481)
 -- Name: Organizer organizer_email_uk; Type: CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -841,6 +917,7 @@ ALTER TABLE ONLY public."Organizer"
 
 
 --
+-- TOC entry 3567 (class 2606 OID 16457)
 -- Name: Organizer organizer_pk; Type: CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -849,6 +926,7 @@ ALTER TABLE ONLY public."Organizer"
 
 
 --
+-- TOC entry 3569 (class 2606 OID 16465)
 -- Name: Organizer organizer_username_uk; Type: CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -857,6 +935,7 @@ ALTER TABLE ONLY public."Organizer"
 
 
 --
+-- TOC entry 3571 (class 2606 OID 16483)
 -- Name: Participant participant_email_uk; Type: CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -865,6 +944,7 @@ ALTER TABLE ONLY public."Participant"
 
 
 --
+-- TOC entry 3573 (class 2606 OID 16448)
 -- Name: Participant participant_pk; Type: CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -873,6 +953,7 @@ ALTER TABLE ONLY public."Participant"
 
 
 --
+-- TOC entry 3575 (class 2606 OID 16473)
 -- Name: Participant participant_username_uk; Type: CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -881,6 +962,7 @@ ALTER TABLE ONLY public."Participant"
 
 
 --
+-- TOC entry 3593 (class 2606 OID 16751)
 -- Name: Performance performance_pk; Type: CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -889,6 +971,7 @@ ALTER TABLE ONLY public."Performance"
 
 
 --
+-- TOC entry 3585 (class 2606 OID 16627)
 -- Name: Player player_pk; Type: CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -897,6 +980,7 @@ ALTER TABLE ONLY public."Player"
 
 
 --
+-- TOC entry 3577 (class 2606 OID 16531)
 -- Name: Referee referee_email_uk; Type: CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -905,6 +989,7 @@ ALTER TABLE ONLY public."Referee"
 
 
 --
+-- TOC entry 3579 (class 2606 OID 16529)
 -- Name: Referee referee_pk; Type: CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -913,6 +998,7 @@ ALTER TABLE ONLY public."Referee"
 
 
 --
+-- TOC entry 3589 (class 2606 OID 16702)
 -- Name: Statistics statistics_pk; Type: CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -921,6 +1007,7 @@ ALTER TABLE ONLY public."Statistics"
 
 
 --
+-- TOC entry 3581 (class 2606 OID 16540)
 -- Name: Venue venue_pk; Type: CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -929,6 +1016,7 @@ ALTER TABLE ONLY public."Venue"
 
 
 --
+-- TOC entry 3597 (class 2606 OID 16682)
 -- Name: Club club_league_fk; Type: FK CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -937,6 +1025,7 @@ ALTER TABLE ONLY public."Club"
 
 
 --
+-- TOC entry 3600 (class 2606 OID 16730)
 -- Name: Fixture fixture_club_away_fk; Type: FK CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -945,6 +1034,7 @@ ALTER TABLE ONLY public."Fixture"
 
 
 --
+-- TOC entry 3601 (class 2606 OID 16725)
 -- Name: Fixture fixture_club_home_fk; Type: FK CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -953,6 +1043,7 @@ ALTER TABLE ONLY public."Fixture"
 
 
 --
+-- TOC entry 3602 (class 2606 OID 16720)
 -- Name: Fixture fixture_league_fk; Type: FK CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -961,6 +1052,7 @@ ALTER TABLE ONLY public."Fixture"
 
 
 --
+-- TOC entry 3603 (class 2606 OID 16735)
 -- Name: Fixture fixture_referee_fk; Type: FK CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -969,6 +1061,7 @@ ALTER TABLE ONLY public."Fixture"
 
 
 --
+-- TOC entry 3604 (class 2606 OID 16740)
 -- Name: Fixture fixture_venue_fk; Type: FK CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -977,6 +1070,7 @@ ALTER TABLE ONLY public."Fixture"
 
 
 --
+-- TOC entry 3596 (class 2606 OID 16588)
 -- Name: League league_organizer_fk; Type: FK CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -985,6 +1079,7 @@ ALTER TABLE ONLY public."League"
 
 
 --
+-- TOC entry 3594 (class 2606 OID 16687)
 -- Name: Participant participant_club_fk; Type: FK CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -993,6 +1088,7 @@ ALTER TABLE ONLY public."Participant"
 
 
 --
+-- TOC entry 3595 (class 2606 OID 16668)
 -- Name: Participant participant_player_fk; Type: FK CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -1001,6 +1097,7 @@ ALTER TABLE ONLY public."Participant"
 
 
 --
+-- TOC entry 3605 (class 2606 OID 16757)
 -- Name: Performance performance_fixture_fk; Type: FK CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -1009,6 +1106,7 @@ ALTER TABLE ONLY public."Performance"
 
 
 --
+-- TOC entry 3606 (class 2606 OID 16752)
 -- Name: Performance performance_player_fk; Type: FK CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -1017,6 +1115,7 @@ ALTER TABLE ONLY public."Performance"
 
 
 --
+-- TOC entry 3598 (class 2606 OID 16703)
 -- Name: Statistics statistics_club_fk; Type: FK CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -1025,12 +1124,15 @@ ALTER TABLE ONLY public."Statistics"
 
 
 --
+-- TOC entry 3599 (class 2606 OID 16708)
 -- Name: Statistics statistics_league_fk; Type: FK CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
 ALTER TABLE ONLY public."Statistics"
     ADD CONSTRAINT statistics_league_fk FOREIGN KEY ("leagueId") REFERENCES public."League"("leagueId");
 
+
+-- Completed on 2023-12-22 00:56:18 +03
 
 --
 -- PostgreSQL database dump complete
