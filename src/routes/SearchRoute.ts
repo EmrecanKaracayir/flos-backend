@@ -10,7 +10,7 @@ export class SearchRoute implements IRoute {
 
   constructor() {
     this.router = Router();
-    this.path = "/search";
+    this.path = "/";
     this.searchController = new SearchController();
     this.initializeRoutes();
   }

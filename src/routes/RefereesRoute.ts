@@ -10,7 +10,7 @@ export class RefereesRoute implements IRoute {
 
   constructor() {
     this.router = Router();
-    this.path = "/referees";
+    this.path = "/";
     this.refereesController = new RefereesController();
     this.initializeRoutes();
   }

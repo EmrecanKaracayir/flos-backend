@@ -12,10 +12,10 @@ export interface ISignupService {
   postSignupOrganizer: (
     dto: ISignupOrganizerReqDto,
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<ISignupOrganizerResData>>;
+  ) => Promise<IGenericResponse<ISignupOrganizerResData | null>>;
 
   postSignupParticipant: (
     dto: ISignupParticipantReqDto,
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<ISignupParticipantResData>>;
+  ) => Promise<IGenericResponse<ISignupParticipantResData | null>>;
 }

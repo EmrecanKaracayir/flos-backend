@@ -10,7 +10,7 @@ export class MyLeaguesRoute implements IRoute {
 
   constructor() {
     this.router = Router();
-    this.path = "/my/leagues";
+    this.path = "/";
     this.myLeaguesController = new MyLeaguesController();
     this.initializeRoutes();
   }

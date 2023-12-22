@@ -1,5 +1,16 @@
 {
-  "cSpell.words": ["codepaths", "dbname", "Emrecan", "FIFA", "flos", "ILIKE"],
+  "cSpell.words": [
+    "BDAY",
+    "codepaths",
+    "dbname",
+    "Emrecan",
+    "FIFA",
+    "flos",
+    "ILIKE",
+    "IPATH",
+    "LPATH",
+    "psql"
+  ],
   "inlineSQL.enableDBIntegration": true,
   "inlineSQL.dbDriver": "postgres",
   "inlineSQL.dbHost": "localhost",

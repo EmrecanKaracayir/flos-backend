@@ -11,8 +11,8 @@ export class LoginRoute implements IRoute {
 
   constructor() {
     this.router = Router();
-    this.organizerPath = "/login/organizer";
-    this.participantPath = "/login/participant";
+    this.organizerPath = "/organizer";
+    this.participantPath = "/participant";
     this.loginController = new LoginController();
     this.initializeRoutes();
   }

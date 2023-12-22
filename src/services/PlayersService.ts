@@ -37,7 +37,7 @@ export class PlayersService implements IPlayersService {
   public async getPlayers$playerId(
     playerId: number,
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<IPlayersResData>> {
+  ): Promise<IGenericResponse<IPlayersResData | null>> {
     const model: IPlayerModel | null =
       await this.playersProvider.getPlayerModelById(playerId);
     if (!model) {

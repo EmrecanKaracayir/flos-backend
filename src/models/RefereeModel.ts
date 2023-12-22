@@ -20,7 +20,9 @@ export class RefereeModel implements IRefereeModel {
       typeof model.refereeId === "number" &&
       typeof model.fullName === "string" &&
       typeof model.age === "number" &&
-      Object.values(RefereeLicenseType).includes(model.licenseType) &&
+      Object.values(RefereeLicenseType).includes(
+        model.licenseType as RefereeLicenseType,
+      ) &&
       typeof model.email === "string" &&
       typeof model.imgPath === "string"
     );

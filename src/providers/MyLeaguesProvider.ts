@@ -17,7 +17,7 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
     organizerId: number,
   ): Promise<IMyLeagueModel[]> {
     const result: QueryResult = await pool.query(
-      MyLeaguesQueries.GET_MY_LEAGUE_MODELS_BY_$ID,
+      MyLeaguesQueries.GET_MY_LEAGUE_MODELS_BY_$OID,
       [organizerId],
     );
     const records: unknown[] = result.rows;
@@ -38,7 +38,7 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
     logoPath: string,
   ): Promise<IMyLeagueModel> {
     const firstResult: QueryResult = await pool.query(
-      MyLeaguesQueries.CREATE_LEAGUE_WITH_$OID_$NAME_$PRIZE_$DESC_$LOGO_PATH,
+      MyLeaguesQueries.CREATE_LEAGUE_WITH_$OID_$NAME_$PRIZE_$DESC_$LPATH,
       [organizerId, name, prize, description, logoPath],
     );
     const firstRecord: unknown = firstResult.rows[0];

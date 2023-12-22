@@ -87,7 +87,7 @@ export class VenuesController implements IVenuesController {
           );
       }
       // Hand over to service
-      const serviceRes: IGenericResponse<IVenuesResData> =
+      const serviceRes: IGenericResponse<IVenuesResData | null> =
         await this.venuesService.getVenues$venueId(
           parseInt(req.params.venueId),
           clientErrors,

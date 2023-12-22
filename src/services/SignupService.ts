@@ -45,13 +45,13 @@ export class SignupService implements ISignupService {
   public async postSignupOrganizer(
     dto: ISignupOrganizerReqDto,
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<ISignupOrganizerResData>> {
+  ): Promise<IGenericResponse<ISignupOrganizerResData | null>> {
     const username: string = dto.username.toLowerCase();
     const password: string = dto.password;
     const email: string = dto.email.toLowerCase();
     this.validateFields(username, password, email, clientErrors);
     if (clientErrors.length > 0) {
-      return new GenericResponse<ISignupOrganizerResData>(
+      return new GenericResponse<null>(
         new HttpStatus(HttpStatusCode.BAD_REQUEST),
         null,
         clientErrors,
@@ -74,7 +74,7 @@ export class SignupService implements ISignupService {
       clientErrors.push(new ClientError(ClientErrorCode.EMAIL_ALREADY_EXISTS));
     }
     if (clientErrors.length > 0) {
-      return new GenericResponse<ISignupOrganizerResData>(
+      return new GenericResponse<null>(
         new HttpStatus(HttpStatusCode.CONFLICT),
         null,
         clientErrors,
@@ -100,13 +100,13 @@ export class SignupService implements ISignupService {
   public async postSignupParticipant(
     dto: ISignupParticipantReqDto,
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<ISignupParticipantResData>> {
+  ): Promise<IGenericResponse<ISignupParticipantResData | null>> {
     const username: string = dto.username.toLowerCase();
     const password: string = dto.password;
     const email: string = dto.email.toLowerCase();
     this.validateFields(username, password, email, clientErrors);
     if (clientErrors.length > 0) {
-      return new GenericResponse<ISignupParticipantResData>(
+      return new GenericResponse<null>(
         new HttpStatus(HttpStatusCode.BAD_REQUEST),
         null,
         clientErrors,
@@ -114,7 +114,6 @@ export class SignupService implements ISignupService {
         null,
       );
     }
-    clientErrors = [];
     if (
       (await this.signupProvider.doesParticipantByUsernameExist(username))
         .recordExists
@@ -130,7 +129,7 @@ export class SignupService implements ISignupService {
       clientErrors.push(new ClientError(ClientErrorCode.EMAIL_ALREADY_EXISTS));
     }
     if (clientErrors.length > 0) {
-      return new GenericResponse<ISignupParticipantResData>(
+      return new GenericResponse<null>(
         new HttpStatus(HttpStatusCode.CONFLICT),
         null,
         clientErrors,

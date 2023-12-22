@@ -57,7 +57,7 @@ export class LoginController implements ILoginController {
           );
       }
       // Hand over to service
-      const serviceRes: IGenericResponse<ILoginOrganizerResData> =
+      const serviceRes: IGenericResponse<ILoginOrganizerResData | null> =
         await this.loginService.postLoginOrganizer(
           req.body as ILoginOrganizerReqDto,
           clientErrors,
@@ -116,7 +116,7 @@ export class LoginController implements ILoginController {
           );
       }
       // Hand over to service
-      const serviceRes: IGenericResponse<ILoginParticipantResData> =
+      const serviceRes: IGenericResponse<ILoginParticipantResData | null> =
         await this.loginService.postLoginParticipant(
           req.body as ILoginParticipantReqDto,
           clientErrors,

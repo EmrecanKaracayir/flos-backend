@@ -37,7 +37,7 @@ export class ClubsService implements IClubsService {
   public async getClubs$clubId(
     clubId: number,
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<IClubsResData>> {
+  ): Promise<IGenericResponse<IClubsResData | null>> {
     const model: IClubModel | null =
       await this.clubsProvider.getClubModelById(clubId);
     if (!model) {

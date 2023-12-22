@@ -52,7 +52,7 @@ export class MyLeaguesService implements IMyLeaguesService {
     organizerId: number,
     dto: IMyLeaguesReqDto,
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<IMyLeaguesResData>> {
+  ): Promise<IGenericResponse<IMyLeaguesResData | null>> {
     this.validateFields(
       dto.name,
       dto.prize,
@@ -61,7 +61,7 @@ export class MyLeaguesService implements IMyLeaguesService {
       clientErrors,
     );
     if (clientErrors.length > 0) {
-      return new GenericResponse<IMyLeaguesResData>(
+      return new GenericResponse<null>(
         new HttpStatus(HttpStatusCode.BAD_REQUEST),
         null,
         clientErrors,
@@ -90,7 +90,7 @@ export class MyLeaguesService implements IMyLeaguesService {
     organizerId: number,
     leagueId: number,
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<IMyLeaguesResData>> {
+  ): Promise<IGenericResponse<IMyLeaguesResData | null>> {
     const model: IMyLeagueModel | null =
       await this.myLeaguesProvider.getMyLeagueModelById(organizerId, leagueId);
     if (!model) {

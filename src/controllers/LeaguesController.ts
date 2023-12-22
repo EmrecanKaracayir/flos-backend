@@ -87,7 +87,7 @@ export class LeaguesController implements ILeaguesController {
           );
       }
       // Hand over to service
-      const serviceRes: IGenericResponse<ILeaguesResData> =
+      const serviceRes: IGenericResponse<ILeaguesResData | null> =
         await this.leaguesService.getLeagues$leagueId(
           parseInt(req.params.leagueId),
           clientErrors,

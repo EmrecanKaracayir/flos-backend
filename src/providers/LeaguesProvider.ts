@@ -27,7 +27,7 @@ export class LeaguesProvider implements ILeaguesProvider {
     leagueId: number,
   ): Promise<ILeagueModel | null> {
     const result: QueryResult = await pool.query(
-      LeaguesQueries.GET_LEAGUE_MODEL_BY_$ID,
+      LeaguesQueries.GET_LEAGUE_MODEL_BY_$LID,
       [leagueId],
     );
     const record: unknown = result.rows[0];

@@ -20,7 +20,7 @@ export class LeagueModel implements ILeagueModel {
     return (
       typeof model.leagueId === "number" &&
       typeof model.name === "string" &&
-      Object.values(LeagueState).includes(model.state) &&
+      Object.values(LeagueState).includes(model.state as LeagueState) &&
       typeof model.prize === "number" &&
       typeof model.organizerEmail === "string" &&
       typeof model.description === "string" &&

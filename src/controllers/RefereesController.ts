@@ -87,7 +87,7 @@ export class RefereesController implements IRefereesController {
           );
       }
       // Hand over to service
-      const serviceRes: IGenericResponse<IRefereesResData> =
+      const serviceRes: IGenericResponse<IRefereesResData | null> =
         await this.refereesService.getReferees$refereeId(
           parseInt(req.params.refereeId),
           clientErrors,

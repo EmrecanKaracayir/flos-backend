@@ -30,7 +30,7 @@ export class LoginService implements ILoginService {
   public async postLoginOrganizer(
     dto: ILoginOrganizerReqDto,
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<ILoginOrganizerResData>> {
+  ): Promise<IGenericResponse<ILoginOrganizerResData | null>> {
     const model: IOrganizerModel | null =
       await this.loginProvider.getOrganizerModelByUsername(dto.username);
     if (!model) {
@@ -67,7 +67,7 @@ export class LoginService implements ILoginService {
   public async postLoginParticipant(
     dto: ILoginParticipantReqDto,
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<ILoginParticipantResData>> {
+  ): Promise<IGenericResponse<ILoginParticipantResData | null>> {
     const model: IParticipantModel | null =
       await this.loginProvider.getParticipantModelByUsername(dto.username);
     if (!model) {

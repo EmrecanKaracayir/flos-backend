@@ -37,7 +37,7 @@ export class VenuesService implements IVenuesService {
   public async getVenues$venueId(
     venueId: number,
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<IVenuesResData>> {
+  ): Promise<IGenericResponse<IVenuesResData | null>> {
     const model: IVenueModel | null =
       await this.venuesProvider.getVenueModelById(venueId);
     if (!model) {

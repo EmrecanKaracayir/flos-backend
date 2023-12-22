@@ -27,7 +27,7 @@ export class RefereesProvider implements IRefereesProvider {
     refereeId: number,
   ): Promise<IRefereeModel | null> {
     const result: QueryResult = await pool.query(
-      RefereesQueries.GET_REFEREE_MODEL_BY_$ID,
+      RefereesQueries.GET_REFEREE_MODEL_BY_$RID,
       [refereeId],
     );
     const record: unknown = result.rows[0];

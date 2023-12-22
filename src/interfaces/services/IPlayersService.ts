@@ -13,5 +13,5 @@ export interface IPlayersService {
   getPlayers$playerId: (
     playerId: number,
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<IPlayersResData>>;
+  ) => Promise<IGenericResponse<IPlayersResData | null>>;
 }

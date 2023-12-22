@@ -13,5 +13,5 @@ export interface ILeaguesService {
   getLeagues$leagueId: (
     leagueId: number,
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<ILeaguesResData>>;
+  ) => Promise<IGenericResponse<ILeaguesResData | null>>;
 }

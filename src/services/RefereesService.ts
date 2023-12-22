@@ -38,7 +38,7 @@ export class RefereesService implements IRefereesService {
   public async getReferees$refereeId(
     refereeId: number,
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<IRefereesResData>> {
+  ): Promise<IGenericResponse<IRefereesResData | null>> {
     const model: IRefereeModel | null =
       await this.refereesProvider.getRefereeModelById(refereeId);
     if (!model) {

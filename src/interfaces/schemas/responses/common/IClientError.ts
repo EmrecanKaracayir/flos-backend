@@ -11,6 +11,12 @@ import {
   LEAGUE_NAME_MAX_LENGTH,
   LEAGUE_NAME_MIN_LENGTH,
 } from "../../../../core/rules/leagueRules";
+import {
+  PLAYER_BIOGRAPHY_MAX_LENGTH,
+  PLAYER_BIOGRAPHY_MIN_LENGTH,
+  PLAYER_FULL_NAME_MAX_LENGTH,
+  PLAYER_FULL_NAME_MIN_LENGTH,
+} from "../../../../core/rules/playerRules";
 import { QUERY_MIN_LENGTH } from "../../../../core/rules/searchRules";
 
 export interface IClientError {
@@ -75,6 +81,13 @@ export enum ClientErrorCode {
   INVALID_LEAGUE_PRIZE_VALUE = 70804,
   INVALID_LEAGUE_DESCRIPTION_LENGTH = 70805,
   INVALID_LOGO_PATH_CONTENT = 70806,
+  // - - 709XX: /my/player errors
+  PARTICIPANT_HAS_NO_PLAYER = 70900,
+  PARTICIPANT_HAS_A_PLAYER = 70901,
+  INVALID_PLAYER_FULL_NAME_LENGTH = 70902,
+  INVALID_DATE_CONTENT = 70903,
+  INVALID_BIOGRAPHY_LENGTH = 70904,
+  INVALID_IMAGE_PATH_CONTENT = 70905,
   // - - 799XX: /* error
   RESOURCE_NOT_FOUND = 79900,
 }
@@ -105,7 +118,7 @@ export const clientErrorMessages: ClientErrorMessages = {
     "Provided password didn't satisfy the requirements. A password must contain at least one lowercase letter, one uppercase letter, one digit and one special character.",
   [ClientErrorCode.INVALID_EMAIL_LENGTH]: `Provided email wasn't in the length range of ${EMAIL_MIN_LENGTH} to ${EMAIL_MAX_LENGTH}.`,
   [ClientErrorCode.INVALID_EMAIL_CONTENT]:
-    "Provided email was not in the valid format.",
+    "Provided email was not in the valid format. Must be a valid email address.",
   [ClientErrorCode.EMAIL_ALREADY_EXISTS]: "Provided email already exists.",
   [ClientErrorCode.MISSING_PARAMETER_$REFEREE_ID]:
     "Parameter 'refereeId' was missing.",
@@ -151,7 +164,17 @@ export const clientErrorMessages: ClientErrorMessages = {
     "Provided prize value was invalid. Must be a safe positive integer.",
   [ClientErrorCode.INVALID_LEAGUE_DESCRIPTION_LENGTH]: `Provided description wasn't in the length range of ${LEAGUE_DESCRIPTION_MIN_LENGTH} to ${LEAGUE_DESCRIPTION_MAX_LENGTH}.`,
   [ClientErrorCode.INVALID_LOGO_PATH_CONTENT]:
-    "Provided logo path was not in the valid format.",
+    "Provided logo path was not in the valid format. Must be a valid URL.",
+  [ClientErrorCode.PARTICIPANT_HAS_NO_PLAYER]:
+    "The participant has no player. It must be created first.",
+  [ClientErrorCode.PARTICIPANT_HAS_A_PLAYER]:
+    "The participant already has a player. It must be deleted first.",
+  [ClientErrorCode.INVALID_PLAYER_FULL_NAME_LENGTH]: `Provided full name wasn't in the length range of ${PLAYER_FULL_NAME_MIN_LENGTH} to ${PLAYER_FULL_NAME_MAX_LENGTH}.`,
+  [ClientErrorCode.INVALID_DATE_CONTENT]:
+    "Provided date was not in the valid format. Must be YYYY-MM-DD.",
+  [ClientErrorCode.INVALID_BIOGRAPHY_LENGTH]: `Provided biography wasn't in the length range of ${PLAYER_BIOGRAPHY_MIN_LENGTH} to ${PLAYER_BIOGRAPHY_MAX_LENGTH}.`,
+  [ClientErrorCode.INVALID_IMAGE_PATH_CONTENT]:
+    "Provided image path was not in the valid format. Must be a valid URL.",
   [ClientErrorCode.RESOURCE_NOT_FOUND]:
     "The requested resource couldn't be found.",
 };

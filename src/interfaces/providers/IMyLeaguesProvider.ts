@@ -18,7 +18,7 @@ export interface IMyLeaguesProvider {
 }
 
 export enum MyLeaguesQueries {
-  GET_MY_LEAGUE_MODELS_BY_$ID = `SELECT * FROM "MyLeagueView" WHERE "organizerId" = $1`,
-  CREATE_LEAGUE_WITH_$OID_$NAME_$PRIZE_$DESC_$LOGO_PATH = `INSERT INTO "League" ("organizerId", name, prize, description, "logoPath") VALUES ($1, $2, $3, $4, $5) RETURNING "leagueId"`,
+  GET_MY_LEAGUE_MODELS_BY_$OID = `SELECT * FROM "MyLeagueView" WHERE "organizerId" = $1`,
+  CREATE_LEAGUE_WITH_$OID_$NAME_$PRIZE_$DESC_$LPATH = `INSERT INTO "League" ("organizerId", name, prize, description, "logoPath") VALUES ($1, $2, $3, $4, $5) RETURNING "leagueId"`,
   GET_MY_LEAGUE_MODEL_BY_$OID_$LID = `SELECT * FROM "MyLeagueView" WHERE "organizerId" = $1 AND "leagueId" = $2`,
 }

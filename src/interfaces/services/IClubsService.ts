@@ -13,5 +13,5 @@ export interface IClubsService {
   getClubs$clubId: (
     clubId: number,
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<IClubsResData>>;
+  ) => Promise<IGenericResponse<IClubsResData | null>>;
 }

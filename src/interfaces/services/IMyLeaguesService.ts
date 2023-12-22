@@ -16,11 +16,11 @@ export interface IMyLeaguesService {
     organizerId: number,
     dto: IMyLeaguesReqDto,
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<IMyLeaguesResData>>;
+  ) => Promise<IGenericResponse<IMyLeaguesResData | null>>;
 
   getMyLeagues$leagueId: (
     organizerId: number,
     leagueId: number,
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<IMyLeaguesResData>>;
+  ) => Promise<IGenericResponse<IMyLeaguesResData | null>>;
 }

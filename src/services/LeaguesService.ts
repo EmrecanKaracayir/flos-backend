@@ -37,7 +37,7 @@ export class LeaguesService implements ILeaguesService {
   public async getLeagues$leagueId(
     leagueId: number,
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<ILeaguesResData>> {
+  ): Promise<IGenericResponse<ILeaguesResData | null>> {
     const model: ILeagueModel | null =
       await this.leaguesProvider.getLeagueModelById(leagueId);
     if (!model) {

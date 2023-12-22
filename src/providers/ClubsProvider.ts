@@ -23,7 +23,7 @@ export class ClubsProvider implements IClubsProvider {
 
   public async getClubModelById(clubId: number): Promise<IClubModel | null> {
     const result: QueryResult = await pool.query(
-      ClubsQueries.GET_CLUB_MODEL_BY_$ID,
+      ClubsQueries.GET_CLUB_MODEL_BY_$CID,
       [clubId],
     );
     const record: unknown = result.rows[0];

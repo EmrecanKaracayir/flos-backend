@@ -12,10 +12,10 @@ export interface ILoginService {
   postLoginOrganizer: (
     dto: ILoginOrganizerReqDto,
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<ILoginOrganizerResData>>;
+  ) => Promise<IGenericResponse<ILoginOrganizerResData | null>>;
 
   postLoginParticipant: (
     dto: ILoginParticipantReqDto,
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<ILoginParticipantResData>>;
+  ) => Promise<IGenericResponse<ILoginParticipantResData | null>>;
 }

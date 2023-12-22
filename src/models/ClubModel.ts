@@ -21,7 +21,7 @@ export class ClubModel implements IClubModel {
     return (
       typeof model.clubId === "number" &&
       typeof model.name === "string" &&
-      Object.values(ClubState).includes(model.state) &&
+      Object.values(ClubState).includes(model.state as ClubState) &&
       typeof model.playerCount === "string" &&
       typeof model.cupCount === "number" &&
       typeof model.participantEmail === "string" &&

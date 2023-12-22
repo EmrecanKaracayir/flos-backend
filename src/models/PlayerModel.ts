@@ -24,7 +24,7 @@ export class PlayerModel implements IPlayerModel {
       typeof model.playerId === "number" &&
       (typeof model.clubName === "string" || model.clubName === null) &&
       typeof model.fullName === "string" &&
-      Object.values(PlayerState).includes(model.state) &&
+      Object.values(PlayerState).includes(model.state as PlayerState) &&
       typeof model.age === "number" &&
       typeof model.goals === "number" &&
       typeof model.assists === "number" &&

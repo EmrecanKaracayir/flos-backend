@@ -11,8 +11,8 @@ export class SignupRoute implements IRoute {
 
   constructor() {
     this.router = Router();
-    this.organizerPath = "/signup/organizer";
-    this.participantPath = "/signup/participant";
+    this.organizerPath = "/organizer";
+    this.participantPath = "/participant";
     this.signupController = new SignupController();
     this.initializeRoutes();
   }

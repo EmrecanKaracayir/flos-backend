@@ -85,7 +85,7 @@ export class MyLeaguesController implements IMyLeaguesController {
         req.headers.authorization!.split(" ")[1],
       );
       // Hand over to service
-      const serviceRes: IGenericResponse<IMyLeaguesResData> =
+      const serviceRes: IGenericResponse<IMyLeaguesResData | null> =
         await this.myLeaguesService.postMyLeagues(
           authPayload.userId,
           req.body as IMyLeaguesReqDto,
@@ -163,7 +163,7 @@ export class MyLeaguesController implements IMyLeaguesController {
           );
       }
       // Hand over to service
-      const serviceRes: IGenericResponse<IMyLeaguesResData> =
+      const serviceRes: IGenericResponse<IMyLeaguesResData | null> =
         await this.myLeaguesService.getMyLeagues$leagueId(
           authPayload.userId,
           parseInt(req.params.leagueId),

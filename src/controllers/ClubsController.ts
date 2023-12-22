@@ -87,7 +87,7 @@ export class ClubsController implements IClubsController {
           );
       }
       // Hand over to service
-      const serviceRes: IGenericResponse<IClubsResData> =
+      const serviceRes: IGenericResponse<IClubsResData | null> =
         await this.clubsService.getClubs$clubId(
           parseInt(req.params.clubId),
           clientErrors,

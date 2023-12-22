@@ -13,5 +13,5 @@ export interface IRefereesService {
   getReferees$refereeId: (
     refereeId: number,
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<IRefereesResData>>;
+  ) => Promise<IGenericResponse<IRefereesResData | null>>;
 }

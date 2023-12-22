@@ -56,7 +56,7 @@ export class SignupController implements ISignupController {
           );
       }
       // Hand over to service
-      const serviceRes: IGenericResponse<ISignupOrganizerResData> =
+      const serviceRes: IGenericResponse<ISignupOrganizerResData | null> =
         await this.signupService.postSignupOrganizer(
           req.body as ISignupOrganizerReqDto,
           clientErrors,
@@ -115,7 +115,7 @@ export class SignupController implements ISignupController {
           );
       }
       // Hand over to service
-      const serviceRes: IGenericResponse<ISignupParticipantResData> =
+      const serviceRes: IGenericResponse<ISignupParticipantResData | null> =
         await this.signupService.postSignupParticipant(
           req.body as ISignupParticipantReqDto,
           clientErrors,

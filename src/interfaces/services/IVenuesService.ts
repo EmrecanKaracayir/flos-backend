@@ -13,5 +13,5 @@ export interface IVenuesService {
   getVenues$venueId: (
     venueId: number,
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<IVenuesResData>>;
+  ) => Promise<IGenericResponse<IVenuesResData | null>>;
 }

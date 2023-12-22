@@ -10,7 +10,7 @@ export class VenuesRoute implements IRoute {
 
   constructor() {
     this.router = Router();
-    this.path = "/venues";
+    this.path = "/";
     this.venuesController = new VenuesController();
     this.initializeRoutes();
   }

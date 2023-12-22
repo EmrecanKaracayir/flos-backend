@@ -8,5 +8,5 @@ export interface IClubsProvider {
 
 export enum ClubsQueries {
   GET_CLUB_MODELS = `SELECT * FROM "ClubView"`,
-  GET_CLUB_MODEL_BY_$ID = `${GET_CLUB_MODELS} WHERE "clubId" = $1`,
+  GET_CLUB_MODEL_BY_$CID = `${GET_CLUB_MODELS} WHERE "clubId" = $1`,
 }

@@ -87,7 +87,7 @@ export class PlayersController implements IPlayersController {
           );
       }
       // Hand over to service
-      const serviceRes: IGenericResponse<IPlayersResData> =
+      const serviceRes: IGenericResponse<IPlayersResData | null> =
         await this.playersService.getPlayers$playerId(
           parseInt(req.params.playerId),
           clientErrors,

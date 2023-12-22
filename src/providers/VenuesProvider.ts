@@ -25,7 +25,7 @@ export class VenuesProvider implements IVenuesProvider {
 
   public async getVenueModelById(venueId: number): Promise<IVenueModel | null> {
     const result: QueryResult = await pool.query(
-      VenuesQueries.GET_VENUE_MODEL_BY_$ID,
+      VenuesQueries.GET_VENUE_MODEL_BY_$VID,
       [venueId],
     );
     const record: unknown = result.rows[0];
