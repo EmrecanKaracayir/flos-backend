@@ -7,8 +7,8 @@ export interface IServerError {
 export class ModelMismatchError extends Error {
   constructor(public readonly model: unknown) {
     super(
-      `Server and database not agreeing on a model. Model was: ${JSON.stringify(
-        model,
+      `Server and database not agreeing on a model. Model was: \n${JSON.stringify(
+        model, null, 2,
       )}`,
     );
     this.name = "ModelMismatchError";

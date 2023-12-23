@@ -62,27 +62,23 @@ export class LoginController implements ILoginController {
           req.body as ILoginOrganizerReqDto,
           clientErrors,
         );
-      if (!serviceRes.data) {
+      if (!serviceRes.httpStatus.isSuccess()) {
         // Respond without token
         return res.status(serviceRes.httpStatus.code).send(serviceRes);
       }
-      // Generate token
-      const token: string = AuthHelper.generateToken({
-        userId: serviceRes.data.organizerId,
-        userRole: serviceRes.data.role,
-      });
       // Respond with token
-      return res
-        .status(serviceRes.httpStatus.code)
-        .send(
-          new GenericResponse<ILoginOrganizerResData>(
-            serviceRes.httpStatus,
-            serviceRes.serverError,
-            serviceRes.clientErrors,
-            serviceRes.data,
-            token,
-          ),
-        );
+      return res.status(serviceRes.httpStatus.code).send(
+        new GenericResponse<ILoginOrganizerResData>(
+          serviceRes.httpStatus,
+          serviceRes.serverError,
+          serviceRes.clientErrors,
+          serviceRes.data,
+          AuthHelper.generateToken({
+            userId: serviceRes.data!.organizerId,
+            userRole: serviceRes.data!.role,
+          }),
+        ),
+      );
     } catch (error) {
       return next(error);
     }
@@ -121,27 +117,23 @@ export class LoginController implements ILoginController {
           req.body as ILoginParticipantReqDto,
           clientErrors,
         );
-      if (!serviceRes.data) {
+      if (!serviceRes.httpStatus.isSuccess()) {
         // Respond without token
         return res.status(serviceRes.httpStatus.code).send(serviceRes);
       }
-      // Generate token
-      const token: string = AuthHelper.generateToken({
-        userId: serviceRes.data.participantId,
-        userRole: serviceRes.data.role,
-      });
       // Respond with token
-      return res
-        .status(serviceRes.httpStatus.code)
-        .send(
-          new GenericResponse<ILoginParticipantResData>(
-            serviceRes.httpStatus,
-            serviceRes.serverError,
-            serviceRes.clientErrors,
-            serviceRes.data,
-            token,
-          ),
-        );
+      return res.status(serviceRes.httpStatus.code).send(
+        new GenericResponse<ILoginParticipantResData>(
+          serviceRes.httpStatus,
+          serviceRes.serverError,
+          serviceRes.clientErrors,
+          serviceRes.data,
+          AuthHelper.generateToken({
+            userId: serviceRes.data!.participantId,
+            userRole: serviceRes.data!.role,
+          }),
+        ),
+      );
     } catch (error) {
       return next(error);
     }

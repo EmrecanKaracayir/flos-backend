@@ -12,4 +12,8 @@ export class HttpStatus implements IHttpStatus {
     this.code = httpStatusCode;
     this.message = httpStatusMessages[httpStatusCode];
   }
+
+  public isSuccess(): boolean {
+    return this.code.toString().startsWith("2");
+  }
 }

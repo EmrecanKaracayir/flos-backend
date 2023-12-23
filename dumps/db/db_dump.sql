@@ -5,7 +5,7 @@
 -- Dumped from database version 16.1
 -- Dumped by pg_dump version 16.1
 
--- Started on 2023-12-23 17:28:51 +03
+-- Started on 2023-12-23 21:07:09 +03
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -757,7 +757,6 @@ COPY public."Fixture" ("fixtureId", "leagueId", "homeClubId", "awayClubId", "hom
 --
 
 COPY public."League" ("leagueId", "organizerId", name, prize, description, "logoPath", state) FROM stdin;
-7	18	Test League 1	24000000	This is a test league 1 from organizer with id 18 that is created for test purposes.	https://www.getautismactive.com/wp-content/uploads/2021/01/Test-Logo-Circle-black-transparent.png	Not started
 \.
 
 
@@ -1175,7 +1174,7 @@ ALTER TABLE ONLY public."Statistics"
     ADD CONSTRAINT statistics_league_fk FOREIGN KEY ("leagueId") REFERENCES public."League"("leagueId");
 
 
--- Completed on 2023-12-23 17:28:51 +03
+-- Completed on 2023-12-23 21:07:09 +03
 
 --
 -- PostgreSQL database dump complete

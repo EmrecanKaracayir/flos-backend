@@ -23,4 +23,17 @@ export interface IMyLeaguesService {
     leagueId: number,
     clientErrors: IClientError[],
   ) => Promise<IGenericResponse<IMyLeaguesResData | null>>;
+
+  putMyLeagues$leagueId: (
+    organizerId: number,
+    leagueId: number,
+    dto: IMyLeaguesReqDto,
+    clientErrors: IClientError[],
+  ) => Promise<IGenericResponse<IMyLeaguesResData | null>>;
+
+  deleteMyLeagues$leagueId: (
+    organizerId: number,
+    leagueId: number,
+    clientErrors: IClientError[],
+  ) => Promise<IGenericResponse<void | null>>;
 }

@@ -11,7 +11,7 @@ export interface IMyClubProvider {
 
   doesMyPlayerInStates: (
     participantId: number,
-    playerStates: PlayerState[],
+    allowedPlayerStates: PlayerState[],
   ) => Promise<boolean>;
 
   createMyClub: (

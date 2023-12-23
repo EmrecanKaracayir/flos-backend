@@ -1,3 +1,4 @@
+import { LeagueState } from "../core/enums/leagueState";
 import { URL_MUST_REGEX } from "../core/rules/common/urlRules";
 import {
   LEAGUE_DESCRIPTION_MAX_LENGTH,
@@ -110,6 +111,151 @@ export class MyLeaguesService implements IMyLeaguesService {
       null,
       clientErrors,
       MyLeaguesResData.fromModel(model),
+      null,
+    );
+  }
+
+  public async putMyLeagues$leagueId(
+    organizerId: number,
+    leagueId: number,
+    dto: IMyLeaguesReqDto,
+    clientErrors: IClientError[],
+  ): Promise<IGenericResponse<IMyLeaguesResData | null>> {
+    if (
+      !(await this.myLeaguesProvider.doesLeagueExistById(leagueId)).recordExists
+    ) {
+      clientErrors.push(
+        new ClientError(ClientErrorCode.NO_LEAGUE_FOUND_IN_MY_LEAGUES),
+      );
+      return new GenericResponse<null>(
+        new HttpStatus(HttpStatusCode.CONFLICT),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    if (
+      !(await this.myLeaguesProvider.isLeagueMineByIds(organizerId, leagueId))
+        .recordExists
+    ) {
+      clientErrors.push(
+        new ClientError(ClientErrorCode.FORBIDDEN_ACCESS_TO_LEAGUE),
+      );
+      return new GenericResponse<null>(
+        new HttpStatus(HttpStatusCode.FORBIDDEN),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    if (
+      !(await this.myLeaguesProvider.doesLeagueByIdInStates(leagueId, [
+        LeagueState.NOT_STARTED,
+      ]))
+    ) {
+      clientErrors.push(
+        new ClientError(ClientErrorCode.LEAGUE_CANNOT_BE_EDITED),
+      );
+      return new GenericResponse<null>(
+        new HttpStatus(HttpStatusCode.CONFLICT),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    this.validateFields(
+      dto.name,
+      dto.prize,
+      dto.description,
+      dto.logoPath,
+      clientErrors,
+    );
+    if (clientErrors.length > 0) {
+      return new GenericResponse<null>(
+        new HttpStatus(HttpStatusCode.BAD_REQUEST),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    clientErrors = [];
+    const model: IMyLeagueModel = await this.myLeaguesProvider.editLeague(
+      organizerId,
+      leagueId,
+      dto.name,
+      dto.prize,
+      dto.description,
+      dto.logoPath,
+    );
+    return new GenericResponse<IMyLeaguesResData>(
+      new HttpStatus(HttpStatusCode.OK),
+      null,
+      clientErrors,
+      MyLeaguesResData.fromModel(model),
+      null,
+    );
+  }
+
+  public async deleteMyLeagues$leagueId(
+    organizerId: number,
+    leagueId: number,
+    clientErrors: IClientError[],
+  ): Promise<IGenericResponse<void | null>> {
+    if (
+      !(await this.myLeaguesProvider.doesLeagueExistById(leagueId)).recordExists
+    ) {
+      clientErrors.push(
+        new ClientError(ClientErrorCode.NO_LEAGUE_FOUND_IN_MY_LEAGUES),
+      );
+      return new GenericResponse<null>(
+        new HttpStatus(HttpStatusCode.CONFLICT),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    if (
+      !(await this.myLeaguesProvider.isLeagueMineByIds(organizerId, leagueId))
+        .recordExists
+    ) {
+      clientErrors.push(
+        new ClientError(ClientErrorCode.FORBIDDEN_ACCESS_TO_LEAGUE),
+      );
+      return new GenericResponse<null>(
+        new HttpStatus(HttpStatusCode.FORBIDDEN),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    if (
+      !(await this.myLeaguesProvider.doesLeagueByIdInStates(leagueId, [
+        LeagueState.NOT_STARTED,
+      ]))
+    ) {
+      clientErrors.push(
+        new ClientError(ClientErrorCode.LEAGUE_CANNOT_BE_DELETED),
+      );
+      return new GenericResponse<null>(
+        new HttpStatus(HttpStatusCode.CONFLICT),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    await this.myLeaguesProvider.deleteLeague(leagueId);
+    return new GenericResponse<void>(
+      new HttpStatus(HttpStatusCode.NO_CONTENT),
+      null,
+      clientErrors,
+      null,
       null,
     );
   }

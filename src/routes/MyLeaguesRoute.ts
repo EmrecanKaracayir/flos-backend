@@ -30,5 +30,17 @@ export class MyLeaguesRoute implements IRoute {
         this.myLeaguesController,
       ),
     );
+    this.router.put(
+      `${this.path}:leagueId`,
+      this.myLeaguesController.putMyLeagues$leagueId.bind(
+        this.myLeaguesController,
+      ),
+    );
+    this.router.delete(
+      `${this.path}:leagueId`,
+      this.myLeaguesController.deleteMyLeagues$leagueId.bind(
+        this.myLeaguesController,
+      ),
+    );
   }
 }

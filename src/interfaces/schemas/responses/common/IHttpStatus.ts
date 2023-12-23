@@ -1,11 +1,14 @@
 export interface IHttpStatus {
   readonly code: number;
   readonly message: string;
+
+  isSuccess: () => boolean;
 }
 
 export enum HttpStatusCode {
   OK = 200,
   CREATED = 201,
+  NO_CONTENT = 204,
   BAD_REQUEST = 400,
   UNAUTHORIZED = 401,
   FORBIDDEN = 403,
@@ -21,6 +24,7 @@ export type HttpStatusMessages = {
 export const httpStatusMessages: HttpStatusMessages = {
   [HttpStatusCode.OK]: "OK",
   [HttpStatusCode.CREATED]: "Created",
+  [HttpStatusCode.NO_CONTENT]: "No Content",
   [HttpStatusCode.BAD_REQUEST]: "Bad Request",
   [HttpStatusCode.UNAUTHORIZED]: "Unauthorized",
   [HttpStatusCode.FORBIDDEN]: "Forbidden",

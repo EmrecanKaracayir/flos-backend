@@ -43,7 +43,22 @@ export class MyClubController implements IMyClubController {
       // Hand over to service
       const serviceRes: IGenericResponse<IMyClubResData | null> =
         await this.myClubService.getMyClub(authPayload.userId, clientErrors);
-      return res.status(serviceRes.httpStatus.code).send(serviceRes);
+      if (!serviceRes.httpStatus.isSuccess()) {
+        // Respond without token
+        return res.status(serviceRes.httpStatus.code).send(serviceRes);
+      }
+      // Respond with token
+      return res
+        .status(serviceRes.httpStatus.code)
+        .send(
+          new GenericResponse<IMyClubResData>(
+            serviceRes.httpStatus,
+            serviceRes.serverError,
+            serviceRes.clientErrors,
+            serviceRes.data,
+            AuthHelper.generateToken(authPayload),
+          ),
+        );
     } catch (error) {
       return next(error);
     }
@@ -87,12 +102,10 @@ export class MyClubController implements IMyClubController {
           req.body as IMyClubReqDto,
           clientErrors,
         );
-      if (!serviceRes.data) {
+      if (!serviceRes.httpStatus.isSuccess()) {
         // Respond without token
         return res.status(serviceRes.httpStatus.code).send(serviceRes);
       }
-      // Generate token
-      const token: string = AuthHelper.generateToken(authPayload);
       // Respond with token
       return res
         .status(serviceRes.httpStatus.code)
@@ -102,7 +115,7 @@ export class MyClubController implements IMyClubController {
             serviceRes.serverError,
             serviceRes.clientErrors,
             serviceRes.data,
-            token,
+            AuthHelper.generateToken(authPayload),
           ),
         );
     } catch (error) {

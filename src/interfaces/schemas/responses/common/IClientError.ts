@@ -1,3 +1,4 @@
+import { LeagueState } from "../../../../core/enums/leagueState";
 import {
   EMAIL_MAX_LENGTH,
   EMAIL_MIN_LENGTH,
@@ -83,10 +84,13 @@ export enum ClientErrorCode {
   MISSING_PARAMETER_$MY_LEAGUE_ID = 70800,
   INVALID_PARAMETER_$MY_LEAGUE_ID = 70801,
   NO_LEAGUE_FOUND_IN_MY_LEAGUES = 70802,
-  INVALID_LEAGUE_NAME_LENGTH = 70803,
-  INVALID_LEAGUE_PRIZE_VALUE = 70804,
-  INVALID_LEAGUE_DESCRIPTION_LENGTH = 70805,
-  INVALID_LEAGUE_LOGO_PATH_CONTENT = 70806,
+  LEAGUE_CANNOT_BE_EDITED = 70803,
+  FORBIDDEN_ACCESS_TO_LEAGUE = 70804,
+  LEAGUE_CANNOT_BE_DELETED = 70805,
+  INVALID_LEAGUE_NAME_LENGTH = 70806,
+  INVALID_LEAGUE_PRIZE_VALUE = 70807,
+  INVALID_LEAGUE_DESCRIPTION_LENGTH = 70808,
+  INVALID_LEAGUE_LOGO_PATH_CONTENT = 70809,
   // - - 709XX: /my/player errors
   PARTICIPANT_HAS_NO_PLAYER = 70900,
   PARTICIPANT_HAS_A_PLAYER = 70901,
@@ -173,6 +177,10 @@ export const clientErrorMessages: ClientErrorMessages = {
     "Provided parameter 'leagueId' was invalid.",
   [ClientErrorCode.NO_LEAGUE_FOUND_IN_MY_LEAGUES]:
     "No league was found with the provided id.",
+  [ClientErrorCode.LEAGUE_CANNOT_BE_EDITED]: `The league cannot be edited. It must be in states '[${LeagueState.NOT_STARTED}]' to be deleted.`,
+  [ClientErrorCode.FORBIDDEN_ACCESS_TO_LEAGUE]:
+    "The league is not owned by the requesting organizer.",
+  [ClientErrorCode.LEAGUE_CANNOT_BE_DELETED]: `The league cannot be deleted. It must be in states '[${LeagueState.NOT_STARTED}]' to be deleted.`,
   [ClientErrorCode.INVALID_LEAGUE_NAME_LENGTH]: `Provided name wasn't in the length range of ${LEAGUE_NAME_MIN_LENGTH} to ${LEAGUE_NAME_MAX_LENGTH}.`,
   [ClientErrorCode.INVALID_LEAGUE_PRIZE_VALUE]:
     "Provided prize value was invalid. Must be a safe positive integer.",

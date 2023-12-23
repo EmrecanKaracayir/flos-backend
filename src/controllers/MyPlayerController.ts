@@ -46,7 +46,22 @@ export class MyPlayerController implements IMyPlayerController {
           authPayload.userId,
           clientErrors,
         );
-      return res.status(serviceRes.httpStatus.code).send(serviceRes);
+      if (!serviceRes.httpStatus.isSuccess()) {
+        // Respond without token
+        return res.status(serviceRes.httpStatus.code).send(serviceRes);
+      }
+      // Respond with token
+      return res
+        .status(serviceRes.httpStatus.code)
+        .send(
+          new GenericResponse<IMyPlayerResData>(
+            serviceRes.httpStatus,
+            serviceRes.serverError,
+            serviceRes.clientErrors,
+            serviceRes.data,
+            AuthHelper.generateToken(authPayload),
+          ),
+        );
     } catch (error) {
       return next(error);
     }
@@ -90,12 +105,10 @@ export class MyPlayerController implements IMyPlayerController {
           req.body as IMyPlayerReqDto,
           clientErrors,
         );
-      if (!serviceRes.data) {
+      if (!serviceRes.httpStatus.isSuccess()) {
         // Respond without token
         return res.status(serviceRes.httpStatus.code).send(serviceRes);
       }
-      // Generate token
-      const token: string = AuthHelper.generateToken(authPayload);
       // Respond with token
       return res
         .status(serviceRes.httpStatus.code)
@@ -105,7 +118,7 @@ export class MyPlayerController implements IMyPlayerController {
             serviceRes.serverError,
             serviceRes.clientErrors,
             serviceRes.data,
-            token,
+            AuthHelper.generateToken(authPayload),
           ),
         );
     } catch (error) {

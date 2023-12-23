@@ -21,4 +21,16 @@ export interface IMyLeaguesController {
     res: Response,
     next: NextFunction,
   ) => Promise<Response | void>;
+
+  putMyLeagues$leagueId: (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => Promise<Response | void>;
+
+  deleteMyLeagues$leagueId: (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => Promise<Response | void>;
 }

@@ -4,6 +4,7 @@ import { PlayerState } from "../core/enums/playerState";
 import { IMyClubModel } from "../interfaces/models/IMyClubModel";
 import { IClubIdModel } from "../interfaces/models/common/IClubIdModel";
 import { IPlayerIdModel } from "../interfaces/models/common/IPlayerIdModel";
+import { IPlayerStateModel } from "../interfaces/models/common/IPlayerStateModel";
 import { IRecordExistsModel } from "../interfaces/models/common/IRecordExistsModel";
 import {
   IMyClubProvider,
@@ -73,7 +74,7 @@ export class MyClubProvider implements IMyClubProvider {
 
   public async doesMyPlayerInStates(
     participantId: number,
-    playerStates: PlayerState[],
+    allowedPlayerStates: PlayerState[],
   ): Promise<boolean> {
     const playerStateRes: QueryResult = await pool.query(
       MyClubQueries.GET_MY_PLAYER_STATE_BY_$PID,
@@ -86,10 +87,9 @@ export class MyClubProvider implements IMyClubProvider {
     if (!PlayerStateModel.isValidModel(playerStateRec)) {
       throw new ModelMismatchError(playerStateRec);
     }
-    if (playerStates.includes((playerStateRec as PlayerStateModel).state)) {
-      return true;
-    }
-    return false;
+    return allowedPlayerStates.includes(
+      (playerStateRec as IPlayerStateModel).state,
+    );
   }
 
   public async createMyClub(
