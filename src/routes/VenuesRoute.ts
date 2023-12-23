@@ -21,7 +21,7 @@ export class VenuesRoute implements IRoute {
       this.venuesController.getVenues.bind(this.venuesController),
     );
     this.router.get(
-      `${this.path}/:venueId`,
+      `${this.path}:venueId`,
       this.venuesController.getVenues$venueId.bind(this.venuesController),
     );
   }

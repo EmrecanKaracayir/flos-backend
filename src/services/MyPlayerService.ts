@@ -154,7 +154,7 @@ export class MyPlayerService implements IMyPlayerService {
     // Image path validation
     if (!isStringMatchingRegex(imgPath, URL_MUST_REGEX)) {
       clientErrors.push(
-        new ClientError(ClientErrorCode.INVALID_IMAGE_PATH_CONTENT),
+        new ClientError(ClientErrorCode.INVALID_PLAYER_IMAGE_PATH_CONTENT),
       );
     }
   }

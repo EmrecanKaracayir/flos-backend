@@ -10,33 +10,33 @@ import { LeagueModel } from "../models/LeagueModel";
 
 export class LeaguesProvider implements ILeaguesProvider {
   public async getLeagueModels(): Promise<ILeagueModel[]> {
-    const result: QueryResult = await pool.query(
+    const leagueRes: QueryResult = await pool.query(
       LeaguesQueries.GET_LEAGUE_MODELS,
     );
-    const records: unknown[] = result.rows;
-    if (!records) {
+    const leagueRecs: unknown[] = leagueRes.rows;
+    if (!leagueRecs) {
       return [];
     }
-    if (!LeagueModel.areValidModels(records)) {
-      throw new ModelMismatchError(records);
+    if (!LeagueModel.areValidModels(leagueRecs)) {
+      throw new ModelMismatchError(leagueRecs);
     }
-    return records as ILeagueModel[];
+    return leagueRecs as ILeagueModel[];
   }
 
   public async getLeagueModelById(
     leagueId: number,
   ): Promise<ILeagueModel | null> {
-    const result: QueryResult = await pool.query(
+    const leagueRes: QueryResult = await pool.query(
       LeaguesQueries.GET_LEAGUE_MODEL_BY_$LID,
       [leagueId],
     );
-    const record: unknown = result.rows[0];
-    if (!record) {
+    const leagueRec: unknown = leagueRes.rows[0];
+    if (!leagueRec) {
       return null;
     }
-    if (!LeagueModel.isValidModel(record)) {
-      throw new ModelMismatchError(record);
+    if (!LeagueModel.isValidModel(leagueRec)) {
+      throw new ModelMismatchError(leagueRec);
     }
-    return record as ILeagueModel;
+    return leagueRec as ILeagueModel;
   }
 }

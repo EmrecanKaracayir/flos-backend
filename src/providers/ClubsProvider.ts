@@ -10,29 +10,29 @@ import { ClubModel } from "../models/ClubModel";
 
 export class ClubsProvider implements IClubsProvider {
   public async getClubModels(): Promise<IClubModel[]> {
-    const result: QueryResult = await pool.query(ClubsQueries.GET_CLUB_MODELS);
-    const records: unknown[] = result.rows;
-    if (!records) {
+    const clubRes: QueryResult = await pool.query(ClubsQueries.GET_CLUB_MODELS);
+    const clubRecs: unknown[] = clubRes.rows;
+    if (!clubRecs) {
       return [];
     }
-    if (!ClubModel.areValidModels(records)) {
-      throw new ModelMismatchError(records);
+    if (!ClubModel.areValidModels(clubRecs)) {
+      throw new ModelMismatchError(clubRecs);
     }
-    return records as IClubModel[];
+    return clubRecs as IClubModel[];
   }
 
   public async getClubModelById(clubId: number): Promise<IClubModel | null> {
-    const result: QueryResult = await pool.query(
+    const clubRes: QueryResult = await pool.query(
       ClubsQueries.GET_CLUB_MODEL_BY_$CID,
       [clubId],
     );
-    const record: unknown = result.rows[0];
-    if (!record) {
+    const clubRec: unknown = clubRes.rows[0];
+    if (!clubRec) {
       return null;
     }
-    if (!ClubModel.isValidModel(record)) {
-      throw new ModelMismatchError(record);
+    if (!ClubModel.isValidModel(clubRec)) {
+      throw new ModelMismatchError(clubRec);
     }
-    return record as IClubModel;
+    return clubRec as IClubModel;
   }
 }

@@ -21,7 +21,7 @@ export class ClubsRoute implements IRoute {
       this.clubsController.getClubs.bind(this.clubsController),
     );
     this.router.get(
-      `${this.path}/:clubId`,
+      `${this.path}:clubId`,
       this.clubsController.getClubs$clubId.bind(this.clubsController),
     );
   }

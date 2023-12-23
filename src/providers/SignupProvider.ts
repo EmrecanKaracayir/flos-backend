@@ -2,7 +2,7 @@ import { QueryResult } from "pg";
 import { pool } from "../core/database/pool";
 import { IOrganizerModel } from "../interfaces/models/IOrganizerModel";
 import { IParticipantModel } from "../interfaces/models/IParticipantModel";
-import { IRecordExistsModel } from "../interfaces/models/IRecordExistsModel";
+import { IRecordExistsModel } from "../interfaces/models/common/IRecordExistsModel";
 import {
   ISignupProvider,
   SignupQueries,
@@ -13,41 +13,41 @@ import {
 } from "../interfaces/schemas/responses/common/IServerError";
 import { OrganizerModel } from "../models/OrganizerModel";
 import { ParticipantModel } from "../models/ParticipantModel";
-import { RecordExistsModel } from "../models/RecordExistsModel";
+import { RecordExistsModel } from "../models/common/RecordExistsModel";
 
 export class SignupProvider implements ISignupProvider {
   public async doesOrganizerByUsernameExist(
     username: string,
   ): Promise<IRecordExistsModel> {
-    const result: QueryResult = await pool.query(
+    const reRes: QueryResult = await pool.query(
       SignupQueries.DOES_ORGANIZER_BY_$USERNAME_EXIST,
       [username],
     );
-    const record: unknown = result.rows[0];
-    if (!record) {
+    const reRec: unknown = reRes.rows[0];
+    if (!reRec) {
       throw new UnexpectedQueryResultError();
     }
-    if (!RecordExistsModel.isValidModel(record)) {
-      throw new ModelMismatchError(record);
+    if (!RecordExistsModel.isValidModel(reRec)) {
+      throw new ModelMismatchError(reRec);
     }
-    return record as IRecordExistsModel;
+    return reRec as IRecordExistsModel;
   }
 
   public async doesOrganizerByEmailExist(
     email: string,
   ): Promise<IRecordExistsModel> {
-    const result: QueryResult = await pool.query(
+    const reRes: QueryResult = await pool.query(
       SignupQueries.DOES_ORGANIZER_BY_$EMAIL_EXIST,
       [email],
     );
-    const record: unknown = result.rows[0];
-    if (!record) {
+    const reRec: unknown = reRes.rows[0];
+    if (!reRec) {
       throw new UnexpectedQueryResultError();
     }
-    if (!RecordExistsModel.isValidModel(record)) {
-      throw new ModelMismatchError(record);
+    if (!RecordExistsModel.isValidModel(reRec)) {
+      throw new ModelMismatchError(reRec);
     }
-    return record as IRecordExistsModel;
+    return reRec as IRecordExistsModel;
   }
 
   public async createOrganizer(
@@ -55,52 +55,52 @@ export class SignupProvider implements ISignupProvider {
     password: string,
     email: string,
   ): Promise<IOrganizerModel> {
-    const result: QueryResult = await pool.query(
+    const organizerRes: QueryResult = await pool.query(
       SignupQueries.CREATE_ORGANIZER_WITH_$USERNAME_$PASSWORD_$EMAIL,
       [username, password, email],
     );
-    const record: unknown = result.rows[0];
-    if (!record) {
+    const organizerRec: unknown = organizerRes.rows[0];
+    if (!organizerRec) {
       throw new UnexpectedQueryResultError();
     }
-    if (!OrganizerModel.isValidModel(record)) {
-      throw new ModelMismatchError(record);
+    if (!OrganizerModel.isValidModel(organizerRec)) {
+      throw new ModelMismatchError(organizerRec);
     }
-    return record as IOrganizerModel;
+    return organizerRec as IOrganizerModel;
   }
 
   public async doesParticipantByUsernameExist(
     username: string,
   ): Promise<IRecordExistsModel> {
-    const result: QueryResult = await pool.query(
+    const reRes: QueryResult = await pool.query(
       SignupQueries.DOES_PARTICIPANT_BY_$USERNAME_EXIST,
       [username],
     );
-    const record: unknown = result.rows[0];
-    if (!record) {
+    const reRec: unknown = reRes.rows[0];
+    if (!reRec) {
       throw new UnexpectedQueryResultError();
     }
-    if (!RecordExistsModel.isValidModel(record)) {
-      throw new ModelMismatchError(record);
+    if (!RecordExistsModel.isValidModel(reRec)) {
+      throw new ModelMismatchError(reRec);
     }
-    return record as IRecordExistsModel;
+    return reRec as IRecordExistsModel;
   }
 
   public async doesParticipantByEmailExist(
     email: string,
   ): Promise<IRecordExistsModel> {
-    const result: QueryResult = await pool.query(
+    const reRes: QueryResult = await pool.query(
       SignupQueries.DOES_PARTICIPANT_BY_$EMAIL_EXIST,
       [email],
     );
-    const record: unknown = result.rows[0];
-    if (!record) {
+    const reRec: unknown = reRes.rows[0];
+    if (!reRec) {
       throw new UnexpectedQueryResultError();
     }
-    if (!RecordExistsModel.isValidModel(record)) {
-      throw new ModelMismatchError(record);
+    if (!RecordExistsModel.isValidModel(reRec)) {
+      throw new ModelMismatchError(reRec);
     }
-    return record as IRecordExistsModel;
+    return reRec as IRecordExistsModel;
   }
 
   public async createParticipant(
@@ -108,17 +108,17 @@ export class SignupProvider implements ISignupProvider {
     password: string,
     email: string,
   ): Promise<IParticipantModel> {
-    const result: QueryResult = await pool.query(
+    const participantRes: QueryResult = await pool.query(
       SignupQueries.CREATE_PARTICIPANT_WITH_$USERNAME_$PASSWORD_$EMAIL,
       [username, password, email],
     );
-    const record: unknown = result.rows[0];
-    if (!record) {
+    const participantRec: unknown = participantRes.rows[0];
+    if (!participantRec) {
       throw new UnexpectedQueryResultError();
     }
-    if (!ParticipantModel.isValidModel(record)) {
-      throw new ModelMismatchError(record);
+    if (!ParticipantModel.isValidModel(participantRec)) {
+      throw new ModelMismatchError(participantRec);
     }
-    return record as IParticipantModel;
+    return participantRec as IParticipantModel;
   }
 }

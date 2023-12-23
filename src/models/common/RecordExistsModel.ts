@@ -1,4 +1,4 @@
-import { IRecordExistsModel } from "../interfaces/models/IRecordExistsModel";
+import { IRecordExistsModel } from "../../interfaces/models/common/IRecordExistsModel";
 
 export class RecordExistsModel implements IRecordExistsModel {
   constructor(public readonly recordExists: boolean) {}

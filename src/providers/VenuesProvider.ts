@@ -10,31 +10,31 @@ import { VenueModel } from "../models/VenueModel";
 
 export class VenuesProvider implements IVenuesProvider {
   public async getVenueModels(): Promise<IVenueModel[]> {
-    const result: QueryResult = await pool.query(
+    const venueRes: QueryResult = await pool.query(
       VenuesQueries.GET_VENUE_MODELS,
     );
-    const records: unknown[] = result.rows;
-    if (!records) {
+    const venueRecs: unknown[] = venueRes.rows;
+    if (!venueRecs) {
       return [];
     }
-    if (!VenueModel.areValidModels(records)) {
-      throw new ModelMismatchError(records);
+    if (!VenueModel.areValidModels(venueRecs)) {
+      throw new ModelMismatchError(venueRecs);
     }
-    return records as IVenueModel[];
+    return venueRecs as IVenueModel[];
   }
 
   public async getVenueModelById(venueId: number): Promise<IVenueModel | null> {
-    const result: QueryResult = await pool.query(
+    const venueRes: QueryResult = await pool.query(
       VenuesQueries.GET_VENUE_MODEL_BY_$VID,
       [venueId],
     );
-    const record: unknown = result.rows[0];
-    if (!record) {
+    const venueRec: unknown = venueRes.rows[0];
+    if (!venueRec) {
       return null;
     }
-    if (!VenueModel.isValidModel(record)) {
-      throw new ModelMismatchError(record);
+    if (!VenueModel.isValidModel(venueRec)) {
+      throw new ModelMismatchError(venueRec);
     }
-    return record as IVenueModel;
+    return venueRec as IVenueModel;
   }
 }

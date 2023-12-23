@@ -1,6 +1,6 @@
 import { IOrganizerModel } from "../models/IOrganizerModel";
 import { IParticipantModel } from "../models/IParticipantModel";
-import { IRecordExistsModel } from "../models/IRecordExistsModel";
+import { IRecordExistsModel } from "../models/common/IRecordExistsModel";
 
 export interface ISignupProvider {
   doesOrganizerByUsernameExist: (

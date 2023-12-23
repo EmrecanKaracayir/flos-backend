@@ -1,4 +1,4 @@
-import { ILeagueIdModel } from "../interfaces/models/ILeagueIdModel";
+import { ILeagueIdModel } from "../../interfaces/models/common/ILeagueIdModel";
 
 export class LeagueIdModel implements ILeagueIdModel {
   constructor(public readonly leagueId: number) {}

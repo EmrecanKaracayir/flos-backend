@@ -21,7 +21,7 @@ export class RefereesRoute implements IRoute {
       this.refereesController.getReferees.bind(this.refereesController),
     );
     this.router.get(
-      `${this.path}/:refereeId`,
+      `${this.path}:refereeId`,
       this.refereesController.getReferees$refereeId.bind(
         this.refereesController,
       ),

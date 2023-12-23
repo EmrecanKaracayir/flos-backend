@@ -14,34 +14,34 @@ export class LoginProvider implements ILoginProvider {
   public async getOrganizerModelByUsername(
     username: string,
   ): Promise<IOrganizerModel | null> {
-    const result: QueryResult = await pool.query(
+    const organizerRes: QueryResult = await pool.query(
       LoginQueries.GET_ORGANIZER_MODEL_BY_$USERNAME,
       [username],
     );
-    const record: unknown = result.rows[0];
-    if (!record) {
+    const organizerRec: unknown = organizerRes.rows[0];
+    if (!organizerRec) {
       return null;
     }
-    if (!OrganizerModel.isValidModel(record)) {
-      throw new ModelMismatchError(record);
+    if (!OrganizerModel.isValidModel(organizerRec)) {
+      throw new ModelMismatchError(organizerRec);
     }
-    return record as IOrganizerModel;
+    return organizerRec as IOrganizerModel;
   }
 
   public async getParticipantModelByUsername(
     username: string,
   ): Promise<IParticipantModel | null> {
-    const result: QueryResult = await pool.query(
+    const participantRes: QueryResult = await pool.query(
       LoginQueries.GET_PARTICIPANT_MODEL_BY_$USERNAME,
       [username],
     );
-    const record: unknown = result.rows[0];
-    if (!record) {
+    const participantRec: unknown = participantRes.rows[0];
+    if (!participantRec) {
       return null;
     }
-    if (!ParticipantModel.isValidModel(record)) {
-      throw new ModelMismatchError(record);
+    if (!ParticipantModel.isValidModel(participantRec)) {
+      throw new ModelMismatchError(participantRec);
     }
-    return record as IParticipantModel;
+    return participantRec as IParticipantModel;
   }
 }

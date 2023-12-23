@@ -10,33 +10,33 @@ import { PlayerModel } from "../models/PlayerModel";
 
 export class PlayersProvider implements IPlayersProvider {
   public async getPlayerModels(): Promise<IPlayerModel[]> {
-    const result: QueryResult = await pool.query(
+    const playerRes: QueryResult = await pool.query(
       PlayersQueries.GET_PLAYER_MODELS,
     );
-    const records: unknown[] = result.rows;
-    if (!records) {
+    const playerRecs: unknown[] = playerRes.rows;
+    if (!playerRecs) {
       return [];
     }
-    if (!PlayerModel.areValidModels(records)) {
-      throw new ModelMismatchError(records);
+    if (!PlayerModel.areValidModels(playerRecs)) {
+      throw new ModelMismatchError(playerRecs);
     }
-    return records as IPlayerModel[];
+    return playerRecs as IPlayerModel[];
   }
 
   public async getPlayerModelById(
     playerId: number,
   ): Promise<IPlayerModel | null> {
-    const result: QueryResult = await pool.query(
+    const playerRes: QueryResult = await pool.query(
       PlayersQueries.GET_PLAYER_MODEL_BY_$PLID,
       [playerId],
     );
-    const record: unknown = result.rows[0];
-    if (!record) {
+    const playerRec: unknown = playerRes.rows[0];
+    if (!playerRec) {
       return null;
     }
-    if (!PlayerModel.isValidModel(record)) {
-      throw new ModelMismatchError(record);
+    if (!PlayerModel.isValidModel(playerRec)) {
+      throw new ModelMismatchError(playerRec);
     }
-    return record as IPlayerModel;
+    return playerRec as IPlayerModel;
   }
 }

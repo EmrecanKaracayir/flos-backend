@@ -1,7 +1,7 @@
 import { QueryResult } from "pg";
 import { UserRole } from "../../core/@types/helpers/authPayloadRules";
 import { pool } from "../../core/database/pool";
-import { IRecordExistsModel } from "../../interfaces/models/IRecordExistsModel";
+import { IRecordExistsModel } from "../../interfaces/models/common/IRecordExistsModel";
 import {
   IUserProvider,
   UserQueries,
@@ -11,41 +11,41 @@ import {
   UnexpectedQueryResultError,
   UnexpectedUserRole,
 } from "../../interfaces/schemas/responses/common/IServerError";
-import { RecordExistsModel } from "../../models/RecordExistsModel";
+import { RecordExistsModel } from "../../models/common/RecordExistsModel";
 
 export class UserProvider implements IUserProvider {
   private static async doesOrganizerByIdExist(
     organizerId: number,
   ): Promise<IRecordExistsModel> {
-    const result: QueryResult = await pool.query(
+    const reRes: QueryResult = await pool.query(
       UserQueries.DOES_ORGANIZER_BY_$OID_EXIST,
       [organizerId],
     );
-    const record: unknown = result.rows[0];
-    if (!record) {
+    const reRec: unknown = reRes.rows[0];
+    if (!reRec) {
       throw new UnexpectedQueryResultError();
     }
-    if (!RecordExistsModel.isValidModel(record)) {
-      throw new ModelMismatchError(record);
+    if (!RecordExistsModel.isValidModel(reRec)) {
+      throw new ModelMismatchError(reRec);
     }
-    return record as IRecordExistsModel;
+    return reRec as IRecordExistsModel;
   }
 
   private static async doesParticipantByIdExist(
     participantId: number,
   ): Promise<IRecordExistsModel> {
-    const result: QueryResult = await pool.query(
+    const reRes: QueryResult = await pool.query(
       UserQueries.DOES_PARTICIPANT_BY_$PID_EXIST,
       [participantId],
     );
-    const record: unknown = result.rows[0];
-    if (!record) {
+    const reRec: unknown = reRes.rows[0];
+    if (!reRec) {
       throw new UnexpectedQueryResultError();
     }
-    if (!RecordExistsModel.isValidModel(record)) {
-      throw new ModelMismatchError(record);
+    if (!RecordExistsModel.isValidModel(reRec)) {
+      throw new ModelMismatchError(reRec);
     }
-    return record as IRecordExistsModel;
+    return reRec as IRecordExistsModel;
   }
 
   public static async doesUserExist(

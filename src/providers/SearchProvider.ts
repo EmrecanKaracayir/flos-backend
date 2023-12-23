@@ -16,72 +16,72 @@ import { SearchModel } from "../models/SearchModel";
 export class SearchProvider implements ISearchProvider {
   public async getSearchModel(query: string): Promise<ISearchModel> {
     // Leagues
-    let leagueModels: ILeagueModel[];
-    const leagueResult: QueryResult = await pool.query(
+    let leagues: ILeagueModel[];
+    const leagueRes: QueryResult = await pool.query(
       SearchQueries.GET_LEAGUES_BY_NAME,
       [query],
     );
-    const leagueRecords: unknown[] = leagueResult.rows;
-    if (!leagueRecords) {
-      leagueModels = [];
+    const leagueRecs: unknown[] = leagueRes.rows;
+    if (!leagueRecs) {
+      leagues = [];
     } else {
-      leagueModels = leagueRecords as ILeagueModel[];
+      leagues = leagueRecs as ILeagueModel[];
     }
     // Clubs
-    let clubModels: IClubModel[];
-    const clubResult: QueryResult = await pool.query(
+    let clubs: IClubModel[];
+    const clubRes: QueryResult = await pool.query(
       SearchQueries.GET_CLUBS_BY_NAME,
       [query],
     );
-    const clubRecords: unknown[] = clubResult.rows;
-    if (!clubRecords) {
-      clubModels = [];
+    const clubRecs: unknown[] = clubRes.rows;
+    if (!clubRecs) {
+      clubs = [];
     } else {
-      clubModels = clubRecords as IClubModel[];
+      clubs = clubRecs as IClubModel[];
     }
     // Players
-    let playerModels: IPlayerModel[];
-    const playerResult: QueryResult = await pool.query(
+    let players: IPlayerModel[];
+    const playerRes: QueryResult = await pool.query(
       SearchQueries.GET_PLAYERS_BY_NAME,
       [query],
     );
-    const playerRecords: unknown[] = playerResult.rows;
-    if (!playerRecords) {
-      playerModels = [];
+    const playerRecs: unknown[] = playerRes.rows;
+    if (!playerRecs) {
+      players = [];
     } else {
-      playerModels = playerRecords as IPlayerModel[];
+      players = playerRecs as IPlayerModel[];
     }
     // Referees
-    let refereeModels: IRefereeModel[];
-    const refereeResult: QueryResult = await pool.query(
+    let referees: IRefereeModel[];
+    const refereeRes: QueryResult = await pool.query(
       SearchQueries.GET_REFEREES_BY_NAME,
       [query],
     );
-    const refereeRecords: unknown[] = refereeResult.rows;
-    if (!refereeRecords) {
-      refereeModels = [];
+    const refereeRecs: unknown[] = refereeRes.rows;
+    if (!refereeRecs) {
+      referees = [];
     } else {
-      refereeModels = refereeRecords as IRefereeModel[];
+      referees = refereeRecs as IRefereeModel[];
     }
     // Venues
-    let venueModels: IVenueModel[];
-    const venueResult: QueryResult = await pool.query(
+    let venues: IVenueModel[];
+    const venueRes: QueryResult = await pool.query(
       SearchQueries.GET_VENUES_BY_NAME,
       [query],
     );
-    const venueRecords: unknown[] = venueResult.rows;
-    if (!venueRecords) {
-      venueModels = [];
+    const venueRecs: unknown[] = venueRes.rows;
+    if (!venueRecs) {
+      venues = [];
     } else {
-      venueModels = venueRecords as IVenueModel[];
+      venues = venueRecs as IVenueModel[];
     }
     // Create SearchModel
     const model: ISearchModel = new SearchModel(
-      leagueModels,
-      clubModels,
-      playerModels,
-      refereeModels,
-      venueModels,
+      leagues,
+      clubs,
+      players,
+      referees,
+      venues,
     );
     if (!SearchModel.isValidModel(model)) {
       throw new ModelMismatchError(model);

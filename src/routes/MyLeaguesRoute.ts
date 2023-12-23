@@ -25,7 +25,7 @@ export class MyLeaguesRoute implements IRoute {
       this.myLeaguesController.postMyLeagues.bind(this.myLeaguesController),
     );
     this.router.get(
-      `${this.path}/:leagueId`,
+      `${this.path}:leagueId`,
       this.myLeaguesController.getMyLeagues$leagueId.bind(
         this.myLeaguesController,
       ),

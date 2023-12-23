@@ -10,33 +10,33 @@ import { RefereeModel } from "../models/RefereeModel";
 
 export class RefereesProvider implements IRefereesProvider {
   public async getRefereeModels(): Promise<IRefereeModel[]> {
-    const result: QueryResult = await pool.query(
+    const refereeRes: QueryResult = await pool.query(
       RefereesQueries.GET_REFEREE_MODELS,
     );
-    const records: unknown[] = result.rows;
-    if (!records) {
+    const refereeRecs: unknown[] = refereeRes.rows;
+    if (!refereeRecs) {
       return [];
     }
-    if (!RefereeModel.areValidModels(records)) {
-      throw new ModelMismatchError(records);
+    if (!RefereeModel.areValidModels(refereeRecs)) {
+      throw new ModelMismatchError(refereeRecs);
     }
-    return records as IRefereeModel[];
+    return refereeRecs as IRefereeModel[];
   }
 
   public async getRefereeModelById(
     refereeId: number,
   ): Promise<IRefereeModel | null> {
-    const result: QueryResult = await pool.query(
+    const refereeRes: QueryResult = await pool.query(
       RefereesQueries.GET_REFEREE_MODEL_BY_$RID,
       [refereeId],
     );
-    const record: unknown = result.rows[0];
-    if (!record) {
+    const refereeRec: unknown = refereeRes.rows[0];
+    if (!refereeRec) {
       return null;
     }
-    if (!RefereeModel.isValidModel(record)) {
-      throw new ModelMismatchError(record);
+    if (!RefereeModel.isValidModel(refereeRec)) {
+      throw new ModelMismatchError(refereeRec);
     }
-    return record as IRefereeModel;
+    return refereeRec as IRefereeModel;
   }
 }

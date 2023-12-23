@@ -9,25 +9,25 @@ import {
   ModelMismatchError,
   UnexpectedQueryResultError,
 } from "../interfaces/schemas/responses/common/IServerError";
-import { LeagueIdModel } from "../models/LeagueIdModel";
 import { MyLeagueModel } from "../models/MyLeagueModel";
+import { LeagueIdModel } from "../models/common/LeagueIdModel";
 
 export class MyLeaguesProvider implements IMyLeaguesProvider {
   public async getMyLeagueModels(
     organizerId: number,
   ): Promise<IMyLeagueModel[]> {
-    const result: QueryResult = await pool.query(
+    const myLeagueRes: QueryResult = await pool.query(
       MyLeaguesQueries.GET_MY_LEAGUE_MODELS_BY_$OID,
       [organizerId],
     );
-    const records: unknown[] = result.rows;
-    if (!records) {
+    const myLeagueRecs: unknown[] = myLeagueRes.rows;
+    if (!myLeagueRecs) {
       return [];
     }
-    if (!MyLeagueModel.areValidModels(records)) {
-      throw new ModelMismatchError(records);
+    if (!MyLeagueModel.areValidModels(myLeagueRecs)) {
+      throw new ModelMismatchError(myLeagueRecs);
     }
-    return records as IMyLeagueModel[];
+    return myLeagueRecs as IMyLeagueModel[];
   }
 
   public async createLeague(
@@ -37,46 +37,56 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
     description: string,
     logoPath: string,
   ): Promise<IMyLeagueModel> {
-    const firstResult: QueryResult = await pool.query(
-      MyLeaguesQueries.CREATE_LEAGUE_WITH_$OID_$NAME_$PRIZE_$DESC_$LPATH,
-      [organizerId, name, prize, description, logoPath],
-    );
-    const firstRecord: unknown = firstResult.rows[0];
-    if (!firstRecord) {
-      throw new UnexpectedQueryResultError();
+    await pool.query("BEGIN");
+    try {
+      // Create league and return its leagueId
+      const leagueIdRes: QueryResult = await pool.query(
+        MyLeaguesQueries.CREATE_LEAGUE_WITH_$OID_$NAME_$PRIZE_$DESC_$LPATH,
+        [organizerId, name, prize, description, logoPath],
+      );
+      const leagueIdRec: unknown = leagueIdRes.rows[0];
+      if (!leagueIdRec) {
+        throw new UnexpectedQueryResultError();
+      }
+      if (!LeagueIdModel.isValidModel(leagueIdRec)) {
+        throw new ModelMismatchError(leagueIdRec);
+      }
+      // Get MyLeagueModel by leagueId
+      const myLeagueRes: QueryResult = await pool.query(
+        MyLeaguesQueries.GET_MY_LEAGUE_MODEL_BY_$OID_$LID,
+        [organizerId, leagueIdRec.leagueId],
+      );
+      const myLeagueRec: unknown = myLeagueRes.rows[0];
+      if (!myLeagueRec) {
+        throw new UnexpectedQueryResultError();
+      }
+      if (!MyLeagueModel.isValidModel(myLeagueRec)) {
+        throw new ModelMismatchError(myLeagueRec);
+      }
+      await pool.query("COMMIT");
+      // Return MyLeagueModel
+      return myLeagueRec as IMyLeagueModel;
+    } catch (error) {
+      await pool.query("ROLLBACK");
+      throw error;
     }
-    if (!LeagueIdModel.isValidModel(firstRecord)) {
-      throw new ModelMismatchError(firstRecord);
-    }
-    const secondResult: QueryResult = await pool.query(
-      MyLeaguesQueries.GET_MY_LEAGUE_MODEL_BY_$OID_$LID,
-      [organizerId, firstRecord.leagueId],
-    );
-    const secondRecord: unknown = secondResult.rows[0];
-    if (!secondRecord) {
-      throw new UnexpectedQueryResultError();
-    }
-    if (!MyLeagueModel.isValidModel(secondRecord)) {
-      throw new ModelMismatchError(secondRecord);
-    }
-    return secondRecord as IMyLeagueModel;
   }
 
   public async getMyLeagueModelById(
     organizerId: number,
     leagueId: number,
   ): Promise<IMyLeagueModel | null> {
-    const result: QueryResult = await pool.query(
+    const myLeagueRes: QueryResult = await pool.query(
       MyLeaguesQueries.GET_MY_LEAGUE_MODEL_BY_$OID_$LID,
       [organizerId, leagueId],
     );
-    const record: unknown = result.rows[0];
-    if (!record) {
+    const myLeagueRec: unknown = myLeagueRes.rows[0];
+    if (!myLeagueRec) {
       return null;
     }
-    if (!MyLeagueModel.isValidModel(record)) {
-      throw new ModelMismatchError(record);
+    if (!MyLeagueModel.isValidModel(myLeagueRec)) {
+      throw new ModelMismatchError(myLeagueRec);
     }
-    return record as IMyLeagueModel;
+    return myLeagueRec as IMyLeagueModel;
   }
 }

@@ -154,7 +154,7 @@ export class MyLeaguesService implements IMyLeaguesService {
     // Logo path validation
     if (!isStringMatchingRegex(logoPath, URL_MUST_REGEX)) {
       clientErrors.push(
-        new ClientError(ClientErrorCode.INVALID_LOGO_PATH_CONTENT),
+        new ClientError(ClientErrorCode.INVALID_LEAGUE_LOGO_PATH_CONTENT),
       );
     }
   }

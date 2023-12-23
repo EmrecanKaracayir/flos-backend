@@ -1,4 +1,4 @@
-import { IPlayerIdModel } from "../interfaces/models/IParticipantIdModel";
+import { IPlayerIdModel } from "../../interfaces/models/common/IPlayerIdModel";
 
 export class PlayerIdModel implements IPlayerIdModel {
   constructor(public readonly playerId: number) {}

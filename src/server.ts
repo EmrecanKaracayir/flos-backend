@@ -15,6 +15,7 @@ import { RefereesRoute } from "./routes/RefereesRoute";
 import { SearchRoute } from "./routes/SearchRoute";
 import { SignupRoute } from "./routes/SignupRoute";
 import { VenuesRoute } from "./routes/VenuesRoute";
+import { MyClubRoute } from "./routes/MyClubRoute";
 
 // App
 const app: Express = express();
@@ -47,6 +48,11 @@ app.use(
   `${API_PREFIX}/my/player`,
   AuthMiddleware.verifyAuth(["participant"]),
   new MyPlayerRoute().router,
+);
+app.use(
+  `${API_PREFIX}/my/club`,
+  AuthMiddleware.verifyAuth(["participant"]),
+  new MyClubRoute().router,
 );
 
 // Post-Middlewares
