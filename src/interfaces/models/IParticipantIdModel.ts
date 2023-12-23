@@ -1,3 +1,3 @@
-export interface IParticipantIdModel {
-  readonly participantId: number;
+export interface IPlayerIdModel {
+  readonly playerId: number;
 }

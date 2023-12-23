@@ -30,3 +30,10 @@ export class PrecisionLossError extends Error {
     this.name = "PrecisionLossError";
   }
 }
+
+export class UnexpectedUserRole extends Error {
+  constructor(userRole: string) {
+    super(`Unexpected user role: '${userRole}'. Contact with the developers.`);
+    this.name = "UnexpectedUserRole";
+  }
+}

@@ -18,5 +18,6 @@ export interface IMyPlayerProvider {
 export enum MyPlayerQueries {
   GET_MY_PLAYER_MODEL_BY_$PID = `SELECT * FROM "MyPlayerView" WHERE "participantId" = $1`,
   DOES_MY_PLAYER_WITH_$PID_EXIST = `SELECT EXISTS (SELECT * FROM "Participant" WHERE "participantId" = $1 AND "playerId" IS NOT NULL) as "recordExists"`,
-  CREATE_PLAYER_WITH_$PID_$FNAME_$BDAY_$BIO_$IPATH = `INSERT INTO "Player" ("participantId", "fullName", birthday, biography, "imgPath") VALUES ($1, $2, $3, $4, $5) RETURNING "playerId"`,
+  CREATE_PLAYER_WITH_$FNAME_$BDAY_$BIO_$IPATH = `INSERT INTO "Player" ("fullName", birthday, biography, "imgPath") VALUES ($1, $2, $3, $4) RETURNING "playerId"`,
+  ASSOCIATE_PARTICIPANT_WITH_$PLID = `UPDATE "Participant" SET "playerId" = $1 WHERE "participantId" = $2`,
 }

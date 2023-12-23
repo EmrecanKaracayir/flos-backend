@@ -11,7 +11,7 @@ import {
   UnexpectedQueryResultError,
 } from "../interfaces/schemas/responses/common/IServerError";
 import { MyPlayerModel } from "../models/MyPlayerModel";
-import { ParticipantIdModel } from "../models/ParticipantIdModel";
+import { PlayerIdModel } from "../models/ParticipantIdModel";
 import { RecordExistsModel } from "../models/RecordExistsModel";
 
 export class MyPlayerProvider implements IMyPlayerProvider {
@@ -57,19 +57,23 @@ export class MyPlayerProvider implements IMyPlayerProvider {
     imgPath: string,
   ): Promise<IMyPlayerModel> {
     const firstResult: QueryResult = await pool.query(
-      MyPlayerQueries.CREATE_PLAYER_WITH_$PID_$FNAME_$BDAY_$BIO_$IPATH,
-      [participantId, fullName, birthday, biography, imgPath],
+      MyPlayerQueries.CREATE_PLAYER_WITH_$FNAME_$BDAY_$BIO_$IPATH,
+      [fullName, birthday, biography, imgPath],
     );
     const firstRecord: unknown = firstResult.rows[0];
     if (!firstRecord) {
       throw new UnexpectedQueryResultError();
     }
-    if (!ParticipantIdModel.isValidModel(firstRecord)) {
+    if (!PlayerIdModel.isValidModel(firstRecord)) {
       throw new ModelMismatchError(firstRecord);
     }
+    await pool.query(MyPlayerQueries.ASSOCIATE_PARTICIPANT_WITH_$PLID, [
+      firstRecord.playerId,
+      participantId,
+    ]);
     const secondResult: QueryResult = await pool.query(
       MyPlayerQueries.GET_MY_PLAYER_MODEL_BY_$PID,
-      [firstRecord.participantId],
+      [participantId],
     );
     const secondRecord: unknown = secondResult.rows[0];
     if (!secondRecord) {

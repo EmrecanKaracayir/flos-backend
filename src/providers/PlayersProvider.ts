@@ -27,7 +27,7 @@ export class PlayersProvider implements IPlayersProvider {
     playerId: number,
   ): Promise<IPlayerModel | null> {
     const result: QueryResult = await pool.query(
-      PlayersQueries.GET_PLAYER_MODEL_BY_$PID,
+      PlayersQueries.GET_PLAYER_MODEL_BY_$PLID,
       [playerId],
     );
     const record: unknown = result.rows[0];

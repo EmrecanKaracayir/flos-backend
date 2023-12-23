@@ -1,13 +1,13 @@
-import { IParticipantIdModel } from "../interfaces/models/IParticipantIdModel";
+import { IPlayerIdModel } from "../interfaces/models/IParticipantIdModel";
 
-export class ParticipantIdModel implements IParticipantIdModel {
-  constructor(public readonly participantId: number) {}
+export class PlayerIdModel implements IPlayerIdModel {
+  constructor(public readonly playerId: number) {}
 
-  public static isValidModel(obj: unknown): obj is IParticipantIdModel {
+  public static isValidModel(obj: unknown): obj is IPlayerIdModel {
     if (typeof obj !== "object" || obj === null) {
       return false;
     }
-    const model: IParticipantIdModel = obj as IParticipantIdModel;
-    return typeof model.participantId === "number";
+    const model: IPlayerIdModel = obj as IPlayerIdModel;
+    return typeof model.playerId === "number";
   }
 }

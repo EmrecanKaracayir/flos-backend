@@ -4,17 +4,18 @@ import { AuthPayload, UserRole } from "../core/@types/helpers/authPayloadRules";
 import { AuthHelper } from "../core/helpers/AuthHelper";
 import { ClientErrorCode } from "../interfaces/schemas/responses/common/IClientError";
 import { HttpStatusCode } from "../interfaces/schemas/responses/common/IHttpStatus";
+import { UserProvider } from "../providers/common/UserProvider";
 import { GenericResponse } from "../schemas/responses/GenericResponse";
 import { ClientError } from "../schemas/responses/common/ClientError";
 import { HttpStatus } from "../schemas/responses/common/HttpStatus";
 
 export class AuthMiddleware {
   public static verifyAuth(allowedUserRoles: Array<UserRole>) {
-    return (
+    return async (
       req: Request,
       res: Response,
       next: NextFunction,
-    ): Response | void => {
+    ): Promise<Response | void> => {
       // Response declaration
       let httpStatus: HttpStatus;
       const clientErrors: Array<ClientError> = [];
@@ -41,6 +42,28 @@ export class AuthMiddleware {
         if (!allowedUserRoles.includes(authPayload.userRole)) {
           httpStatus = new HttpStatus(HttpStatusCode.FORBIDDEN);
           clientErrors.push(new ClientError(ClientErrorCode.FORBIDDEN_ACCESS));
+          return res
+            .status(httpStatus.code)
+            .send(
+              new GenericResponse<null>(
+                httpStatus,
+                null,
+                clientErrors,
+                null,
+                null,
+              ),
+            );
+        }
+        if (
+          !(
+            await UserProvider.doesUserExist(
+              authPayload.userId,
+              authPayload.userRole,
+            )
+          ).recordExists
+        ) {
+          httpStatus = new HttpStatus(HttpStatusCode.UNAUTHORIZED);
+          clientErrors.push(new ClientError(ClientErrorCode.INVALID_TOKEN));
           return res
             .status(httpStatus.code)
             .send(

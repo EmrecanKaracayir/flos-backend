@@ -9,6 +9,7 @@
     "ILIKE",
     "IPATH",
     "LPATH",
+    "PLID",
     "psql"
   ],
   "inlineSQL.enableDBIntegration": true,

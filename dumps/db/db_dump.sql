@@ -5,7 +5,7 @@
 -- Dumped from database version 16.1
 -- Dumped by pg_dump version 16.1
 
--- Started on 2023-12-23 00:12:52 +03
+-- Started on 2023-12-23 14:55:25 +03
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -783,6 +783,8 @@ COPY public."Player" ("playerId", "clubId", "fullName", birthday, "imgPath", goa
 1	1	Edin Dzeko	1986-03-17	https://i.pinimg.com/originals/f4/f3/b0/f4f3b0e7d7965b88907d4178d74dc7d3.png	0	0	I play for the soul.
 3	3	Z. Ibrahimovic	1981-10-03	https://pbs.twimg.com/profile_images/1214310860576952321/dKb_Ih9K.jpg	0	0	I am Zlatan, the lion.
 2	2	Mauro Icardi	1993-02-19	https://marriedbiography.com/wp-content/uploads/2019/06/Mauro-Icardi.jpg	0	0	I am Icardi, I love football.
+8	\N	Lionel Messi	1987-06-24	https://a.espncdn.com/combiner/i?img=/i/headshots/soccer/players/full/45843.png&w=350&h=254	0	0	Lionel Andrés Messi, also known as Leo Messi, is an Argentine professional footballer who plays as a forward for and captains both Major League Soccer club Inter Miami and the Argentina national team.
+9	\N	Lionel Messi	1987-06-24	https://a.espncdn.com/combiner/i?img=/i/headshots/soccer/players/full/45843.png&w=350&h=254	0	0	Lionel Andrés Messi, also known as Leo Messi, is an Argentine professional footballer who plays as a forward for and captains both Major League Soccer club Inter Miami and the Argentina national team.
 \.
 
 
@@ -886,7 +888,7 @@ SELECT pg_catalog.setval('public."Participant_participantId_seq"', 6, true);
 -- Name: Player_playerId_seq; Type: SEQUENCE SET; Schema: public; Owner: Emrecan
 --
 
-SELECT pg_catalog.setval('public."Player_playerId_seq"', 4, true);
+SELECT pg_catalog.setval('public."Player_playerId_seq"', 9, true);
 
 
 --
@@ -1159,7 +1161,7 @@ ALTER TABLE ONLY public."Statistics"
     ADD CONSTRAINT statistics_league_fk FOREIGN KEY ("leagueId") REFERENCES public."League"("leagueId");
 
 
--- Completed on 2023-12-23 00:12:52 +03
+-- Completed on 2023-12-23 14:55:25 +03
 
 --
 -- PostgreSQL database dump complete
