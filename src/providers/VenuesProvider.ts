@@ -10,9 +10,7 @@ import { VenueModel } from "../models/VenueModel";
 
 export class VenuesProvider implements IVenuesProvider {
   public async getVenueModels(): Promise<IVenueModel[]> {
-    const venueRes: QueryResult = await pool.query(
-      VenuesQueries.GET_VENUE_MODELS,
-    );
+    const venueRes: QueryResult = await pool.query(VenuesQueries.GET_VENUES);
     const venueRecs: unknown[] = venueRes.rows;
     if (!venueRecs) {
       return [];
@@ -25,7 +23,7 @@ export class VenuesProvider implements IVenuesProvider {
 
   public async getVenueModelById(venueId: number): Promise<IVenueModel | null> {
     const venueRes: QueryResult = await pool.query(
-      VenuesQueries.GET_VENUE_MODEL_BY_$VID,
+      VenuesQueries.GET_VENUE_$VNID,
       [venueId],
     );
     const venueRec: unknown = venueRes.rows[0];

@@ -18,7 +18,7 @@ export class SearchProvider implements ISearchProvider {
     // Leagues
     let leagues: ILeagueModel[];
     const leagueRes: QueryResult = await pool.query(
-      SearchQueries.GET_LEAGUES_BY_NAME,
+      SearchQueries.GET_LEAGUES_$SEARCH,
       [query],
     );
     const leagueRecs: unknown[] = leagueRes.rows;
@@ -30,7 +30,7 @@ export class SearchProvider implements ISearchProvider {
     // Clubs
     let clubs: IClubModel[];
     const clubRes: QueryResult = await pool.query(
-      SearchQueries.GET_CLUBS_BY_NAME,
+      SearchQueries.GET_CLUBS_$SEARCH,
       [query],
     );
     const clubRecs: unknown[] = clubRes.rows;
@@ -42,7 +42,7 @@ export class SearchProvider implements ISearchProvider {
     // Players
     let players: IPlayerModel[];
     const playerRes: QueryResult = await pool.query(
-      SearchQueries.GET_PLAYERS_BY_NAME,
+      SearchQueries.GET_PLAYERS_$SEARCH,
       [query],
     );
     const playerRecs: unknown[] = playerRes.rows;
@@ -54,7 +54,7 @@ export class SearchProvider implements ISearchProvider {
     // Referees
     let referees: IRefereeModel[];
     const refereeRes: QueryResult = await pool.query(
-      SearchQueries.GET_REFEREES_BY_NAME,
+      SearchQueries.GET_REFEREES_$SEARCH,
       [query],
     );
     const refereeRecs: unknown[] = refereeRes.rows;
@@ -66,7 +66,7 @@ export class SearchProvider implements ISearchProvider {
     // Venues
     let venues: IVenueModel[];
     const venueRes: QueryResult = await pool.query(
-      SearchQueries.GET_VENUES_BY_NAME,
+      SearchQueries.GET_VENUES_$SEARCH,
       [query],
     );
     const venueRecs: unknown[] = venueRes.rows;

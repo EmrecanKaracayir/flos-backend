@@ -7,6 +7,6 @@ export interface ILeaguesProvider {
 }
 
 export enum LeaguesQueries {
-  GET_LEAGUE_MODELS = `SELECT * FROM "LeagueView"`,
-  GET_LEAGUE_MODEL_BY_$LID = `${GET_LEAGUE_MODELS} WHERE "leagueId" = $1`,
+  GET_LEAGUES = `SELECT * FROM "LeagueView"`,
+  GET_LEAGUE_$LGID = `SELECT * FROM "LeagueView" WHERE "leagueId" = $1`,
 }

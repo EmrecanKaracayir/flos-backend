@@ -22,7 +22,7 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
     organizerId: number,
   ): Promise<IMyLeagueModel[]> {
     const myLeagueRes: QueryResult = await pool.query(
-      MyLeaguesQueries.GET_MY_LEAGUE_MODELS_BY_$OID,
+      MyLeaguesQueries.GET_MY_LEAGUES_$ORID,
       [organizerId],
     );
     const myLeagueRecs: unknown[] = myLeagueRes.rows;
@@ -46,7 +46,7 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
     try {
       // Create league and return its leagueId
       const leagueIdRes: QueryResult = await pool.query(
-        MyLeaguesQueries.CREATE_LEAGUE_WITH_$OID_$NAME_$PRIZE_$DESC_$LPATH,
+        MyLeaguesQueries.CREATE_LEAGUE_$OID_$NAME_$PRIZE_$DESC_$LPATH,
         [organizerId, name, prize, description, logoPath],
       );
       const leagueIdRec: unknown = leagueIdRes.rows[0];
@@ -58,7 +58,7 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
       }
       // Get MyLeagueModel by leagueId
       const myLeagueRes: QueryResult = await pool.query(
-        MyLeaguesQueries.GET_MY_LEAGUE_MODEL_BY_$OID_$LID,
+        MyLeaguesQueries.GET_MY_LEAGUE_$ORID_$LGID,
         [organizerId, leagueIdRec.leagueId],
       );
       const myLeagueRec: unknown = myLeagueRes.rows[0];
@@ -82,7 +82,7 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
     leagueId: number,
   ): Promise<IMyLeagueModel | null> {
     const myLeagueRes: QueryResult = await pool.query(
-      MyLeaguesQueries.GET_MY_LEAGUE_MODEL_BY_$OID_$LID,
+      MyLeaguesQueries.GET_MY_LEAGUE_$ORID_$LGID,
       [organizerId, leagueId],
     );
     const myLeagueRec: unknown = myLeagueRes.rows[0];
@@ -95,29 +95,12 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
     return myLeagueRec as IMyLeagueModel;
   }
 
-  public async doesLeagueExistById(
-    leagueId: number,
-  ): Promise<IRecordExistsModel> {
-    const reRes: QueryResult = await pool.query(
-      MyLeaguesQueries.DOES_LEAGUE_BY_$LID_EXIST,
-      [leagueId],
-    );
-    const reRec: unknown = reRes.rows[0];
-    if (!reRec) {
-      throw new UnexpectedQueryResultError();
-    }
-    if (!RecordExistsModel.isValidModel(reRec)) {
-      throw new ModelMismatchError(reRec);
-    }
-    return reRec as IRecordExistsModel;
-  }
-
-  public async isLeagueMineByIds(
+  public async doesMyLeagueExistById(
     organizerId: number,
     leagueId: number,
   ): Promise<IRecordExistsModel> {
     const reRes: QueryResult = await pool.query(
-      MyLeaguesQueries.IS_LEAGUE_MINE_BY_$OID_$LID,
+      MyLeaguesQueries.DOES_MY_LEAGUE_EXIST_$ORID_$LGID,
       [organizerId, leagueId],
     );
     const reRec: unknown = reRes.rows[0];
@@ -135,7 +118,7 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
     allowedLeagueStates: LeagueState[],
   ): Promise<boolean> {
     const leagueStateRes: QueryResult = await pool.query(
-      MyLeaguesQueries.GET_LEAGUE_STATE_BY_$LID,
+      MyLeaguesQueries.GET_LEAGUE_STATE_$LGID,
       [leagueId],
     );
     const leagueStateRec: unknown = leagueStateRes.rows[0];
@@ -150,7 +133,7 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
     );
   }
 
-  public async editLeague(
+  public async updateLeague(
     organizerId: number,
     leagueId: number,
     name: string,
@@ -162,12 +145,12 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
     try {
       // Edit league
       await pool.query(
-        MyLeaguesQueries.EDIT_LEAGUE_WITH_$NAME_$PRIZE_$DESC_$LPATH_$LID,
-        [name, prize, description, logoPath, leagueId],
+        MyLeaguesQueries.UPDATE_LEAGUE_$LGID_$NAME_$PRIZE_$DESC_$LPATH,
+        [leagueId, name, prize, description, logoPath],
       );
       // Get MyLeagueModel by leagueId
       const myLeagueRes: QueryResult = await pool.query(
-        MyLeaguesQueries.GET_MY_LEAGUE_MODEL_BY_$OID_$LID,
+        MyLeaguesQueries.GET_MY_LEAGUE_$ORID_$LGID,
         [organizerId, leagueId],
       );
       const myLeagueRec: unknown = myLeagueRes.rows[0];
@@ -190,11 +173,11 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
     await pool.query("BEGIN");
     try {
       // Free clubs from league
-      await pool.query(MyLeaguesQueries.FREE_CLUBS_FROM_LEAGUE_BY_$LID, [
+      await pool.query(MyLeaguesQueries.FREE_CLUBS_FROM_LEAGUE_$LGID, [
         leagueId,
       ]);
       // Delete league
-      await pool.query(MyLeaguesQueries.DELETE_LEAGUE_BY_$LID, [leagueId]);
+      await pool.query(MyLeaguesQueries.DELETE_LEAGUE_$LGID, [leagueId]);
       await pool.query("COMMIT");
     } catch (error) {
       await pool.query("ROLLBACK");

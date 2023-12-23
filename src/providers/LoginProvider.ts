@@ -15,7 +15,7 @@ export class LoginProvider implements ILoginProvider {
     username: string,
   ): Promise<IOrganizerModel | null> {
     const organizerRes: QueryResult = await pool.query(
-      LoginQueries.GET_ORGANIZER_MODEL_BY_$USERNAME,
+      LoginQueries.GET_ORGANIZER_$UNAME,
       [username],
     );
     const organizerRec: unknown = organizerRes.rows[0];
@@ -32,7 +32,7 @@ export class LoginProvider implements ILoginProvider {
     username: string,
   ): Promise<IParticipantModel | null> {
     const participantRes: QueryResult = await pool.query(
-      LoginQueries.GET_PARTICIPANT_MODEL_BY_$USERNAME,
+      LoginQueries.GET_PARTICIPANT_$UNAME,
       [username],
     );
     const participantRec: unknown = participantRes.rows[0];

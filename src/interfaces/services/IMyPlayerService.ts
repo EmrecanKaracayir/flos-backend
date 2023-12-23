@@ -17,4 +17,15 @@ export interface IMyPlayerService {
     dto: IMyPlayerReqDto,
     clientErrors: IClientError[],
   ) => Promise<IGenericResponse<IMyPlayerResData | null>>;
+
+  putMyPlayer: (
+    participantId: number,
+    dto: IMyPlayerReqDto,
+    clientErrors: IClientError[],
+  ) => Promise<IGenericResponse<IMyPlayerResData | null>>;
+
+  deleteMyPlayer: (
+    participantId: number,
+    clientErrors: IClientError[],
+  ) => Promise<IGenericResponse<void | null>>;
 }

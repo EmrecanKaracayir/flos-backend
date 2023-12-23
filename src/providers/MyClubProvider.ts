@@ -25,7 +25,7 @@ export class MyClubProvider implements IMyClubProvider {
     participantId: number,
   ): Promise<IMyClubModel | null> {
     const myClubRes: QueryResult = await pool.query(
-      MyClubQueries.GET_MY_CLUB_MODEL_BY_$PID,
+      MyClubQueries.GET_MY_CLUB_$PRID,
       [participantId],
     );
     const myClubRec: unknown = myClubRes.rows[0];
@@ -42,7 +42,7 @@ export class MyClubProvider implements IMyClubProvider {
     participantId: number,
   ): Promise<IRecordExistsModel> {
     const reRes: QueryResult = await pool.query(
-      MyClubQueries.DOES_MY_CLUB_BY_$PID_EXIST,
+      MyClubQueries.DOES_MY_CLUB_EXIST_$PRID,
       [participantId],
     );
     const reRec: unknown = reRes.rows[0];
@@ -59,7 +59,7 @@ export class MyClubProvider implements IMyClubProvider {
     participantId: number,
   ): Promise<IRecordExistsModel> {
     const reRes: QueryResult = await pool.query(
-      MyClubQueries.DOES_MY_PLAYER_BY_$PID_EXIST,
+      MyClubQueries.DOES_MY_PLAYER_EXIST_$PRID,
       [participantId],
     );
     const reRec: unknown = reRes.rows[0];
@@ -77,7 +77,7 @@ export class MyClubProvider implements IMyClubProvider {
     allowedPlayerStates: PlayerState[],
   ): Promise<boolean> {
     const playerStateRes: QueryResult = await pool.query(
-      MyClubQueries.GET_MY_PLAYER_STATE_BY_$PID,
+      MyClubQueries.GET_MY_PLAYER_STATE_$PRID,
       [participantId],
     );
     const playerStateRec: unknown = playerStateRes.rows[0];
@@ -102,7 +102,7 @@ export class MyClubProvider implements IMyClubProvider {
     try {
       // Create club and return its clubId
       const clubIdRes: QueryResult = await pool.query(
-        MyClubQueries.CREATE_CLUB_WITH_$NAME_$DESC_$LPATH,
+        MyClubQueries.CREATE_CLUB_$NAME_$DESC_$LPATH,
         [name, description, logoPath],
       );
       const clubIdRec: unknown = clubIdRes.rows[0];
@@ -113,13 +113,13 @@ export class MyClubProvider implements IMyClubProvider {
         throw new ModelMismatchError(clubIdRec);
       }
       // Associate participant with club
-      await pool.query(
-        MyClubQueries.ASSOCIATE_PARTICIPANT_WITH_CLUB_WITH_$CID_$PID,
-        [(clubIdRec as IClubIdModel).clubId, participantId],
-      );
+      await pool.query(MyClubQueries.SET_CLID_IN_PARTICIPANT_$CLID_$PRID, [
+        (clubIdRec as IClubIdModel).clubId,
+        participantId,
+      ]);
       // Get participant's playerId
       const playerIdRes: QueryResult = await pool.query(
-        MyClubQueries.GET_MY_PLID_BY_$PID,
+        MyClubQueries.GET_MY_PLID_$PRID,
         [participantId],
       );
       const playerIdRec: unknown = playerIdRes.rows[0];
@@ -130,13 +130,13 @@ export class MyClubProvider implements IMyClubProvider {
         throw new ModelMismatchError(playerIdRec);
       }
       // Associate participant's player with club
-      await pool.query(
-        MyClubQueries.ASSOCIATE_PLAYER_WITH_CLUB_WITH_$CID_$PLID,
-        [clubIdRec.clubId, (playerIdRec as IPlayerIdModel).playerId],
-      );
+      await pool.query(MyClubQueries.SET_CLID_IN_PLAYER_$CLID_$PLID, [
+        clubIdRec.clubId,
+        (playerIdRec as IPlayerIdModel).playerId,
+      ]);
       // Get MyClubModel
       const myClubRes: QueryResult = await pool.query(
-        MyClubQueries.GET_MY_CLUB_MODEL_BY_$PID,
+        MyClubQueries.GET_MY_CLUB_$PRID,
         [participantId],
       );
       const myClubRec: unknown = myClubRes.rows[0];

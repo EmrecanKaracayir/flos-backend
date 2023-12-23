@@ -15,4 +15,16 @@ export interface IMyPlayerController {
     res: Response,
     next: NextFunction,
   ) => Promise<Response | void>;
+
+  putMyPlayer: (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => Promise<Response | void>;
+
+  deleteMyPlayer: (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => Promise<Response | void>;
 }

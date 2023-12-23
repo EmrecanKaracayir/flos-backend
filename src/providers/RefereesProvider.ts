@@ -11,7 +11,7 @@ import { RefereeModel } from "../models/RefereeModel";
 export class RefereesProvider implements IRefereesProvider {
   public async getRefereeModels(): Promise<IRefereeModel[]> {
     const refereeRes: QueryResult = await pool.query(
-      RefereesQueries.GET_REFEREE_MODELS,
+      RefereesQueries.GET_REFEREES,
     );
     const refereeRecs: unknown[] = refereeRes.rows;
     if (!refereeRecs) {
@@ -27,7 +27,7 @@ export class RefereesProvider implements IRefereesProvider {
     refereeId: number,
   ): Promise<IRefereeModel | null> {
     const refereeRes: QueryResult = await pool.query(
-      RefereesQueries.GET_REFEREE_MODEL_BY_$RID,
+      RefereesQueries.GET_REFEREE_$RFID,
       [refereeId],
     );
     const refereeRec: unknown = refereeRes.rows[0];

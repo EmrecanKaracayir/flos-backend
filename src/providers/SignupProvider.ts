@@ -20,7 +20,7 @@ export class SignupProvider implements ISignupProvider {
     username: string,
   ): Promise<IRecordExistsModel> {
     const reRes: QueryResult = await pool.query(
-      SignupQueries.DOES_ORGANIZER_BY_$USERNAME_EXIST,
+      SignupQueries.DOES_ORGANIZER_EXIST_$UNAME,
       [username],
     );
     const reRec: unknown = reRes.rows[0];
@@ -37,7 +37,7 @@ export class SignupProvider implements ISignupProvider {
     email: string,
   ): Promise<IRecordExistsModel> {
     const reRes: QueryResult = await pool.query(
-      SignupQueries.DOES_ORGANIZER_BY_$EMAIL_EXIST,
+      SignupQueries.DOES_ORGANIZER_EXIST_$EMAIL,
       [email],
     );
     const reRec: unknown = reRes.rows[0];
@@ -56,7 +56,7 @@ export class SignupProvider implements ISignupProvider {
     email: string,
   ): Promise<IOrganizerModel> {
     const organizerRes: QueryResult = await pool.query(
-      SignupQueries.CREATE_ORGANIZER_WITH_$USERNAME_$PASSWORD_$EMAIL,
+      SignupQueries.CREATE_ORGANIZER_$UNAME_$PSWRD_$EMAIL,
       [username, password, email],
     );
     const organizerRec: unknown = organizerRes.rows[0];
@@ -73,7 +73,7 @@ export class SignupProvider implements ISignupProvider {
     username: string,
   ): Promise<IRecordExistsModel> {
     const reRes: QueryResult = await pool.query(
-      SignupQueries.DOES_PARTICIPANT_BY_$USERNAME_EXIST,
+      SignupQueries.DOES_PARTICIPANT_EXIST_$UNAME,
       [username],
     );
     const reRec: unknown = reRes.rows[0];
@@ -90,7 +90,7 @@ export class SignupProvider implements ISignupProvider {
     email: string,
   ): Promise<IRecordExistsModel> {
     const reRes: QueryResult = await pool.query(
-      SignupQueries.DOES_PARTICIPANT_BY_$EMAIL_EXIST,
+      SignupQueries.DOES_PARTICIPANT_EXIST_$EMAIL,
       [email],
     );
     const reRec: unknown = reRes.rows[0];
@@ -109,7 +109,7 @@ export class SignupProvider implements ISignupProvider {
     email: string,
   ): Promise<IParticipantModel> {
     const participantRes: QueryResult = await pool.query(
-      SignupQueries.CREATE_PARTICIPANT_WITH_$USERNAME_$PASSWORD_$EMAIL,
+      SignupQueries.CREATE_PARTICIPANT_$UNAME_$PSWRD_$EMAIL,
       [username, password, email],
     );
     const participantRec: unknown = participantRes.rows[0];

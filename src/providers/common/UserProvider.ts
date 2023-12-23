@@ -18,7 +18,7 @@ export class UserProvider implements IUserProvider {
     organizerId: number,
   ): Promise<IRecordExistsModel> {
     const reRes: QueryResult = await pool.query(
-      UserQueries.DOES_ORGANIZER_BY_$OID_EXIST,
+      UserQueries.DOES_ORGANIZER_EXIST_$ORID,
       [organizerId],
     );
     const reRec: unknown = reRes.rows[0];
@@ -35,7 +35,7 @@ export class UserProvider implements IUserProvider {
     participantId: number,
   ): Promise<IRecordExistsModel> {
     const reRes: QueryResult = await pool.query(
-      UserQueries.DOES_PARTICIPANT_BY_$PID_EXIST,
+      UserQueries.DOES_PARTICIPANT_EXIST_$PRID,
       [participantId],
     );
     const reRec: unknown = reRes.rows[0];

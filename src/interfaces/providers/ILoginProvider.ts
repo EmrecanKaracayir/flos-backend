@@ -12,6 +12,6 @@ export interface ILoginProvider {
 }
 
 export enum LoginQueries {
-  GET_ORGANIZER_MODEL_BY_$USERNAME = `SELECT * FROM "Organizer" WHERE username = $1`,
-  GET_PARTICIPANT_MODEL_BY_$USERNAME = `SELECT * FROM "Participant" WHERE username = $1`,
+  GET_ORGANIZER_$UNAME = `SELECT * FROM "Organizer" WHERE username = $1`,
+  GET_PARTICIPANT_$UNAME = `SELECT * FROM "Participant" WHERE username = $1`,
 }

@@ -10,9 +10,7 @@ import { LeagueModel } from "../models/LeagueModel";
 
 export class LeaguesProvider implements ILeaguesProvider {
   public async getLeagueModels(): Promise<ILeagueModel[]> {
-    const leagueRes: QueryResult = await pool.query(
-      LeaguesQueries.GET_LEAGUE_MODELS,
-    );
+    const leagueRes: QueryResult = await pool.query(LeaguesQueries.GET_LEAGUES);
     const leagueRecs: unknown[] = leagueRes.rows;
     if (!leagueRecs) {
       return [];
@@ -27,7 +25,7 @@ export class LeaguesProvider implements ILeaguesProvider {
     leagueId: number,
   ): Promise<ILeagueModel | null> {
     const leagueRes: QueryResult = await pool.query(
-      LeaguesQueries.GET_LEAGUE_MODEL_BY_$LID,
+      LeaguesQueries.GET_LEAGUE_$LGID,
       [leagueId],
     );
     const leagueRec: unknown = leagueRes.rows[0];

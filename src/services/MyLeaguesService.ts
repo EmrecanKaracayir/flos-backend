@@ -122,28 +122,18 @@ export class MyLeaguesService implements IMyLeaguesService {
     clientErrors: IClientError[],
   ): Promise<IGenericResponse<IMyLeaguesResData | null>> {
     if (
-      !(await this.myLeaguesProvider.doesLeagueExistById(leagueId)).recordExists
+      !(
+        await this.myLeaguesProvider.doesMyLeagueExistById(
+          organizerId,
+          leagueId,
+        )
+      ).recordExists
     ) {
       clientErrors.push(
         new ClientError(ClientErrorCode.NO_LEAGUE_FOUND_IN_MY_LEAGUES),
       );
       return new GenericResponse<null>(
         new HttpStatus(HttpStatusCode.CONFLICT),
-        null,
-        clientErrors,
-        null,
-        null,
-      );
-    }
-    if (
-      !(await this.myLeaguesProvider.isLeagueMineByIds(organizerId, leagueId))
-        .recordExists
-    ) {
-      clientErrors.push(
-        new ClientError(ClientErrorCode.FORBIDDEN_ACCESS_TO_LEAGUE),
-      );
-      return new GenericResponse<null>(
-        new HttpStatus(HttpStatusCode.FORBIDDEN),
         null,
         clientErrors,
         null,
@@ -183,7 +173,7 @@ export class MyLeaguesService implements IMyLeaguesService {
       );
     }
     clientErrors = [];
-    const model: IMyLeagueModel = await this.myLeaguesProvider.editLeague(
+    const model: IMyLeagueModel = await this.myLeaguesProvider.updateLeague(
       organizerId,
       leagueId,
       dto.name,
@@ -206,28 +196,18 @@ export class MyLeaguesService implements IMyLeaguesService {
     clientErrors: IClientError[],
   ): Promise<IGenericResponse<void | null>> {
     if (
-      !(await this.myLeaguesProvider.doesLeagueExistById(leagueId)).recordExists
+      !(
+        await this.myLeaguesProvider.doesMyLeagueExistById(
+          organizerId,
+          leagueId,
+        )
+      ).recordExists
     ) {
       clientErrors.push(
         new ClientError(ClientErrorCode.NO_LEAGUE_FOUND_IN_MY_LEAGUES),
       );
       return new GenericResponse<null>(
         new HttpStatus(HttpStatusCode.CONFLICT),
-        null,
-        clientErrors,
-        null,
-        null,
-      );
-    }
-    if (
-      !(await this.myLeaguesProvider.isLeagueMineByIds(organizerId, leagueId))
-        .recordExists
-    ) {
-      clientErrors.push(
-        new ClientError(ClientErrorCode.FORBIDDEN_ACCESS_TO_LEAGUE),
-      );
-      return new GenericResponse<null>(
-        new HttpStatus(HttpStatusCode.FORBIDDEN),
         null,
         clientErrors,
         null,

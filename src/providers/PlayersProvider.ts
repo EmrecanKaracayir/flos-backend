@@ -10,9 +10,7 @@ import { PlayerModel } from "../models/PlayerModel";
 
 export class PlayersProvider implements IPlayersProvider {
   public async getPlayerModels(): Promise<IPlayerModel[]> {
-    const playerRes: QueryResult = await pool.query(
-      PlayersQueries.GET_PLAYER_MODELS,
-    );
+    const playerRes: QueryResult = await pool.query(PlayersQueries.GET_PLAYERS);
     const playerRecs: unknown[] = playerRes.rows;
     if (!playerRecs) {
       return [];
@@ -27,7 +25,7 @@ export class PlayersProvider implements IPlayersProvider {
     playerId: number,
   ): Promise<IPlayerModel | null> {
     const playerRes: QueryResult = await pool.query(
-      PlayersQueries.GET_PLAYER_MODEL_BY_$PLID,
+      PlayersQueries.GET_PLAYER_$PLID,
       [playerId],
     );
     const playerRec: unknown = playerRes.rows[0];

@@ -1,6 +1,7 @@
 {
   "cSpell.words": [
     "BDAY",
+    "CLID",
     "codepaths",
     "dbname",
     "Emrecan",
@@ -8,9 +9,15 @@
     "flos",
     "ILIKE",
     "IPATH",
+    "LGID",
     "LPATH",
+    "ORID",
     "PLID",
-    "psql"
+    "PRID",
+    "psql",
+    "PSWRD",
+    "RFID",
+    "VNID"
   ],
   "inlineSQL.enableDBIntegration": true,
   "inlineSQL.dbDriver": "postgres",

@@ -1,3 +1,4 @@
+import { PlayerState } from "../core/enums/playerState";
 import { DATE_MUST_REGEX } from "../core/rules/common/dateRules";
 import { URL_MUST_REGEX } from "../core/rules/common/urlRules";
 import {
@@ -110,6 +111,104 @@ export class MyPlayerService implements IMyPlayerService {
       null,
       clientErrors,
       MyPlayerResData.fromModel(model),
+      null,
+    );
+  }
+
+  public async putMyPlayer(
+    participantId: number,
+    dto: IMyPlayerReqDto,
+    clientErrors: IClientError[],
+  ): Promise<IGenericResponse<IMyPlayerResData | null>> {
+    if (
+      !(await this.myPlayerProvider.doesMyPlayerExist(participantId))
+        .recordExists
+    ) {
+      clientErrors.push(
+        new ClientError(ClientErrorCode.PARTICIPANT_HAS_NO_PLAYER),
+      );
+      return new GenericResponse<null>(
+        new HttpStatus(HttpStatusCode.NOT_FOUND),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    this.validateFields(
+      dto.fullName,
+      dto.birthday,
+      dto.biography,
+      dto.imgPath,
+      clientErrors,
+    );
+    if (clientErrors.length > 0) {
+      return new GenericResponse<null>(
+        new HttpStatus(HttpStatusCode.BAD_REQUEST),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    clientErrors = [];
+    const model: IMyPlayerModel = await this.myPlayerProvider.updateMyPlayer(
+      participantId,
+      dto.fullName,
+      dto.birthday,
+      dto.biography,
+      dto.imgPath,
+    );
+    return new GenericResponse<IMyPlayerResData>(
+      new HttpStatus(HttpStatusCode.OK),
+      null,
+      clientErrors,
+      MyPlayerResData.fromModel(model),
+      null,
+    );
+  }
+
+  public async deleteMyPlayer(
+    participantId: number,
+    clientErrors: IClientError[],
+  ): Promise<IGenericResponse<void | null>> {
+    if (
+      !(await this.myPlayerProvider.doesMyPlayerExist(participantId))
+        .recordExists
+    ) {
+      clientErrors.push(
+        new ClientError(ClientErrorCode.PARTICIPANT_HAS_NO_PLAYER),
+      );
+      return new GenericResponse<null>(
+        new HttpStatus(HttpStatusCode.NOT_FOUND),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    if (
+      !(await this.myPlayerProvider.doesMyPlayerInStates(participantId, [
+        PlayerState.AVAILABLE,
+      ]))
+    ) {
+      clientErrors.push(
+        new ClientError(ClientErrorCode.PLAYER_CANNOT_BE_DELETED),
+      );
+      return new GenericResponse<null>(
+        new HttpStatus(HttpStatusCode.CONFLICT),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    await this.myPlayerProvider.deleteMyPlayer(participantId);
+    return new GenericResponse<void>(
+      new HttpStatus(HttpStatusCode.NO_CONTENT),
+      null,
+      clientErrors,
+      null,
       null,
     );
   }

@@ -1,4 +1,5 @@
 import { LeagueState } from "../../../../core/enums/leagueState";
+import { PlayerState } from "../../../../core/enums/playerState";
 import {
   EMAIL_MAX_LENGTH,
   EMAIL_MIN_LENGTH,
@@ -85,19 +86,19 @@ export enum ClientErrorCode {
   INVALID_PARAMETER_$MY_LEAGUE_ID = 70801,
   NO_LEAGUE_FOUND_IN_MY_LEAGUES = 70802,
   LEAGUE_CANNOT_BE_EDITED = 70803,
-  FORBIDDEN_ACCESS_TO_LEAGUE = 70804,
-  LEAGUE_CANNOT_BE_DELETED = 70805,
-  INVALID_LEAGUE_NAME_LENGTH = 70806,
-  INVALID_LEAGUE_PRIZE_VALUE = 70807,
-  INVALID_LEAGUE_DESCRIPTION_LENGTH = 70808,
-  INVALID_LEAGUE_LOGO_PATH_CONTENT = 70809,
+  LEAGUE_CANNOT_BE_DELETED = 70804,
+  INVALID_LEAGUE_NAME_LENGTH = 70805,
+  INVALID_LEAGUE_PRIZE_VALUE = 70806,
+  INVALID_LEAGUE_DESCRIPTION_LENGTH = 70807,
+  INVALID_LEAGUE_LOGO_PATH_CONTENT = 70808,
   // - - 709XX: /my/player errors
   PARTICIPANT_HAS_NO_PLAYER = 70900,
   PARTICIPANT_HAS_A_PLAYER = 70901,
-  INVALID_PLAYER_FULL_NAME_LENGTH = 70902,
-  INVALID_DATE_CONTENT = 70903,
-  INVALID_BIOGRAPHY_LENGTH = 70904,
-  INVALID_PLAYER_IMAGE_PATH_CONTENT = 70905,
+  PLAYER_CANNOT_BE_DELETED = 70902,
+  INVALID_PLAYER_FULL_NAME_LENGTH = 70903,
+  INVALID_DATE_CONTENT = 70904,
+  INVALID_BIOGRAPHY_LENGTH = 70905,
+  INVALID_PLAYER_IMAGE_PATH_CONTENT = 70906,
   // - - 710XX: /my/club errors
   PARTICIPANT_HAS_NO_CLUB = 71000,
   PARTICIPANT_HAS_A_CLUB = 71001,
@@ -176,11 +177,9 @@ export const clientErrorMessages: ClientErrorMessages = {
   [ClientErrorCode.INVALID_PARAMETER_$MY_LEAGUE_ID]:
     "Provided parameter 'leagueId' was invalid.",
   [ClientErrorCode.NO_LEAGUE_FOUND_IN_MY_LEAGUES]:
-    "No league was found with the provided id.",
-  [ClientErrorCode.LEAGUE_CANNOT_BE_EDITED]: `The league cannot be edited. It must be in states '[${LeagueState.NOT_STARTED}]' to be deleted.`,
-  [ClientErrorCode.FORBIDDEN_ACCESS_TO_LEAGUE]:
-    "The league is not owned by the requesting organizer.",
-  [ClientErrorCode.LEAGUE_CANNOT_BE_DELETED]: `The league cannot be deleted. It must be in states '[${LeagueState.NOT_STARTED}]' to be deleted.`,
+    "The organizer has no league with the provided id.",
+  [ClientErrorCode.LEAGUE_CANNOT_BE_EDITED]: `The league cannot be edited. Its state must be one of '[${LeagueState.NOT_STARTED}]' to be editable.`,
+  [ClientErrorCode.LEAGUE_CANNOT_BE_DELETED]: `The league cannot be deleted. Its state must be one of '[${LeagueState.NOT_STARTED}]' to be deletable.`,
   [ClientErrorCode.INVALID_LEAGUE_NAME_LENGTH]: `Provided name wasn't in the length range of ${LEAGUE_NAME_MIN_LENGTH} to ${LEAGUE_NAME_MAX_LENGTH}.`,
   [ClientErrorCode.INVALID_LEAGUE_PRIZE_VALUE]:
     "Provided prize value was invalid. Must be a safe positive integer.",
@@ -191,6 +190,7 @@ export const clientErrorMessages: ClientErrorMessages = {
     "The participant has no player. A player must be created first.",
   [ClientErrorCode.PARTICIPANT_HAS_A_PLAYER]:
     "The participant already has a player. The player must be deleted first.",
+  [ClientErrorCode.PLAYER_CANNOT_BE_DELETED]: `The player cannot be deleted. Its state must be one of '[${PlayerState.AVAILABLE}]' to be deletable.`,
   [ClientErrorCode.INVALID_PLAYER_FULL_NAME_LENGTH]: `Provided full name wasn't in the length range of ${PLAYER_FULL_NAME_MIN_LENGTH} to ${PLAYER_FULL_NAME_MAX_LENGTH}.`,
   [ClientErrorCode.INVALID_DATE_CONTENT]:
     "Provided date was not in the valid format. Must be YYYY-MM-DD.",
@@ -203,8 +203,7 @@ export const clientErrorMessages: ClientErrorMessages = {
     "The participant already has a club. The club must be deleted first.",
   [ClientErrorCode.PARTICIPANT_HAS_NO_PLAYER_FOR_CLUB]:
     "The participant has no player for the club. A player must be created first.",
-  [ClientErrorCode.PARTICIPANT_PLAYER_IS_NOT_AVAILABLE]:
-    "The participant's player is not available. The player must not be in a club.",
+  [ClientErrorCode.PARTICIPANT_PLAYER_IS_NOT_AVAILABLE]: `The participant's player is not available. The player's state must be one of '[${PlayerState.AVAILABLE}]' to create a club.`,
   [ClientErrorCode.INVALID_CLUB_NAME_LENGTH]: `Provided name wasn't in the length range of ${CLUB_NAME_MIN_LENGTH} to ${CLUB_NAME_MAX_LENGTH}.`,
   [ClientErrorCode.INVALID_DESCRIPTION_LENGTH]: `Provided description wasn't in the length range of ${CLUB_DESCRIPTION_MIN_LENGTH} to ${CLUB_DESCRIPTION_MAX_LENGTH}.`,
   [ClientErrorCode.INVALID_CLUB_LOGO_PATH_CONTENT]:

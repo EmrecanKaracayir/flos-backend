@@ -10,7 +10,7 @@ import { ClubModel } from "../models/ClubModel";
 
 export class ClubsProvider implements IClubsProvider {
   public async getClubModels(): Promise<IClubModel[]> {
-    const clubRes: QueryResult = await pool.query(ClubsQueries.GET_CLUB_MODELS);
+    const clubRes: QueryResult = await pool.query(ClubsQueries.GET_CLUBS);
     const clubRecs: unknown[] = clubRes.rows;
     if (!clubRecs) {
       return [];
@@ -22,10 +22,9 @@ export class ClubsProvider implements IClubsProvider {
   }
 
   public async getClubModelById(clubId: number): Promise<IClubModel | null> {
-    const clubRes: QueryResult = await pool.query(
-      ClubsQueries.GET_CLUB_MODEL_BY_$CID,
-      [clubId],
-    );
+    const clubRes: QueryResult = await pool.query(ClubsQueries.GET_CLUB_$CLID, [
+      clubId,
+    ]);
     const clubRec: unknown = clubRes.rows[0];
     if (!clubRec) {
       return null;

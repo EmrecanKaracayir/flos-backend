@@ -24,5 +24,13 @@ export class MyPlayerRoute implements IRoute {
       this.path,
       this.myPlayerController.postMyPlayer.bind(this.myPlayerController),
     );
+    this.router.put(
+      this.path,
+      this.myPlayerController.putMyPlayer.bind(this.myPlayerController),
+    );
+    this.router.delete(
+      this.path,
+      this.myPlayerController.deleteMyPlayer.bind(this.myPlayerController),
+    );
   }
 }
