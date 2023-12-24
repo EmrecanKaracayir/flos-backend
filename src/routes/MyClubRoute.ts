@@ -24,5 +24,13 @@ export class MyClubRoute implements IRoute {
       this.path,
       this.myClubController.postMyClub.bind(this.myClubController),
     );
+    this.router.put(
+      this.path,
+      this.myClubController.putMyClub.bind(this.myClubController),
+    );
+    this.router.delete(
+      this.path,
+      this.myClubController.deleteMyClub.bind(this.myClubController),
+    );
   }
 }

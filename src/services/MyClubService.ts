@@ -1,3 +1,4 @@
+import { ClubState } from "../core/enums/clubState";
 import { PlayerState } from "../core/enums/playerState";
 import {
   CLUB_DESCRIPTION_MAX_LENGTH,
@@ -95,7 +96,7 @@ export class MyClubService implements IMyClubService {
       );
     }
     if (
-      !(await this.myClubProvider.doesMyPlayerInStates(participantId, [
+      !(await this.myClubProvider.doesMyPlayerInState(participantId, [
         PlayerState.AVAILABLE,
       ]))
     ) {
@@ -132,6 +133,97 @@ export class MyClubService implements IMyClubService {
       null,
       clientErrors,
       MyClubResData.fromModel(model),
+      null,
+    );
+  }
+
+  public async putMyClub(
+    participantId: number,
+    dto: IMyClubReqDto,
+    clientErrors: IClientError[],
+  ): Promise<IGenericResponse<IMyClubResData | null>> {
+    if (
+      !(await this.myClubProvider.doesMyClubExist(participantId)).recordExists
+    ) {
+      clientErrors.push(
+        new ClientError(ClientErrorCode.PARTICIPANT_HAS_NO_CLUB),
+      );
+      return new GenericResponse<null>(
+        new HttpStatus(HttpStatusCode.NOT_FOUND),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    this.validateFields(dto.name, dto.description, dto.logoPath, clientErrors);
+    if (clientErrors.length > 0) {
+      return new GenericResponse<null>(
+        new HttpStatus(HttpStatusCode.BAD_REQUEST),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    clientErrors = [];
+    const model: IMyClubModel = await this.myClubProvider.updateMyClub(
+      participantId,
+      dto.name,
+      dto.description,
+      dto.logoPath,
+    );
+    return new GenericResponse<IMyClubResData>(
+      new HttpStatus(HttpStatusCode.OK),
+      null,
+      clientErrors,
+      MyClubResData.fromModel(model),
+      null,
+    );
+  }
+
+  public async deleteMyClub(
+    participantId: number,
+    clientErrors: IClientError[],
+  ): Promise<IGenericResponse<void | null>> {
+    if (
+      !(await this.myClubProvider.doesMyClubExist(participantId)).recordExists
+    ) {
+      clientErrors.push(
+        new ClientError(ClientErrorCode.PARTICIPANT_HAS_NO_CLUB),
+      );
+      return new GenericResponse<null>(
+        new HttpStatus(HttpStatusCode.NOT_FOUND),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    if (
+      !(await this.myClubProvider.doesMyClubInState(participantId, [
+        ClubState.NOT_READY,
+        ClubState.READY,
+        ClubState.SIGNED,
+      ]))
+    ) {
+      clientErrors.push(
+        new ClientError(ClientErrorCode.CLUB_CANNOT_BE_DELETED),
+      );
+      return new GenericResponse<null>(
+        new HttpStatus(HttpStatusCode.CONFLICT),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    await this.myClubProvider.deleteMyClub(participantId);
+    return new GenericResponse<void>(
+      new HttpStatus(HttpStatusCode.NO_CONTENT),
+      null,
+      clientErrors,
+      null,
       null,
     );
   }

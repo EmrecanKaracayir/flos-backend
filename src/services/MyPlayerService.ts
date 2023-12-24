@@ -188,7 +188,7 @@ export class MyPlayerService implements IMyPlayerService {
       );
     }
     if (
-      !(await this.myPlayerProvider.doesMyPlayerInStates(participantId, [
+      !(await this.myPlayerProvider.doesMyPlayerInState(participantId, [
         PlayerState.AVAILABLE,
       ]))
     ) {

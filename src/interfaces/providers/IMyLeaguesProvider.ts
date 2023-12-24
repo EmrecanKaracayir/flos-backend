@@ -5,7 +5,7 @@ import { IRecordExistsModel } from "../models/common/IRecordExistsModel";
 export interface IMyLeaguesProvider {
   getMyLeagueModels: (organizerId: number) => Promise<IMyLeagueModel[]>;
 
-  createLeague: (
+  createMyLeague: (
     organizerId: number,
     name: string,
     prize: number,
@@ -23,12 +23,12 @@ export interface IMyLeaguesProvider {
     leagueId: number,
   ) => Promise<IRecordExistsModel>;
 
-  doesLeagueByIdInStates: (
+  doesMyLeagueByIdInState: (
     leagueId: number,
     allowedLeagueStates: LeagueState[],
   ) => Promise<boolean>;
 
-  updateLeague: (
+  updateMyLeague: (
     organizerId: number,
     leagueId: number,
     name: string,
@@ -37,7 +37,7 @@ export interface IMyLeaguesProvider {
     logoPath: string,
   ) => Promise<IMyLeagueModel>;
 
-  deleteLeague: (leagueId: number) => Promise<void>;
+  deleteMyLeague: (leagueId: number) => Promise<void>;
 }
 
 export enum MyLeaguesQueries {
@@ -45,8 +45,8 @@ export enum MyLeaguesQueries {
   CREATE_LEAGUE_$OID_$NAME_$PRIZE_$DESC_$LPATH = `INSERT INTO "League" ("organizerId", name, prize, description, "logoPath") VALUES ($1, $2, $3, $4, $5) RETURNING "leagueId"`,
   GET_MY_LEAGUE_$ORID_$LGID = `SELECT * FROM "MyLeagueView" WHERE "organizerId" = $1 AND "leagueId" = $2`,
   DOES_MY_LEAGUE_EXIST_$ORID_$LGID = `SELECT EXISTS (SELECT * FROM "League" WHERE "organizerId" = $1 AND "leagueId" = $2) AS "recordExists"`,
-  GET_LEAGUE_STATE_$LGID = `SELECT state FROM "League" WHERE "leagueId" = $1`,
+  GET_MY_LEAGUE_STATE_$LGID = `SELECT state FROM "MyLeagueView" WHERE "leagueId" = $1`,
   UPDATE_LEAGUE_$LGID_$NAME_$PRIZE_$DESC_$LPATH = `UPDATE "League" SET name = $2, prize = $3, description = $4, "logoPath" = $5 WHERE "leagueId" = $1`,
-  FREE_CLUBS_FROM_LEAGUE_$LGID = `UPDATE "Club" SET "leagueId" = NULL WHERE "leagueId" = $1`,
+  FREE_LEAGUE_FROM_CLUBS_$LGID = `UPDATE "Club" SET "leagueId" = NULL WHERE "leagueId" = $1`,
   DELETE_LEAGUE_$LGID = `DELETE FROM "League" WHERE "leagueId" = $1`,
 }

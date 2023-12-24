@@ -122,4 +122,100 @@ export class MyClubController implements IMyClubController {
       return next(error);
     }
   }
+
+  public async putMyClub(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<Response | void> {
+    // Response declaration
+    let httpStatus: IHttpStatus;
+    const clientErrors: Array<IClientError> = [];
+    // Logic
+    try {
+      if (!MyClubReqDto.isValidDto(req.body)) {
+        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        clientErrors.push(
+          new ClientError(ClientErrorCode.INVALID_REQUEST_BODY),
+        );
+        return res
+          .status(httpStatus.code)
+          .send(
+            new GenericResponse<null>(
+              httpStatus,
+              null,
+              clientErrors,
+              null,
+              null,
+            ),
+          );
+      }
+      // Parse token (Has to be valid, otherwise it would not have reached this point)
+      const authPayload: AuthPayload = AuthHelper.verifyToken(
+        req.headers.authorization!.split(" ")[1],
+      );
+      // Hand over to service
+      const serviceRes: IGenericResponse<IMyClubResData | null> =
+        await this.myClubService.putMyClub(
+          authPayload.userId,
+          req.body as IMyClubReqDto,
+          clientErrors,
+        );
+      if (!serviceRes.httpStatus.isSuccess()) {
+        // Respond without token
+        return res.status(serviceRes.httpStatus.code).send(serviceRes);
+      }
+      // Respond with token
+      return res
+        .status(serviceRes.httpStatus.code)
+        .send(
+          new GenericResponse<IMyClubResData>(
+            serviceRes.httpStatus,
+            serviceRes.serverError,
+            serviceRes.clientErrors,
+            serviceRes.data,
+            AuthHelper.generateToken(authPayload),
+          ),
+        );
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  public async deleteMyClub(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<Response | void> {
+    // Response declaration
+    const clientErrors: Array<IClientError> = [];
+    // Logic
+    try {
+      // Parse token (Has to be valid, otherwise it would not have reached this point)
+      const authPayload: AuthPayload = AuthHelper.verifyToken(
+        req.headers.authorization!.split(" ")[1],
+      );
+      // Hand over to service
+      const serviceRes: IGenericResponse<void> =
+        await this.myClubService.deleteMyClub(authPayload.userId, clientErrors);
+      if (!serviceRes.httpStatus.isSuccess()) {
+        // Respond without token
+        return res.status(serviceRes.httpStatus.code).send(serviceRes);
+      }
+      // Respond with token
+      return res
+        .status(serviceRes.httpStatus.code)
+        .send(
+          new GenericResponse<void>(
+            serviceRes.httpStatus,
+            serviceRes.serverError,
+            serviceRes.clientErrors,
+            null,
+            AuthHelper.generateToken(authPayload),
+          ),
+        );
+    } catch (error) {
+      return next(error);
+    }
+  }
 }

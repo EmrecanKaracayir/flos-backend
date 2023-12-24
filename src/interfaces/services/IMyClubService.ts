@@ -17,4 +17,15 @@ export interface IMyClubService {
     dto: IMyClubReqDto,
     clientErrors: IClientError[],
   ) => Promise<IGenericResponse<IMyClubResData | null>>;
+
+  putMyClub: (
+    participantId: number,
+    dto: IMyClubReqDto,
+    clientErrors: IClientError[],
+  ) => Promise<IGenericResponse<IMyClubResData | null>>;
+
+  deleteMyClub: (
+    participantId: number,
+    clientErrors: IClientError[],
+  ) => Promise<IGenericResponse<void | null>>;
 }

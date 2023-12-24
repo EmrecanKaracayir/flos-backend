@@ -35,7 +35,7 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
     return myLeagueRecs as IMyLeagueModel[];
   }
 
-  public async createLeague(
+  public async createMyLeague(
     organizerId: number,
     name: string,
     prize: number,
@@ -113,12 +113,12 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
     return reRec as IRecordExistsModel;
   }
 
-  public async doesLeagueByIdInStates(
+  public async doesMyLeagueByIdInState(
     leagueId: number,
     allowedLeagueStates: LeagueState[],
   ): Promise<boolean> {
     const leagueStateRes: QueryResult = await pool.query(
-      MyLeaguesQueries.GET_LEAGUE_STATE_$LGID,
+      MyLeaguesQueries.GET_MY_LEAGUE_STATE_$LGID,
       [leagueId],
     );
     const leagueStateRec: unknown = leagueStateRes.rows[0];
@@ -133,7 +133,7 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
     );
   }
 
-  public async updateLeague(
+  public async updateMyLeague(
     organizerId: number,
     leagueId: number,
     name: string,
@@ -169,11 +169,11 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
     }
   }
 
-  public async deleteLeague(leagueId: number): Promise<void> {
+  public async deleteMyLeague(leagueId: number): Promise<void> {
     await pool.query("BEGIN");
     try {
       // Free clubs from league
-      await pool.query(MyLeaguesQueries.FREE_CLUBS_FROM_LEAGUE_$LGID, [
+      await pool.query(MyLeaguesQueries.FREE_LEAGUE_FROM_CLUBS_$LGID, [
         leagueId,
       ]);
       // Delete league

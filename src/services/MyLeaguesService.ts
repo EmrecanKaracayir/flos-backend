@@ -71,7 +71,7 @@ export class MyLeaguesService implements IMyLeaguesService {
       );
     }
     clientErrors = [];
-    const model: IMyLeagueModel = await this.myLeaguesProvider.createLeague(
+    const model: IMyLeagueModel = await this.myLeaguesProvider.createMyLeague(
       organizerId,
       dto.name,
       dto.prize,
@@ -141,7 +141,7 @@ export class MyLeaguesService implements IMyLeaguesService {
       );
     }
     if (
-      !(await this.myLeaguesProvider.doesLeagueByIdInStates(leagueId, [
+      !(await this.myLeaguesProvider.doesMyLeagueByIdInState(leagueId, [
         LeagueState.NOT_STARTED,
       ]))
     ) {
@@ -173,7 +173,7 @@ export class MyLeaguesService implements IMyLeaguesService {
       );
     }
     clientErrors = [];
-    const model: IMyLeagueModel = await this.myLeaguesProvider.updateLeague(
+    const model: IMyLeagueModel = await this.myLeaguesProvider.updateMyLeague(
       organizerId,
       leagueId,
       dto.name,
@@ -215,7 +215,7 @@ export class MyLeaguesService implements IMyLeaguesService {
       );
     }
     if (
-      !(await this.myLeaguesProvider.doesLeagueByIdInStates(leagueId, [
+      !(await this.myLeaguesProvider.doesMyLeagueByIdInState(leagueId, [
         LeagueState.NOT_STARTED,
       ]))
     ) {
@@ -230,7 +230,7 @@ export class MyLeaguesService implements IMyLeaguesService {
         null,
       );
     }
-    await this.myLeaguesProvider.deleteLeague(leagueId);
+    await this.myLeaguesProvider.deleteMyLeague(leagueId);
     return new GenericResponse<void>(
       new HttpStatus(HttpStatusCode.NO_CONTENT),
       null,

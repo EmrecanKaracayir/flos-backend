@@ -112,7 +112,7 @@ export class MyPlayerProvider implements IMyPlayerProvider {
     try {
       // Get playerId from participant
       const playerIdRes: QueryResult = await pool.query(
-        MyPlayerQueries.GET_PLID_$PRID,
+        MyPlayerQueries.GET_MY_PLID_$PRID,
         [participantId],
       );
       const playerIdRec: unknown = playerIdRes.rows[0];
@@ -154,7 +154,7 @@ export class MyPlayerProvider implements IMyPlayerProvider {
     }
   }
 
-  public async doesMyPlayerInStates(
+  public async doesMyPlayerInState(
     participantId: number,
     allowedPlayerStates: PlayerState[],
   ): Promise<boolean> {
@@ -179,7 +179,7 @@ export class MyPlayerProvider implements IMyPlayerProvider {
     try {
       // Get playerId from participant
       const playerIdRes: QueryResult = await pool.query(
-        MyPlayerQueries.GET_PLID_$PRID,
+        MyPlayerQueries.GET_MY_PLID_$PRID,
         [participantId],
       );
       const playerIdRec: unknown = playerIdRes.rows[0];

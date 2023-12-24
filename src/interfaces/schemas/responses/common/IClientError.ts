@@ -1,3 +1,4 @@
+import { ClubState } from "../../../../core/enums/clubState";
 import { LeagueState } from "../../../../core/enums/leagueState";
 import { PlayerState } from "../../../../core/enums/playerState";
 import {
@@ -104,9 +105,10 @@ export enum ClientErrorCode {
   PARTICIPANT_HAS_A_CLUB = 71001,
   PARTICIPANT_HAS_NO_PLAYER_FOR_CLUB = 71002,
   PARTICIPANT_PLAYER_IS_NOT_AVAILABLE = 71003,
-  INVALID_CLUB_NAME_LENGTH = 71004,
-  INVALID_DESCRIPTION_LENGTH = 71005,
-  INVALID_CLUB_LOGO_PATH_CONTENT = 71006,
+  CLUB_CANNOT_BE_DELETED = 71004,
+  INVALID_CLUB_NAME_LENGTH = 71005,
+  INVALID_DESCRIPTION_LENGTH = 71006,
+  INVALID_CLUB_LOGO_PATH_CONTENT = 71007,
   // - - 799XX: /* error
   RESOURCE_NOT_FOUND = 79900,
 }
@@ -116,17 +118,25 @@ export type ClientErrorMessages = {
 };
 
 export const clientErrorMessages: ClientErrorMessages = {
+  /// NON-USER RELATED (1XXXX - 5XXXX)
+  // - 1XXXX: Contract errors
   [ClientErrorCode.INVALID_REQUEST_BODY]: "Provided request body was invalid.",
   [ClientErrorCode.MISSING_TOKEN]: "Token was missing.",
+  //
+  // USER RELATED ERRORS (6XXXX - 9XXXX)
+  // - 6XXXX: Authorization errors
   [ClientErrorCode.INVALID_TOKEN]: "Provided token was invalid.",
   [ClientErrorCode.EXPIRED_TOKEN]: "Provided token has expired.",
   [ClientErrorCode.FORBIDDEN_ACCESS]:
     "Provided role doesn't have the necessary permissions to access this resource.",
+  // - 7XXXX: Request errors
+  // - - 700XX: /login errors
   [ClientErrorCode.NO_ACCOUNT_FOUND_IN_ORGANIZERS]:
     "No organizer account was found with the provided username.",
   [ClientErrorCode.NO_ACCOUNT_FOUND_IN_PARTICIPANTS]:
     "No participant account was found with the provided username.",
   [ClientErrorCode.INCORRECT_PASSWORD]: "Provided password was incorrect.",
+  // - - 701XX: /signup errors
   [ClientErrorCode.INVALID_USERNAME_LENGTH]: `Provided username wasn't in the length range of ${USERNAME_MIN_LENGTH} to ${USERNAME_MAX_LENGTH}.`,
   [ClientErrorCode.INVALID_USERNAME_CONTENT]:
     "Provided username contained forbidden characters.",
@@ -139,39 +149,46 @@ export const clientErrorMessages: ClientErrorMessages = {
   [ClientErrorCode.INVALID_EMAIL_CONTENT]:
     "Provided email was not in the valid format. Must be a valid email address.",
   [ClientErrorCode.EMAIL_ALREADY_EXISTS]: "Provided email already exists.",
+  // - - 702XX: /referees errors
   [ClientErrorCode.MISSING_PARAMETER_$REFEREE_ID]:
     "Parameter 'refereeId' was missing.",
   [ClientErrorCode.INVALID_PARAMETER_$REFEREE_ID]:
     "Provided parameter 'refereeId' was invalid.",
   [ClientErrorCode.NO_REFEREE_FOUND_IN_REFEREES]:
     "No referee was found with the provided id.",
+  // - - 703XX: /venues errors
   [ClientErrorCode.MISSING_PARAMETER_$VENUE_ID]:
     "Parameter 'venueId' was missing.",
   [ClientErrorCode.INVALID_PARAMETER_$VENUE_ID]:
     "Provided parameter 'venueId' was invalid.",
   [ClientErrorCode.NO_VENUE_FOUND_IN_VENUES]:
     "No venue was found with the provided id.",
+  // - - 704XX: /leagues errors
   [ClientErrorCode.MISSING_PARAMETER_$LEAGUE_ID]:
     "Parameter 'leagueId' was missing.",
   [ClientErrorCode.INVALID_PARAMETER_$LEAGUE_ID]:
     "Provided parameter 'leagueId' was invalid.",
   [ClientErrorCode.NO_LEAGUE_FOUND_IN_LEAGUES]:
     "No league was found with the provided id.",
+  // - - 705XX: /clubs errors
   [ClientErrorCode.MISSING_PARAMETER_$CLUB_ID]:
     "Parameter 'clubId' was missing.",
   [ClientErrorCode.INVALID_PARAMETER_$CLUB_ID]:
     "Provided parameter 'clubId' was invalid.",
   [ClientErrorCode.NO_CLUB_FOUND_IN_CLUBS]:
     "No club was found with the provided id.",
+  // - - 706XX: /players errors
   [ClientErrorCode.MISSING_PARAMETER_$PLAYER_ID]:
     "Parameter 'playerId' was missing.",
   [ClientErrorCode.INVALID_PARAMETER_$PLAYER_ID]:
     "Provided parameter 'playerId' was invalid.",
   [ClientErrorCode.NO_PLAYER_FOUND_IN_PLAYERS]:
     "No player was found with the provided id.",
+  // - - 707XX: /search errors
   [ClientErrorCode.MISSING_QUERY_$Q]: "Query 'q' was missing.",
   [ClientErrorCode.INVALID_QUERY_$Q]: "Provided query 'q' was invalid.",
   [ClientErrorCode.INVALID_QUERY_LENGTH_$Q]: `Provided query 'q' was too short. Search query must be at least ${QUERY_MIN_LENGTH} characters long.`,
+  // - - 708XX: /my/leagues errors
   [ClientErrorCode.MISSING_PARAMETER_$MY_LEAGUE_ID]:
     "Parameter 'leagueId' was missing.",
   [ClientErrorCode.INVALID_PARAMETER_$MY_LEAGUE_ID]:
@@ -186,6 +203,7 @@ export const clientErrorMessages: ClientErrorMessages = {
   [ClientErrorCode.INVALID_LEAGUE_DESCRIPTION_LENGTH]: `Provided description wasn't in the length range of ${LEAGUE_DESCRIPTION_MIN_LENGTH} to ${LEAGUE_DESCRIPTION_MAX_LENGTH}.`,
   [ClientErrorCode.INVALID_LEAGUE_LOGO_PATH_CONTENT]:
     "Provided logo path was not in the valid format. Must be a valid URL.",
+  // - - 709XX: /my/player errors
   [ClientErrorCode.PARTICIPANT_HAS_NO_PLAYER]:
     "The participant has no player. A player must be created first.",
   [ClientErrorCode.PARTICIPANT_HAS_A_PLAYER]:
@@ -197,6 +215,7 @@ export const clientErrorMessages: ClientErrorMessages = {
   [ClientErrorCode.INVALID_BIOGRAPHY_LENGTH]: `Provided biography wasn't in the length range of ${PLAYER_BIOGRAPHY_MIN_LENGTH} to ${PLAYER_BIOGRAPHY_MAX_LENGTH}.`,
   [ClientErrorCode.INVALID_PLAYER_IMAGE_PATH_CONTENT]:
     "Provided image path was not in the valid format. Must be a valid URL.",
+  // - - 710XX: /my/club errors
   [ClientErrorCode.PARTICIPANT_HAS_NO_CLUB]:
     "The participant has no club. A club must be created first.",
   [ClientErrorCode.PARTICIPANT_HAS_A_CLUB]:
@@ -204,10 +223,12 @@ export const clientErrorMessages: ClientErrorMessages = {
   [ClientErrorCode.PARTICIPANT_HAS_NO_PLAYER_FOR_CLUB]:
     "The participant has no player for the club. A player must be created first.",
   [ClientErrorCode.PARTICIPANT_PLAYER_IS_NOT_AVAILABLE]: `The participant's player is not available. The player's state must be one of '[${PlayerState.AVAILABLE}]' to create a club.`,
+  [ClientErrorCode.CLUB_CANNOT_BE_DELETED]: `The club cannot be deleted. Its state must be one of '[${ClubState.NOT_READY}, ${ClubState.READY}, ${ClubState.SIGNED}]' to be deletable.`,
   [ClientErrorCode.INVALID_CLUB_NAME_LENGTH]: `Provided name wasn't in the length range of ${CLUB_NAME_MIN_LENGTH} to ${CLUB_NAME_MAX_LENGTH}.`,
   [ClientErrorCode.INVALID_DESCRIPTION_LENGTH]: `Provided description wasn't in the length range of ${CLUB_DESCRIPTION_MIN_LENGTH} to ${CLUB_DESCRIPTION_MAX_LENGTH}.`,
   [ClientErrorCode.INVALID_CLUB_LOGO_PATH_CONTENT]:
     "Provided logo path was not in the valid format. Must be a valid URL.",
+  // - - 799XX: /* error
   [ClientErrorCode.RESOURCE_NOT_FOUND]:
     "The requested resource couldn't be found.",
 };
