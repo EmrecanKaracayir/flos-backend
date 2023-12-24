@@ -33,7 +33,7 @@ export enum MyPlayerQueries {
   SET_PLID_IN_PARTICIPANT_$PLID_$PRID = `UPDATE "Participant" SET "playerId" = $1 WHERE "participantId" = $2`,
   GET_MY_PLID_$PRID = `SELECT "playerId" FROM "Participant" WHERE "participantId" = $1`,
   UPDATE_PLAYER_$PLID_$FNAME_$BDAY_$BIO_$IPATH = `UPDATE "Player" SET "fullName" = $2, birthday = $3, biography = $4, "imgPath" = $5 WHERE "playerId" = $1`,
-  IS_MY_PLAYER_IN_STATE_$PRID_$STATES = `SELECT EXISTS (SELECT state FROM "MyPlayerView" WHERE "participantId" = $1 AND state = ANY($2)) AS "recordExists"`,
+  IS_MY_PLAYER_IN_STATE_$PRID_$STATES = `SELECT EXISTS (SELECT state FROM "MyPlayerView" WHERE "participantId" = $1 AND state = ANY($2::"PlayerState"[])) AS "recordExists"`,
   FREE_PLAYER_FROM_PARTICIPANT_$PRID = `UPDATE "Participant" SET "playerId" = NULL WHERE "participantId" = $1`,
   DELETE_PLAYER_$PLID = `DELETE FROM "Player" WHERE "playerId" = $1`,
 }

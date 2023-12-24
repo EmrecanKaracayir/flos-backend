@@ -5,7 +5,7 @@
 -- Dumped from database version 16.1
 -- Dumped by pg_dump version 16.1
 
--- Started on 2023-12-24 06:03:29 +03
+-- Started on 2023-12-24 07:08:58 +03
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -19,11 +19,11 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 917 (class 1247 OID 16792)
--- Name: clubStateType; Type: TYPE; Schema: public; Owner: Emrecan
+-- TOC entry 929 (class 1247 OID 16792)
+-- Name: ClubState; Type: TYPE; Schema: public; Owner: Emrecan
 --
 
-CREATE TYPE public."clubStateType" AS ENUM (
+CREATE TYPE public."ClubState" AS ENUM (
     'Not ready',
     'Ready',
     'Signed',
@@ -31,41 +31,41 @@ CREATE TYPE public."clubStateType" AS ENUM (
 );
 
 
-ALTER TYPE public."clubStateType" OWNER TO "Emrecan";
+ALTER TYPE public."ClubState" OWNER TO "Emrecan";
 
 --
--- TOC entry 884 (class 1247 OID 16607)
--- Name: leagueStateType; Type: TYPE; Schema: public; Owner: Emrecan
+-- TOC entry 900 (class 1247 OID 16607)
+-- Name: LeagueState; Type: TYPE; Schema: public; Owner: Emrecan
 --
 
-CREATE TYPE public."leagueStateType" AS ENUM (
+CREATE TYPE public."LeagueState" AS ENUM (
     'Not started',
     'In progress',
     'Finished'
 );
 
 
-ALTER TYPE public."leagueStateType" OWNER TO "Emrecan";
+ALTER TYPE public."LeagueState" OWNER TO "Emrecan";
 
 --
--- TOC entry 887 (class 1247 OID 16615)
--- Name: playerStateType; Type: TYPE; Schema: public; Owner: Emrecan
+-- TOC entry 903 (class 1247 OID 16615)
+-- Name: PlayerState; Type: TYPE; Schema: public; Owner: Emrecan
 --
 
-CREATE TYPE public."playerStateType" AS ENUM (
+CREATE TYPE public."PlayerState" AS ENUM (
     'Available',
     'In a club'
 );
 
 
-ALTER TYPE public."playerStateType" OWNER TO "Emrecan";
+ALTER TYPE public."PlayerState" OWNER TO "Emrecan";
 
 --
--- TOC entry 881 (class 1247 OID 16595)
--- Name: refereeLicenseType; Type: TYPE; Schema: public; Owner: Emrecan
+-- TOC entry 906 (class 1247 OID 16595)
+-- Name: RefereeLicenseCategory; Type: TYPE; Schema: public; Owner: Emrecan
 --
 
-CREATE TYPE public."refereeLicenseType" AS ENUM (
+CREATE TYPE public."RefereeLicenseCategory" AS ENUM (
     'Category FIFA',
     'Category S',
     'Category A',
@@ -74,7 +74,7 @@ CREATE TYPE public."refereeLicenseType" AS ENUM (
 );
 
 
-ALTER TYPE public."refereeLicenseType" OWNER TO "Emrecan";
+ALTER TYPE public."RefereeLicenseCategory" OWNER TO "Emrecan";
 
 SET default_tablespace = '';
 
@@ -109,7 +109,7 @@ CREATE TABLE public."League" (
     prize integer NOT NULL,
     description character varying(2048) NOT NULL,
     "logoPath" character varying(2048) NOT NULL,
-    state public."leagueStateType" DEFAULT 'Not started'::public."leagueStateType" NOT NULL
+    state public."LeagueState" DEFAULT 'Not started'::public."LeagueState" NOT NULL
 );
 
 
@@ -160,10 +160,10 @@ CREATE VIEW public."ClubView" AS
  SELECT "Club"."clubId",
     "Club".name,
         CASE
-            WHEN (("Club"."leagueId" IS NULL) AND ("playerByClub".count > 7)) THEN 'Ready'::public."clubStateType"
-            WHEN (("Club"."leagueId" IS NULL) AND ("playerByClub".count < 7)) THEN 'Not ready'::public."clubStateType"
-            WHEN (("Club"."leagueId" IS NOT NULL) AND ("League".state = 'Not started'::public."leagueStateType")) THEN 'Signed'::public."clubStateType"
-            ELSE 'In a league'::public."clubStateType"
+            WHEN (("Club"."leagueId" IS NULL) AND ("playerByClub".count > 7)) THEN 'Ready'::public."ClubState"
+            WHEN (("Club"."leagueId" IS NULL) AND ("playerByClub".count < 7)) THEN 'Not ready'::public."ClubState"
+            WHEN (("Club"."leagueId" IS NOT NULL) AND ("League".state = 'Not started'::public."LeagueState")) THEN 'Signed'::public."ClubState"
+            ELSE 'In a league'::public."ClubState"
         END AS state,
     "playerByClub".count AS "playerCount",
     "Club"."cupCount",
@@ -345,10 +345,10 @@ CREATE VIEW public."MyClubView" AS
     "Participant"."participantId",
     "Club".name,
         CASE
-            WHEN (("Club"."leagueId" IS NULL) AND ("playerByClub".count > 7)) THEN 'Ready'::public."clubStateType"
-            WHEN (("Club"."leagueId" IS NULL) AND ("playerByClub".count < 7)) THEN 'Not ready'::public."clubStateType"
-            WHEN (("Club"."leagueId" IS NOT NULL) AND ("League".state = 'Not started'::public."leagueStateType")) THEN 'Signed'::public."clubStateType"
-            ELSE 'In a league'::public."clubStateType"
+            WHEN (("Club"."leagueId" IS NULL) AND ("playerByClub".count > 7)) THEN 'Ready'::public."ClubState"
+            WHEN (("Club"."leagueId" IS NULL) AND ("playerByClub".count < 7)) THEN 'Not ready'::public."ClubState"
+            WHEN (("Club"."leagueId" IS NOT NULL) AND ("League".state = 'Not started'::public."LeagueState")) THEN 'Signed'::public."ClubState"
+            ELSE 'In a league'::public."ClubState"
         END AS state,
     "playerByClub".count AS "playerCount",
     "Club"."cupCount",
@@ -403,8 +403,8 @@ CREATE VIEW public."MyPlayerView" AS
     "Player".biography,
     "Player"."imgPath",
         CASE
-            WHEN ("Player"."clubId" IS NULL) THEN 'Available'::public."playerStateType"
-            ELSE 'In a club'::public."playerStateType"
+            WHEN ("Player"."clubId" IS NULL) THEN 'Available'::public."PlayerState"
+            ELSE 'In a club'::public."PlayerState"
         END AS state
    FROM ((public."Player"
      JOIN public."Participant" ON (("Player"."playerId" = "Participant"."playerId")))
@@ -494,8 +494,8 @@ CREATE VIEW public."PlayerView" AS
     "Player".biography,
     "Player"."imgPath",
         CASE
-            WHEN ("Player"."clubId" IS NULL) THEN 'Available'::public."playerStateType"
-            ELSE 'In a club'::public."playerStateType"
+            WHEN ("Player"."clubId" IS NULL) THEN 'Available'::public."PlayerState"
+            ELSE 'In a club'::public."PlayerState"
         END AS state
    FROM ((public."Player"
      JOIN public."Participant" ON (("Player"."playerId" = "Participant"."playerId")))
@@ -540,7 +540,7 @@ CREATE TABLE public."Referee" (
     birthday date NOT NULL,
     email character varying(254) NOT NULL,
     "imgPath" character varying(2048) NOT NULL,
-    "licenseType" public."refereeLicenseType" NOT NULL
+    "licenseType" public."RefereeLicenseCategory" NOT NULL
 );
 
 
@@ -758,6 +758,7 @@ COPY public."Fixture" ("fixtureId", "leagueId", "homeClubId", "awayClubId", "hom
 --
 
 COPY public."League" ("leagueId", "organizerId", name, prize, description, "logoPath", state) FROM stdin;
+9	18	Test League 1	24000000	This is a test league 1 from organizer with id 18 that is created for test purposes.	https://www.getautismactive.com/wp-content/uploads/2021/01/Test-Logo-Circle-black-transparent.png	Not started
 \.
 
 
@@ -868,7 +869,7 @@ SELECT pg_catalog.setval('public."Fixture_fixtureId_seq"', 1, false);
 -- Name: League_leagueId_seq; Type: SEQUENCE SET; Schema: public; Owner: Emrecan
 --
 
-SELECT pg_catalog.setval('public."League_leagueId_seq"', 8, true);
+SELECT pg_catalog.setval('public."League_leagueId_seq"', 9, true);
 
 
 --
@@ -1177,7 +1178,7 @@ ALTER TABLE ONLY public."Statistics"
     ADD CONSTRAINT statistics_league_fk FOREIGN KEY ("leagueId") REFERENCES public."League"("leagueId");
 
 
--- Completed on 2023-12-24 06:03:30 +03
+-- Completed on 2023-12-24 07:08:58 +03
 
 --
 -- PostgreSQL database dump complete
