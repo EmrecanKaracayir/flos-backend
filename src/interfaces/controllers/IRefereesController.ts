@@ -5,7 +5,7 @@ export interface IRefereesController {
   readonly refereesService: IRefereesService;
 
   getReferees: (
-    req: Request,
+    _: Request,
     res: Response,
     next: NextFunction,
   ) => Promise<Response | void>;

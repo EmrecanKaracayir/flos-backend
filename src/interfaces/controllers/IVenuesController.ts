@@ -5,7 +5,7 @@ export interface IVenuesController {
   readonly venuesService: IVenuesService;
 
   getVenues: (
-    req: Request,
+    _: Request,
     res: Response,
     next: NextFunction,
   ) => Promise<Response | void>;

@@ -1,13 +1,10 @@
 import { IOrganizerModel } from "../models/IOrganizerModel";
 import { IParticipantModel } from "../models/IParticipantModel";
-import { IRecordExistsModel } from "../models/common/IRecordExistsModel";
 
 export interface ISignupProvider {
-  doesOrganizerByUsernameExist: (
-    username: string,
-  ) => Promise<IRecordExistsModel>;
+  doesOrganizerByUsernameExist: (username: string) => Promise<boolean>;
 
-  doesOrganizerByEmailExist: (email: string) => Promise<IRecordExistsModel>;
+  doesOrganizerByEmailExist: (email: string) => Promise<boolean>;
 
   createOrganizer: (
     username: string,
@@ -15,13 +12,9 @@ export interface ISignupProvider {
     email: string,
   ) => Promise<IOrganizerModel>;
 
-  doesParticipantByUsernameExist: (
-    username: string,
-  ) => Promise<IRecordExistsModel>;
+  doesParticipantByUsernameExist: (username: string) => Promise<boolean>;
 
-  doesParticipantByEmailExist: (
-    username: string,
-  ) => Promise<IRecordExistsModel>;
+  doesParticipantByEmailExist: (username: string) => Promise<boolean>;
 
   createParticipant: (
     username: string,

@@ -1,12 +1,10 @@
 import { QueryResult } from "pg";
 import { pool } from "../core/database/pool";
-import { ClubState } from "../core/enums/clubState";
-import { PlayerState } from "../core/enums/playerState";
+import { DELETABLE_CLUB_STATES } from "../core/rules/clubRules";
+import { AVAILABLE_PLAYER_STATES } from "../core/rules/playerRules";
 import { IMyClubModel } from "../interfaces/models/IMyClubModel";
 import { IClubIdModel } from "../interfaces/models/common/IClubIdModel";
-import { IClubStateModel } from "../interfaces/models/common/IClubStateModel";
 import { IPlayerIdModel } from "../interfaces/models/common/IPlayerIdModel";
-import { IPlayerStateModel } from "../interfaces/models/common/IPlayerStateModel";
 import { IRecordExistsModel } from "../interfaces/models/common/IRecordExistsModel";
 import {
   IMyClubProvider,
@@ -18,9 +16,7 @@ import {
 } from "../interfaces/schemas/responses/common/IServerError";
 import { MyClubModel } from "../models/MyClubModel";
 import { ClubIdModel } from "../models/common/ClubIdModel";
-import { ClubStateModel } from "../models/common/ClubStateModel";
 import { PlayerIdModel } from "../models/common/PlayerIdModel";
-import { PlayerStateModel } from "../models/common/PlayerStateModel";
 import { RecordExistsModel } from "../models/common/RecordExistsModel";
 
 export class MyClubProvider implements IMyClubProvider {
@@ -41,9 +37,7 @@ export class MyClubProvider implements IMyClubProvider {
     return myClubRec as IMyClubModel;
   }
 
-  public async doesMyClubExist(
-    participantId: number,
-  ): Promise<IRecordExistsModel> {
+  public async doesMyClubExist(participantId: number): Promise<boolean> {
     const reRes: QueryResult = await pool.query(
       MyClubQueries.DOES_MY_CLUB_EXIST_$PRID,
       [participantId],
@@ -55,12 +49,10 @@ export class MyClubProvider implements IMyClubProvider {
     if (!RecordExistsModel.isValidModel(reRec)) {
       throw new ModelMismatchError(reRec);
     }
-    return reRec as IRecordExistsModel;
+    return (reRec as IRecordExistsModel).recordExists;
   }
 
-  public async doesMyPlayerExist(
-    participantId: number,
-  ): Promise<IRecordExistsModel> {
+  public async doesMyPlayerExist(participantId: number): Promise<boolean> {
     const reRes: QueryResult = await pool.query(
       MyClubQueries.DOES_MY_PLAYER_EXIST_$PRID,
       [participantId],
@@ -72,27 +64,22 @@ export class MyClubProvider implements IMyClubProvider {
     if (!RecordExistsModel.isValidModel(reRec)) {
       throw new ModelMismatchError(reRec);
     }
-    return reRec as IRecordExistsModel;
+    return (reRec as IRecordExistsModel).recordExists;
   }
 
-  public async doesMyPlayerInState(
-    participantId: number,
-    allowedPlayerStates: PlayerState[],
-  ): Promise<boolean> {
-    const playerStateRes: QueryResult = await pool.query(
-      MyClubQueries.GET_MY_PLAYER_STATE_$PRID,
-      [participantId],
+  public async isMyPlayerAvailable(participantId: number): Promise<boolean> {
+    const reRes: QueryResult = await pool.query(
+      MyClubQueries.IS_MY_PLAYER_IN_STATE_$PRID_$STATES,
+      [participantId, AVAILABLE_PLAYER_STATES],
     );
-    const playerStateRec: unknown = playerStateRes.rows[0];
-    if (!playerStateRec) {
+    const reRec: unknown = reRes.rows[0];
+    if (!reRec) {
       throw new UnexpectedQueryResultError();
     }
-    if (!PlayerStateModel.isValidModel(playerStateRec)) {
-      throw new ModelMismatchError(playerStateRec);
+    if (!RecordExistsModel.isValidModel(reRec)) {
+      throw new ModelMismatchError(reRec);
     }
-    return allowedPlayerStates.includes(
-      (playerStateRec as IPlayerStateModel).state,
-    );
+    return (reRec as IRecordExistsModel).recordExists;
   }
 
   public async createMyClub(
@@ -206,22 +193,19 @@ export class MyClubProvider implements IMyClubProvider {
     }
   }
 
-  public async doesMyClubInState(
-    participantId: number,
-    allowedClubStates: ClubState[],
-  ): Promise<boolean> {
-    const clubStateRes: QueryResult = await pool.query(
-      MyClubQueries.GET_MY_CLUB_STATE_$PRID,
-      [participantId],
+  public async isMyClubDeletable(participantId: number): Promise<boolean> {
+    const reRes: QueryResult = await pool.query(
+      MyClubQueries.IS_MY_CLUB_IN_STATE_$PRID_$STATES,
+      [participantId, DELETABLE_CLUB_STATES],
     );
-    const clubStateRec: unknown = clubStateRes.rows[0];
-    if (!clubStateRec) {
+    const reRec: unknown = reRes.rows[0];
+    if (!reRec) {
       throw new UnexpectedQueryResultError();
     }
-    if (!ClubStateModel.isValidModel(clubStateRec)) {
-      throw new ModelMismatchError(clubStateRec);
+    if (!RecordExistsModel.isValidModel(reRec)) {
+      throw new ModelMismatchError(reRec);
     }
-    return allowedClubStates.includes((clubStateRec as IClubStateModel).state);
+    return (reRec as IRecordExistsModel).recordExists;
   }
 
   public async deleteMyClub(participantId: number): Promise<void> {

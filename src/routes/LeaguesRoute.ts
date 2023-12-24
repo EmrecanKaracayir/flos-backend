@@ -5,23 +5,22 @@ import { IRoute } from "../interfaces/routes/IRoute";
 
 export class LeaguesRoute implements IRoute {
   public readonly router: Router;
-  private readonly path: string;
+  public static readonly path: string = "leagues";
   private readonly leaguesController: ILeaguesController;
 
   constructor() {
     this.router = Router();
-    this.path = "/";
     this.leaguesController = new LeaguesController();
     this.initializeRoutes();
   }
 
   private initializeRoutes(): void {
     this.router.get(
-      this.path,
+      "/",
       this.leaguesController.getLeagues.bind(this.leaguesController),
     );
     this.router.get(
-      `${this.path}:leagueId`,
+      "/:leagueId",
       this.leaguesController.getLeagues$leagueId.bind(this.leaguesController),
     );
   }

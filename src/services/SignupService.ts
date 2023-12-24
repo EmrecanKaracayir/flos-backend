@@ -60,17 +60,12 @@ export class SignupService implements ISignupService {
       );
     }
     clientErrors = [];
-    if (
-      (await this.signupProvider.doesOrganizerByUsernameExist(username))
-        .recordExists
-    ) {
+    if (await this.signupProvider.doesOrganizerByUsernameExist(username)) {
       clientErrors.push(
         new ClientError(ClientErrorCode.USERNAME_ALREADY_EXISTS),
       );
     }
-    if (
-      (await this.signupProvider.doesOrganizerByEmailExist(email)).recordExists
-    ) {
+    if (await this.signupProvider.doesOrganizerByEmailExist(email)) {
       clientErrors.push(new ClientError(ClientErrorCode.EMAIL_ALREADY_EXISTS));
     }
     if (clientErrors.length > 0) {
@@ -114,18 +109,12 @@ export class SignupService implements ISignupService {
         null,
       );
     }
-    if (
-      (await this.signupProvider.doesParticipantByUsernameExist(username))
-        .recordExists
-    ) {
+    if (await this.signupProvider.doesParticipantByUsernameExist(username)) {
       clientErrors.push(
         new ClientError(ClientErrorCode.USERNAME_ALREADY_EXISTS),
       );
     }
-    if (
-      (await this.signupProvider.doesParticipantByEmailExist(email))
-        .recordExists
-    ) {
+    if (await this.signupProvider.doesParticipantByEmailExist(email)) {
       clientErrors.push(new ClientError(ClientErrorCode.EMAIL_ALREADY_EXISTS));
     }
     if (clientErrors.length > 0) {

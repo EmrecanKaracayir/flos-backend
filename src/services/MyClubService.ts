@@ -1,5 +1,3 @@
-import { ClubState } from "../core/enums/clubState";
-import { PlayerState } from "../core/enums/playerState";
 import {
   CLUB_DESCRIPTION_MAX_LENGTH,
   CLUB_DESCRIPTION_MIN_LENGTH,
@@ -67,9 +65,7 @@ export class MyClubService implements IMyClubService {
     dto: IMyClubReqDto,
     clientErrors: IClientError[],
   ): Promise<IGenericResponse<IMyClubResData | null>> {
-    if (
-      (await this.myClubProvider.doesMyClubExist(participantId)).recordExists
-    ) {
+    if (await this.myClubProvider.doesMyClubExist(participantId)) {
       clientErrors.push(
         new ClientError(ClientErrorCode.PARTICIPANT_HAS_A_CLUB),
       );
@@ -81,9 +77,7 @@ export class MyClubService implements IMyClubService {
         null,
       );
     }
-    if (
-      !(await this.myClubProvider.doesMyPlayerExist(participantId)).recordExists
-    ) {
+    if (!(await this.myClubProvider.doesMyPlayerExist(participantId))) {
       clientErrors.push(
         new ClientError(ClientErrorCode.PARTICIPANT_HAS_NO_PLAYER_FOR_CLUB),
       );
@@ -95,11 +89,7 @@ export class MyClubService implements IMyClubService {
         null,
       );
     }
-    if (
-      !(await this.myClubProvider.doesMyPlayerInState(participantId, [
-        PlayerState.AVAILABLE,
-      ]))
-    ) {
+    if (!(await this.myClubProvider.isMyPlayerAvailable(participantId))) {
       clientErrors.push(
         new ClientError(ClientErrorCode.PARTICIPANT_PLAYER_IS_NOT_AVAILABLE),
       );
@@ -142,9 +132,7 @@ export class MyClubService implements IMyClubService {
     dto: IMyClubReqDto,
     clientErrors: IClientError[],
   ): Promise<IGenericResponse<IMyClubResData | null>> {
-    if (
-      !(await this.myClubProvider.doesMyClubExist(participantId)).recordExists
-    ) {
+    if (!(await this.myClubProvider.doesMyClubExist(participantId))) {
       clientErrors.push(
         new ClientError(ClientErrorCode.PARTICIPANT_HAS_NO_CLUB),
       );
@@ -186,9 +174,7 @@ export class MyClubService implements IMyClubService {
     participantId: number,
     clientErrors: IClientError[],
   ): Promise<IGenericResponse<void | null>> {
-    if (
-      !(await this.myClubProvider.doesMyClubExist(participantId)).recordExists
-    ) {
+    if (!(await this.myClubProvider.doesMyClubExist(participantId))) {
       clientErrors.push(
         new ClientError(ClientErrorCode.PARTICIPANT_HAS_NO_CLUB),
       );
@@ -200,13 +186,7 @@ export class MyClubService implements IMyClubService {
         null,
       );
     }
-    if (
-      !(await this.myClubProvider.doesMyClubInState(participantId, [
-        ClubState.NOT_READY,
-        ClubState.READY,
-        ClubState.SIGNED,
-      ]))
-    ) {
+    if (!(await this.myClubProvider.isMyClubDeletable(participantId))) {
       clientErrors.push(
         new ClientError(ClientErrorCode.CLUB_CANNOT_BE_DELETED),
       );

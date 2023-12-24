@@ -1,11 +1,9 @@
 import { QueryResult } from "pg";
 import { pool } from "../core/database/pool";
-import { PlayerState } from "../core/enums/playerState";
+import { DELETABLE_PLAYER_STATES } from "../core/rules/playerRules";
 import { IMyPlayerModel } from "../interfaces/models/IMyPlayerModel";
 import { IPlayerIdModel } from "../interfaces/models/common/IPlayerIdModel";
-import { IPlayerStateModel } from "../interfaces/models/common/IPlayerStateModel";
 import { IRecordExistsModel } from "../interfaces/models/common/IRecordExistsModel";
-import { MyClubQueries } from "../interfaces/providers/IMyClubProvider";
 import {
   IMyPlayerProvider,
   MyPlayerQueries,
@@ -16,7 +14,6 @@ import {
 } from "../interfaces/schemas/responses/common/IServerError";
 import { MyPlayerModel } from "../models/MyPlayerModel";
 import { PlayerIdModel } from "../models/common/PlayerIdModel";
-import { PlayerStateModel } from "../models/common/PlayerStateModel";
 import { RecordExistsModel } from "../models/common/RecordExistsModel";
 
 export class MyPlayerProvider implements IMyPlayerProvider {
@@ -37,9 +34,7 @@ export class MyPlayerProvider implements IMyPlayerProvider {
     return myPlayerRec as IMyPlayerModel;
   }
 
-  public async doesMyPlayerExist(
-    participantId: number,
-  ): Promise<IRecordExistsModel> {
+  public async doesMyPlayerExist(participantId: number): Promise<boolean> {
     const reRes: QueryResult = await pool.query(
       MyPlayerQueries.DOES_MY_PLAYER_EXIST_$PRID,
       [participantId],
@@ -51,7 +46,7 @@ export class MyPlayerProvider implements IMyPlayerProvider {
     if (!RecordExistsModel.isValidModel(reRec)) {
       throw new ModelMismatchError(reRec);
     }
-    return reRec as IRecordExistsModel;
+    return (reRec as IRecordExistsModel).recordExists;
   }
 
   public async createMyPlayer(
@@ -154,24 +149,19 @@ export class MyPlayerProvider implements IMyPlayerProvider {
     }
   }
 
-  public async doesMyPlayerInState(
-    participantId: number,
-    allowedPlayerStates: PlayerState[],
-  ): Promise<boolean> {
-    const playerStateRes: QueryResult = await pool.query(
-      MyClubQueries.GET_MY_PLAYER_STATE_$PRID,
-      [participantId],
+  public async isMyPlayerDeletable(participantId: number): Promise<boolean> {
+    const reRes: QueryResult = await pool.query(
+      MyPlayerQueries.IS_MY_PLAYER_IN_STATE_$PRID_$STATES,
+      [participantId, DELETABLE_PLAYER_STATES],
     );
-    const playerStateRec: unknown = playerStateRes.rows[0];
-    if (!playerStateRec) {
+    const reRec: unknown = reRes.rows[0];
+    if (!reRec) {
       throw new UnexpectedQueryResultError();
     }
-    if (!PlayerStateModel.isValidModel(playerStateRec)) {
-      throw new ModelMismatchError(playerStateRec);
+    if (!RecordExistsModel.isValidModel(reRec)) {
+      throw new ModelMismatchError(reRec);
     }
-    return allowedPlayerStates.includes(
-      (playerStateRec as IPlayerStateModel).state,
-    );
+    return (reRec as IRecordExistsModel).recordExists;
   }
 
   public async deleteMyPlayer(participantId: number): Promise<void> {

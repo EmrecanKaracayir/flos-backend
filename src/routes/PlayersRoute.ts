@@ -5,23 +5,22 @@ import { IRoute } from "../interfaces/routes/IRoute";
 
 export class PlayersRoute implements IRoute {
   public readonly router: Router;
-  private readonly path: string;
+  public static readonly path: string = "players";
   private readonly playersController: IPlayersController;
 
   constructor() {
     this.router = Router();
-    this.path = "/";
     this.playersController = new PlayersController();
     this.initializeRoutes();
   }
 
   private initializeRoutes(): void {
     this.router.get(
-      this.path,
+      "/",
       this.playersController.getPlayers.bind(this.playersController),
     );
     this.router.get(
-      `${this.path}:playerId`,
+      "/:playerId",
       this.playersController.getPlayers$playerId.bind(this.playersController),
     );
   }

@@ -5,19 +5,18 @@ import { IRoute } from "../interfaces/routes/IRoute";
 
 export class SearchRoute implements IRoute {
   public readonly router: Router;
-  private readonly path: string;
+  public static readonly path: string = "search";
   private readonly searchController: ISearchController;
 
   constructor() {
     this.router = Router();
-    this.path = "/";
     this.searchController = new SearchController();
     this.initializeRoutes();
   }
 
   private initializeRoutes(): void {
     this.router.get(
-      this.path,
+      "/",
       this.searchController.getSearch_.bind(this.searchController),
     );
   }

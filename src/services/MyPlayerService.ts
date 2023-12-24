@@ -1,4 +1,3 @@
-import { PlayerState } from "../core/enums/playerState";
 import { DATE_MUST_REGEX } from "../core/rules/common/dateRules";
 import { URL_MUST_REGEX } from "../core/rules/common/urlRules";
 import {
@@ -67,10 +66,7 @@ export class MyPlayerService implements IMyPlayerService {
     dto: IMyPlayerReqDto,
     clientErrors: IClientError[],
   ): Promise<IGenericResponse<IMyPlayerResData | null>> {
-    if (
-      (await this.myPlayerProvider.doesMyPlayerExist(participantId))
-        .recordExists
-    ) {
+    if (await this.myPlayerProvider.doesMyPlayerExist(participantId)) {
       clientErrors.push(
         new ClientError(ClientErrorCode.PARTICIPANT_HAS_A_PLAYER),
       );
@@ -120,10 +116,7 @@ export class MyPlayerService implements IMyPlayerService {
     dto: IMyPlayerReqDto,
     clientErrors: IClientError[],
   ): Promise<IGenericResponse<IMyPlayerResData | null>> {
-    if (
-      !(await this.myPlayerProvider.doesMyPlayerExist(participantId))
-        .recordExists
-    ) {
+    if (!(await this.myPlayerProvider.doesMyPlayerExist(participantId))) {
       clientErrors.push(
         new ClientError(ClientErrorCode.PARTICIPANT_HAS_NO_PLAYER),
       );
@@ -172,10 +165,7 @@ export class MyPlayerService implements IMyPlayerService {
     participantId: number,
     clientErrors: IClientError[],
   ): Promise<IGenericResponse<void | null>> {
-    if (
-      !(await this.myPlayerProvider.doesMyPlayerExist(participantId))
-        .recordExists
-    ) {
+    if (!(await this.myPlayerProvider.doesMyPlayerExist(participantId))) {
       clientErrors.push(
         new ClientError(ClientErrorCode.PARTICIPANT_HAS_NO_PLAYER),
       );
@@ -187,11 +177,7 @@ export class MyPlayerService implements IMyPlayerService {
         null,
       );
     }
-    if (
-      !(await this.myPlayerProvider.doesMyPlayerInState(participantId, [
-        PlayerState.AVAILABLE,
-      ]))
-    ) {
+    if (!(await this.myPlayerProvider.isMyPlayerDeletable(participantId))) {
       clientErrors.push(
         new ClientError(ClientErrorCode.PLAYER_CANNOT_BE_DELETED),
       );

@@ -8,6 +8,7 @@ import { LoggerMiddleware } from "./middlewares/LoggerMiddleware";
 import { ClubsRoute } from "./routes/ClubsRoute";
 import { LeaguesRoute } from "./routes/LeaguesRoute";
 import { LoginRoute } from "./routes/LoginRoute";
+import { MyClubRoute } from "./routes/MyClubRoute";
 import { MyLeaguesRoute } from "./routes/MyLeaguesRoute";
 import { MyPlayerRoute } from "./routes/MyPlayerRoute";
 import { PlayersRoute } from "./routes/PlayersRoute";
@@ -15,7 +16,6 @@ import { RefereesRoute } from "./routes/RefereesRoute";
 import { SearchRoute } from "./routes/SearchRoute";
 import { SignupRoute } from "./routes/SignupRoute";
 import { VenuesRoute } from "./routes/VenuesRoute";
-import { MyClubRoute } from "./routes/MyClubRoute";
 
 // App
 const app: Express = express();
@@ -29,28 +29,28 @@ app.use(express.json());
 app.use(LoggerMiddleware.log);
 
 // Routes without Authentication
-app.use(`${API_PREFIX}/login`, new LoginRoute().router);
-app.use(`${API_PREFIX}/signup`, new SignupRoute().router);
-app.use(`${API_PREFIX}/referees`, new RefereesRoute().router);
-app.use(`${API_PREFIX}/venues`, new VenuesRoute().router);
-app.use(`${API_PREFIX}/leagues`, new LeaguesRoute().router);
-app.use(`${API_PREFIX}/clubs`, new ClubsRoute().router);
-app.use(`${API_PREFIX}/players`, new PlayersRoute().router);
-app.use(`${API_PREFIX}/search`, new SearchRoute().router);
+app.use(`${API_PREFIX}/${LoginRoute.path}`, new LoginRoute().router);
+app.use(`${API_PREFIX}/${SignupRoute.path}`, new SignupRoute().router);
+app.use(`${API_PREFIX}/${RefereesRoute.path}`, new RefereesRoute().router);
+app.use(`${API_PREFIX}/${VenuesRoute.path}`, new VenuesRoute().router);
+app.use(`${API_PREFIX}/${LeaguesRoute.path}`, new LeaguesRoute().router);
+app.use(`${API_PREFIX}/${ClubsRoute.path}`, new ClubsRoute().router);
+app.use(`${API_PREFIX}/${PlayersRoute.path}`, new PlayersRoute().router);
+app.use(`${API_PREFIX}/${SearchRoute.path}`, new SearchRoute().router);
 
 // Routes with Authentication
 app.use(
-  `${API_PREFIX}/my/leagues`,
+  `${API_PREFIX}/${MyLeaguesRoute.path}`,
   AuthMiddleware.verifyAuth(["organizer"]),
   new MyLeaguesRoute().router,
 );
 app.use(
-  `${API_PREFIX}/my/player`,
+  `${API_PREFIX}/${MyPlayerRoute.path}`,
   AuthMiddleware.verifyAuth(["participant"]),
   new MyPlayerRoute().router,
 );
 app.use(
-  `${API_PREFIX}/my/club`,
+  `${API_PREFIX}/${MyClubRoute.path}`,
   AuthMiddleware.verifyAuth(["participant"]),
   new MyClubRoute().router,
 );

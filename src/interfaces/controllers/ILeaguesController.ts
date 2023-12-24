@@ -5,7 +5,7 @@ export interface ILeaguesController {
   readonly leaguesService: ILeaguesService;
 
   getLeagues: (
-    req: Request,
+    _: Request,
     res: Response,
     next: NextFunction,
   ) => Promise<Response | void>;

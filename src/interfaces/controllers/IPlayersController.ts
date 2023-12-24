@@ -5,7 +5,7 @@ export interface IPlayersController {
   readonly playersService: IPlayersService;
 
   getPlayers: (
-    req: Request,
+    _: Request,
     res: Response,
     next: NextFunction,
   ) => Promise<Response | void>;

@@ -1,4 +1,3 @@
-import { LeagueState } from "../core/enums/leagueState";
 import { URL_MUST_REGEX } from "../core/rules/common/urlRules";
 import {
   LEAGUE_DESCRIPTION_MAX_LENGTH,
@@ -122,12 +121,10 @@ export class MyLeaguesService implements IMyLeaguesService {
     clientErrors: IClientError[],
   ): Promise<IGenericResponse<IMyLeaguesResData | null>> {
     if (
-      !(
-        await this.myLeaguesProvider.doesMyLeagueExistById(
-          organizerId,
-          leagueId,
-        )
-      ).recordExists
+      !(await this.myLeaguesProvider.doesMyLeagueExistById(
+        organizerId,
+        leagueId,
+      ))
     ) {
       clientErrors.push(
         new ClientError(ClientErrorCode.NO_LEAGUE_FOUND_IN_MY_LEAGUES),
@@ -140,11 +137,7 @@ export class MyLeaguesService implements IMyLeaguesService {
         null,
       );
     }
-    if (
-      !(await this.myLeaguesProvider.doesMyLeagueByIdInState(leagueId, [
-        LeagueState.NOT_STARTED,
-      ]))
-    ) {
+    if (!(await this.myLeaguesProvider.isMyLeagueEditable(leagueId))) {
       clientErrors.push(
         new ClientError(ClientErrorCode.LEAGUE_CANNOT_BE_EDITED),
       );
@@ -196,12 +189,10 @@ export class MyLeaguesService implements IMyLeaguesService {
     clientErrors: IClientError[],
   ): Promise<IGenericResponse<void | null>> {
     if (
-      !(
-        await this.myLeaguesProvider.doesMyLeagueExistById(
-          organizerId,
-          leagueId,
-        )
-      ).recordExists
+      !(await this.myLeaguesProvider.doesMyLeagueExistById(
+        organizerId,
+        leagueId,
+      ))
     ) {
       clientErrors.push(
         new ClientError(ClientErrorCode.NO_LEAGUE_FOUND_IN_MY_LEAGUES),
@@ -214,11 +205,7 @@ export class MyLeaguesService implements IMyLeaguesService {
         null,
       );
     }
-    if (
-      !(await this.myLeaguesProvider.doesMyLeagueByIdInState(leagueId, [
-        LeagueState.NOT_STARTED,
-      ]))
-    ) {
+    if (!(await this.myLeaguesProvider.isMyLeagueDeletable(leagueId))) {
       clientErrors.push(
         new ClientError(ClientErrorCode.LEAGUE_CANNOT_BE_DELETED),
       );

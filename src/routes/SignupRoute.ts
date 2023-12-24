@@ -5,25 +5,22 @@ import { IRoute } from "../interfaces/routes/IRoute";
 
 export class SignupRoute implements IRoute {
   public readonly router: Router;
-  private readonly organizerPath: string;
-  private readonly participantPath: string;
+  public static readonly path: string = "login";
   private readonly signupController: ISignupController;
 
   constructor() {
     this.router = Router();
-    this.organizerPath = "/organizer";
-    this.participantPath = "/participant";
     this.signupController = new SignupController();
     this.initializeRoutes();
   }
 
   private initializeRoutes(): void {
     this.router.post(
-      this.organizerPath,
+      "/organizer",
       this.signupController.postSignupOrganizer.bind(this.signupController),
     );
     this.router.post(
-      this.participantPath,
+      "/participant",
       this.signupController.postSignupParticipant.bind(this.signupController),
     );
   }

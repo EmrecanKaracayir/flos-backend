@@ -18,7 +18,7 @@ import { RecordExistsModel } from "../models/common/RecordExistsModel";
 export class SignupProvider implements ISignupProvider {
   public async doesOrganizerByUsernameExist(
     username: string,
-  ): Promise<IRecordExistsModel> {
+  ): Promise<boolean> {
     const reRes: QueryResult = await pool.query(
       SignupQueries.DOES_ORGANIZER_EXIST_$UNAME,
       [username],
@@ -30,12 +30,10 @@ export class SignupProvider implements ISignupProvider {
     if (!RecordExistsModel.isValidModel(reRec)) {
       throw new ModelMismatchError(reRec);
     }
-    return reRec as IRecordExistsModel;
+    return (reRec as IRecordExistsModel).recordExists;
   }
 
-  public async doesOrganizerByEmailExist(
-    email: string,
-  ): Promise<IRecordExistsModel> {
+  public async doesOrganizerByEmailExist(email: string): Promise<boolean> {
     const reRes: QueryResult = await pool.query(
       SignupQueries.DOES_ORGANIZER_EXIST_$EMAIL,
       [email],
@@ -47,7 +45,7 @@ export class SignupProvider implements ISignupProvider {
     if (!RecordExistsModel.isValidModel(reRec)) {
       throw new ModelMismatchError(reRec);
     }
-    return reRec as IRecordExistsModel;
+    return (reRec as IRecordExistsModel).recordExists;
   }
 
   public async createOrganizer(
@@ -71,7 +69,7 @@ export class SignupProvider implements ISignupProvider {
 
   public async doesParticipantByUsernameExist(
     username: string,
-  ): Promise<IRecordExistsModel> {
+  ): Promise<boolean> {
     const reRes: QueryResult = await pool.query(
       SignupQueries.DOES_PARTICIPANT_EXIST_$UNAME,
       [username],
@@ -83,12 +81,10 @@ export class SignupProvider implements ISignupProvider {
     if (!RecordExistsModel.isValidModel(reRec)) {
       throw new ModelMismatchError(reRec);
     }
-    return reRec as IRecordExistsModel;
+    return (reRec as IRecordExistsModel).recordExists;
   }
 
-  public async doesParticipantByEmailExist(
-    email: string,
-  ): Promise<IRecordExistsModel> {
+  public async doesParticipantByEmailExist(email: string): Promise<boolean> {
     const reRes: QueryResult = await pool.query(
       SignupQueries.DOES_PARTICIPANT_EXIST_$EMAIL,
       [email],
@@ -100,7 +96,7 @@ export class SignupProvider implements ISignupProvider {
     if (!RecordExistsModel.isValidModel(reRec)) {
       throw new ModelMismatchError(reRec);
     }
-    return reRec as IRecordExistsModel;
+    return (reRec as IRecordExistsModel).recordExists;
   }
 
   public async createParticipant(

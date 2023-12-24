@@ -5,7 +5,7 @@ export interface IClubsController {
   readonly clubsService: IClubsService;
 
   getClubs: (
-    req: Request,
+    _: Request,
     res: Response,
     next: NextFunction,
   ) => Promise<Response | void>;

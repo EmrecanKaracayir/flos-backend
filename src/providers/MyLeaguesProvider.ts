@@ -1,8 +1,7 @@
 import { QueryResult } from "pg";
 import { pool } from "../core/database/pool";
-import { LeagueState } from "../core/enums/leagueState";
+import { EDITABLE_LEAGUE_STATES } from "../core/rules/leagueRules";
 import { IMyLeagueModel } from "../interfaces/models/IMyLeagueModel";
-import { ILeagueStateModel } from "../interfaces/models/common/ILeagueStateModel";
 import { IRecordExistsModel } from "../interfaces/models/common/IRecordExistsModel";
 import {
   IMyLeaguesProvider,
@@ -14,8 +13,8 @@ import {
 } from "../interfaces/schemas/responses/common/IServerError";
 import { MyLeagueModel } from "../models/MyLeagueModel";
 import { LeagueIdModel } from "../models/common/LeagueIdModel";
-import { LeagueStateModel } from "../models/common/LeagueStateModel";
 import { RecordExistsModel } from "../models/common/RecordExistsModel";
+import { DELETABLE_CLUB_STATES } from "../core/rules/clubRules";
 
 export class MyLeaguesProvider implements IMyLeaguesProvider {
   public async getMyLeagueModels(
@@ -98,7 +97,7 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
   public async doesMyLeagueExistById(
     organizerId: number,
     leagueId: number,
-  ): Promise<IRecordExistsModel> {
+  ): Promise<boolean> {
     const reRes: QueryResult = await pool.query(
       MyLeaguesQueries.DOES_MY_LEAGUE_EXIST_$ORID_$LGID,
       [organizerId, leagueId],
@@ -110,27 +109,22 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
     if (!RecordExistsModel.isValidModel(reRec)) {
       throw new ModelMismatchError(reRec);
     }
-    return reRec as IRecordExistsModel;
+    return (reRec as IRecordExistsModel).recordExists;
   }
 
-  public async doesMyLeagueByIdInState(
-    leagueId: number,
-    allowedLeagueStates: LeagueState[],
-  ): Promise<boolean> {
-    const leagueStateRes: QueryResult = await pool.query(
-      MyLeaguesQueries.GET_MY_LEAGUE_STATE_$LGID,
-      [leagueId],
+  public async isMyLeagueEditable(leagueId: number): Promise<boolean> {
+    const reRes: QueryResult = await pool.query(
+      MyLeaguesQueries.IS_MY_LEAGUE_IN_STATE_$PRID_$STATES,
+      [leagueId, EDITABLE_LEAGUE_STATES],
     );
-    const leagueStateRec: unknown = leagueStateRes.rows[0];
-    if (!leagueStateRec) {
+    const reRec: unknown = reRes.rows[0];
+    if (!reRec) {
       throw new UnexpectedQueryResultError();
     }
-    if (!LeagueStateModel.isValidModel(leagueStateRec)) {
-      throw new ModelMismatchError(leagueStateRec);
+    if (!RecordExistsModel.isValidModel(reRec)) {
+      throw new ModelMismatchError(reRec);
     }
-    return allowedLeagueStates.includes(
-      (leagueStateRec as ILeagueStateModel).state,
-    );
+    return (reRec as IRecordExistsModel).recordExists;
   }
 
   public async updateMyLeague(
@@ -167,6 +161,21 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
       await pool.query("ROLLBACK");
       throw error;
     }
+  }
+
+  public async isMyLeagueDeletable(leagueId: number): Promise<boolean> {
+    const reRes: QueryResult = await pool.query(
+      MyLeaguesQueries.IS_MY_LEAGUE_IN_STATE_$PRID_$STATES,
+      [leagueId, DELETABLE_CLUB_STATES],
+    );
+    const reRec: unknown = reRes.rows[0];
+    if (!reRec) {
+      throw new UnexpectedQueryResultError();
+    }
+    if (!RecordExistsModel.isValidModel(reRec)) {
+      throw new ModelMismatchError(reRec);
+    }
+    return (reRec as IRecordExistsModel).recordExists;
   }
 
   public async deleteMyLeague(leagueId: number): Promise<void> {
