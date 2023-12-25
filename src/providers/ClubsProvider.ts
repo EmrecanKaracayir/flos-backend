@@ -5,11 +5,11 @@ import {
   ClubsQueries,
   IClubsProvider,
 } from "../interfaces/providers/IClubsProvider";
-import { ModelMismatchError } from "../interfaces/schemas/responses/common/IServerError";
+import { ModelMismatchError } from "../interfaces/schemas/responses/app/IServerError";
 import { ClubModel } from "../models/ClubModel";
 
 export class ClubsProvider implements IClubsProvider {
-  public async getClubModels(): Promise<IClubModel[]> {
+  public async getClubs(): Promise<IClubModel[]> {
     const clubRes: QueryResult = await pool.query(ClubsQueries.GET_CLUBS);
     const clubRecs: unknown[] = clubRes.rows;
     if (!clubRecs) {
@@ -21,7 +21,7 @@ export class ClubsProvider implements IClubsProvider {
     return clubRecs as IClubModel[];
   }
 
-  public async getClubModelById(clubId: number): Promise<IClubModel | null> {
+  public async getClub(clubId: number): Promise<IClubModel | null> {
     const clubRes: QueryResult = await pool.query(ClubsQueries.GET_CLUB_$CLID, [
       clubId,
     ]);

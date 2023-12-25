@@ -17,23 +17,23 @@ import {
 import { IOrganizerModel } from "../interfaces/models/IOrganizerModel";
 import { IParticipantModel } from "../interfaces/models/IParticipantModel";
 import { ISignupProvider } from "../interfaces/providers/ISignupProvider";
-import { ISignupOrganizerReqDto } from "../interfaces/schemas/requests/routes/signup/organizer/ISignupOrganizerReqDto";
-import { ISignupParticipantReqDto } from "../interfaces/schemas/requests/routes/signup/participant/ISignupParticipantReqDto";
-import { IGenericResponse } from "../interfaces/schemas/responses/IGenericResponse";
+import { ISignupOrganizerReq } from "../interfaces/schemas/requests/routes/signup/organizer/ISignupOrganizerReq";
+import { ISignupParticipantReq } from "../interfaces/schemas/requests/routes/signup/participant/ISignupParticipantReq";
+import { IAppResponse } from "../interfaces/schemas/responses/IAppResponse";
 import {
   ClientErrorCode,
   IClientError,
-} from "../interfaces/schemas/responses/common/IClientError";
-import { HttpStatusCode } from "../interfaces/schemas/responses/common/IHttpStatus";
-import { ISignupOrganizerResData } from "../interfaces/schemas/responses/routes/signup/organizer/ISignupOrganizerResData";
-import { ISignupParticipantResData } from "../interfaces/schemas/responses/routes/signup/participant/ISignupParticipantResData";
+} from "../interfaces/schemas/responses/app/IClientError";
+import { HttpStatusCode } from "../interfaces/schemas/responses/app/IHttpStatus";
+import { ISignupOrganizerRes } from "../interfaces/schemas/responses/routes/signup/organizer/ISignupOrganizerRes";
+import { ISignupParticipantRes } from "../interfaces/schemas/responses/routes/signup/participant/ISignupParticipantRes";
 import { ISignupService } from "../interfaces/services/ISignupService";
 import { SignupProvider } from "../providers/SignupProvider";
-import { GenericResponse } from "../schemas/responses/GenericResponse";
-import { ClientError } from "../schemas/responses/common/ClientError";
-import { HttpStatus } from "../schemas/responses/common/HttpStatus";
-import { SignupOrganizerResData } from "../schemas/responses/routes/signup/organizer/SignupOrganizerResData";
-import { SignupParticipantResData } from "../schemas/responses/routes/signup/participant/SignupParticipantResData";
+import { AppResponse } from "../schemas/responses/AppResponse";
+import { ClientError } from "../schemas/responses/app/ClientError";
+import { HttpStatus } from "../schemas/responses/app/HttpStatus";
+import { SignupOrganizerRes } from "../schemas/responses/routes/signup/organizer/SignupOrganizerRes";
+import { SignupParticipantRes } from "../schemas/responses/routes/signup/participant/SignupParticipantRes";
 
 export class SignupService implements ISignupService {
   public readonly signupProvider: ISignupProvider;
@@ -43,15 +43,15 @@ export class SignupService implements ISignupService {
   }
 
   public async postSignupOrganizer(
-    dto: ISignupOrganizerReqDto,
+    dto: ISignupOrganizerReq,
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<ISignupOrganizerResData | null>> {
+  ): Promise<IAppResponse<ISignupOrganizerRes | null>> {
     const username: string = dto.username.toLowerCase();
     const password: string = dto.password;
     const email: string = dto.email.toLowerCase();
     this.validateFields(username, password, email, clientErrors);
     if (clientErrors.length > 0) {
-      return new GenericResponse<null>(
+      return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.BAD_REQUEST),
         null,
         clientErrors,
@@ -69,7 +69,7 @@ export class SignupService implements ISignupService {
       clientErrors.push(new ClientError(ClientErrorCode.EMAIL_ALREADY_EXISTS));
     }
     if (clientErrors.length > 0) {
-      return new GenericResponse<null>(
+      return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.CONFLICT),
         null,
         clientErrors,
@@ -83,25 +83,25 @@ export class SignupService implements ISignupService {
       hashedPassword,
       email,
     );
-    return new GenericResponse<ISignupOrganizerResData>(
+    return new AppResponse<ISignupOrganizerRes>(
       new HttpStatus(HttpStatusCode.CREATED),
       null,
       clientErrors,
-      SignupOrganizerResData.fromModel(model),
+      SignupOrganizerRes.fromModel(model),
       null,
     );
   }
 
   public async postSignupParticipant(
-    dto: ISignupParticipantReqDto,
+    dto: ISignupParticipantReq,
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<ISignupParticipantResData | null>> {
+  ): Promise<IAppResponse<ISignupParticipantRes | null>> {
     const username: string = dto.username.toLowerCase();
     const password: string = dto.password;
     const email: string = dto.email.toLowerCase();
     this.validateFields(username, password, email, clientErrors);
     if (clientErrors.length > 0) {
-      return new GenericResponse<null>(
+      return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.BAD_REQUEST),
         null,
         clientErrors,
@@ -118,7 +118,7 @@ export class SignupService implements ISignupService {
       clientErrors.push(new ClientError(ClientErrorCode.EMAIL_ALREADY_EXISTS));
     }
     if (clientErrors.length > 0) {
-      return new GenericResponse<null>(
+      return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.CONFLICT),
         null,
         clientErrors,
@@ -133,11 +133,11 @@ export class SignupService implements ISignupService {
         hashedPassword,
         email,
       );
-    return new GenericResponse<ISignupParticipantResData>(
+    return new AppResponse<ISignupParticipantRes>(
       new HttpStatus(HttpStatusCode.CREATED),
       null,
       clientErrors,
-      SignupParticipantResData.fromModel(model),
+      SignupParticipantRes.fromModel(model),
       null,
     );
   }

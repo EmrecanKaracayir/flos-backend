@@ -25,19 +25,25 @@ export class MyLeaguesRoute implements IRoute {
     );
     this.router.get(
       "/:leagueId",
-      this.myLeaguesController.getMyLeagues$leagueId.bind(
-        this.myLeaguesController,
-      ),
+      this.myLeaguesController.getMyLeagues$.bind(this.myLeaguesController),
     );
     this.router.put(
       "/:leagueId",
-      this.myLeaguesController.putMyLeagues$leagueId.bind(
-        this.myLeaguesController,
-      ),
+      this.myLeaguesController.putMyLeagues$.bind(this.myLeaguesController),
     );
     this.router.delete(
       "/:leagueId",
-      this.myLeaguesController.deleteMyLeagues$leagueId.bind(
+      this.myLeaguesController.deleteMyLeagues$.bind(this.myLeaguesController),
+    );
+    this.router.get(
+      "/:leagueId/clubs",
+      this.myLeaguesController.getMyLeagues$Clubs.bind(
+        this.myLeaguesController,
+      ),
+    );
+    this.router.post(
+      "/:leagueId/clubs",
+      this.myLeaguesController.postMyLeagues$Clubs.bind(
         this.myLeaguesController,
       ),
     );

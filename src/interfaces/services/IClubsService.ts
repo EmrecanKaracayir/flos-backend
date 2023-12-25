@@ -1,17 +1,17 @@
 import { IClubsProvider } from "../providers/IClubsProvider";
-import { IGenericResponse } from "../schemas/responses/IGenericResponse";
-import { IClientError } from "../schemas/responses/common/IClientError";
-import { IClubsResData } from "../schemas/responses/routes/clubs/IClubsResData";
+import { IAppResponse } from "../schemas/responses/IAppResponse";
+import { IClientError } from "../schemas/responses/app/IClientError";
+import { IClubsRes } from "../schemas/responses/routes/clubs/IClubsRes";
 
 export interface IClubsService {
   readonly clubsProvider: IClubsProvider;
 
   getClubs: (
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<IClubsResData[]>>;
+  ) => Promise<IAppResponse<IClubsRes[]>>;
 
-  getClubs$clubId: (
+  getClubs$: (
     clubId: number,
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<IClubsResData | null>>;
+  ) => Promise<IAppResponse<IClubsRes | null>>;
 }

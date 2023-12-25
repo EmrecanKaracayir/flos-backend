@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import { HttpStatusCode } from "../interfaces/schemas/responses/common/IHttpStatus";
-import { GenericResponse } from "../schemas/responses/GenericResponse";
-import { HttpStatus } from "../schemas/responses/common/HttpStatus";
-import { ServerError } from "../schemas/responses/common/ServerError";
+import { HttpStatusCode } from "../interfaces/schemas/responses/app/IHttpStatus";
+import { AppResponse } from "../schemas/responses/AppResponse";
+import { HttpStatus } from "../schemas/responses/app/HttpStatus";
+import { ServerError } from "../schemas/responses/app/ServerError";
 
 export class FailureMiddleware {
   public static serverFailure(
@@ -21,7 +21,7 @@ export class FailureMiddleware {
     return res
       .status(httpStatus.code)
       .send(
-        new GenericResponse<null>(
+        new AppResponse<null>(
           httpStatus,
           new ServerError(error),
           [],

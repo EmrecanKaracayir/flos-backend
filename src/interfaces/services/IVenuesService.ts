@@ -1,17 +1,17 @@
 import { IVenuesProvider } from "../providers/IVenuesProvider";
-import { IGenericResponse } from "../schemas/responses/IGenericResponse";
-import { IClientError } from "../schemas/responses/common/IClientError";
-import { IVenuesResData } from "../schemas/responses/routes/venues/IVenuesResData";
+import { IAppResponse } from "../schemas/responses/IAppResponse";
+import { IClientError } from "../schemas/responses/app/IClientError";
+import { IVenuesRes } from "../schemas/responses/routes/venues/IVenuesRes";
 
 export interface IVenuesService {
   readonly venuesProvider: IVenuesProvider;
 
   getVenues: (
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<IVenuesResData[]>>;
+  ) => Promise<IAppResponse<IVenuesRes[]>>;
 
-  getVenues$venueId: (
+  getVenues$: (
     venueId: number,
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<IVenuesResData | null>>;
+  ) => Promise<IAppResponse<IVenuesRes | null>>;
 }

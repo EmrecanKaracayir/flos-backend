@@ -1,21 +1,21 @@
 import { ILoginProvider } from "../providers/ILoginProvider";
-import { ILoginOrganizerReqDto } from "../schemas/requests/routes/login/organizer/ILoginOrganizerReqDto";
-import { ILoginParticipantReqDto } from "../schemas/requests/routes/login/participant/ILoginParticipantReqDto";
-import { IGenericResponse } from "../schemas/responses/IGenericResponse";
-import { IClientError } from "../schemas/responses/common/IClientError";
-import { ILoginOrganizerResData } from "../schemas/responses/routes/login/organizer/ILoginOrganizerResData";
-import { ILoginParticipantResData } from "../schemas/responses/routes/login/participant/ILoginParticipantResData";
+import { ILoginOrganizerReq } from "../schemas/requests/routes/login/organizer/ILoginOrganizerReq";
+import { ILoginParticipantReq } from "../schemas/requests/routes/login/participant/ILoginParticipantReq";
+import { IAppResponse } from "../schemas/responses/IAppResponse";
+import { IClientError } from "../schemas/responses/app/IClientError";
+import { ILoginOrganizerRes } from "../schemas/responses/routes/login/organizer/ILoginOrganizerRes";
+import { ILoginParticipantRes } from "../schemas/responses/routes/login/participant/ILoginParticipantRes";
 
 export interface ILoginService {
   readonly loginProvider: ILoginProvider;
 
   postLoginOrganizer: (
-    dto: ILoginOrganizerReqDto,
+    dto: ILoginOrganizerReq,
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<ILoginOrganizerResData | null>>;
+  ) => Promise<IAppResponse<ILoginOrganizerRes | null>>;
 
   postLoginParticipant: (
-    dto: ILoginParticipantReqDto,
+    dto: ILoginParticipantReq,
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<ILoginParticipantResData | null>>;
+  ) => Promise<IAppResponse<ILoginParticipantRes | null>>;
 }

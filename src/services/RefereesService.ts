@@ -1,18 +1,18 @@
 import { IRefereeModel } from "../interfaces/models/IRefereeModel";
 import { IRefereesProvider } from "../interfaces/providers/IRefereesProvider";
-import { IGenericResponse } from "../interfaces/schemas/responses/IGenericResponse";
+import { IAppResponse } from "../interfaces/schemas/responses/IAppResponse";
 import {
   ClientErrorCode,
   IClientError,
-} from "../interfaces/schemas/responses/common/IClientError";
-import { HttpStatusCode } from "../interfaces/schemas/responses/common/IHttpStatus";
-import { IRefereesResData } from "../interfaces/schemas/responses/routes/referees/IRefereesResData";
+} from "../interfaces/schemas/responses/app/IClientError";
+import { HttpStatusCode } from "../interfaces/schemas/responses/app/IHttpStatus";
+import { IRefereesRes } from "../interfaces/schemas/responses/routes/referees/IRefereesRes";
 import { IRefereesService } from "../interfaces/services/IRefereesService";
 import { RefereesProvider } from "../providers/RefereesProvider";
-import { GenericResponse } from "../schemas/responses/GenericResponse";
-import { ClientError } from "../schemas/responses/common/ClientError";
-import { HttpStatus } from "../schemas/responses/common/HttpStatus";
-import { RefereesResData } from "../schemas/responses/routes/referees/RefereesResData";
+import { AppResponse } from "../schemas/responses/AppResponse";
+import { ClientError } from "../schemas/responses/app/ClientError";
+import { HttpStatus } from "../schemas/responses/app/HttpStatus";
+import { RefereesRes } from "../schemas/responses/routes/referees/RefereesRes";
 
 export class RefereesService implements IRefereesService {
   public readonly refereesProvider: IRefereesProvider;
@@ -23,29 +23,28 @@ export class RefereesService implements IRefereesService {
 
   public async getReferees(
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<IRefereesResData[]>> {
-    const models: IRefereeModel[] =
-      await this.refereesProvider.getRefereeModels();
-    return new GenericResponse<IRefereesResData[]>(
+  ): Promise<IAppResponse<IRefereesRes[]>> {
+    const models: IRefereeModel[] = await this.refereesProvider.getReferees();
+    return new AppResponse<IRefereesRes[]>(
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      RefereesResData.fromModels(models),
+      RefereesRes.fromModels(models),
       null,
     );
   }
 
-  public async getReferees$refereeId(
+  public async getReferees$(
     refereeId: number,
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<IRefereesResData | null>> {
+  ): Promise<IAppResponse<IRefereesRes | null>> {
     const model: IRefereeModel | null =
-      await this.refereesProvider.getRefereeModelById(refereeId);
+      await this.refereesProvider.getReferee(refereeId);
     if (!model) {
       clientErrors.push(
         new ClientError(ClientErrorCode.NO_REFEREE_FOUND_IN_REFEREES),
       );
-      return new GenericResponse<null>(
+      return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.NOT_FOUND),
         null,
         clientErrors,
@@ -53,11 +52,11 @@ export class RefereesService implements IRefereesService {
         null,
       );
     }
-    return new GenericResponse<IRefereesResData>(
+    return new AppResponse<IRefereesRes>(
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      RefereesResData.fromModel(model),
+      RefereesRes.fromModel(model),
       null,
     );
   }

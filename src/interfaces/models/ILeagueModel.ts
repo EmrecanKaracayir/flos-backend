@@ -1,11 +1,3 @@
-import { LeagueState } from "../../core/enums/leagueState";
+import { IBaseLeagueModel } from "./base/IBaseLeagueModel";
 
-export interface ILeagueModel {
-  readonly leagueId: number;
-  readonly name: string;
-  readonly state: LeagueState;
-  readonly prize: number;
-  readonly organizerEmail: string;
-  readonly description: string;
-  readonly logoPath: string;
-}
+export interface ILeagueModel extends IBaseLeagueModel {}

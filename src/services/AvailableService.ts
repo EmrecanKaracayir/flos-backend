@@ -2,19 +2,19 @@ import { IClubModel } from "../interfaces/models/IClubModel";
 import { ILeagueModel } from "../interfaces/models/ILeagueModel";
 import { IPlayerModel } from "../interfaces/models/IPlayerModel";
 import { IAvailableProvider } from "../interfaces/providers/IAvailableProvider";
-import { IGenericResponse } from "../interfaces/schemas/responses/IGenericResponse";
-import { IClientError } from "../interfaces/schemas/responses/common/IClientError";
-import { HttpStatusCode } from "../interfaces/schemas/responses/common/IHttpStatus";
-import { IClubsResData } from "../interfaces/schemas/responses/routes/clubs/IClubsResData";
-import { ILeaguesResData } from "../interfaces/schemas/responses/routes/leagues/ILeaguesResData";
-import { IPlayersResData } from "../interfaces/schemas/responses/routes/players/IPlayersResData";
+import { IAppResponse } from "../interfaces/schemas/responses/IAppResponse";
+import { IClientError } from "../interfaces/schemas/responses/app/IClientError";
+import { HttpStatusCode } from "../interfaces/schemas/responses/app/IHttpStatus";
+import { IAvailableClubsRes } from "../interfaces/schemas/responses/routes/available/clubs/IAvailableClubsRes";
+import { IAvailableLeaguesRes } from "../interfaces/schemas/responses/routes/available/leagues/IAvailableLeaguesRes";
+import { IAvailablePlayersRes } from "../interfaces/schemas/responses/routes/available/player/IAvailablePlayersRes";
 import { IAvailableService } from "../interfaces/services/IAvailableService";
 import { AvailableProvider } from "../providers/AvailableProvider";
-import { GenericResponse } from "../schemas/responses/GenericResponse";
-import { HttpStatus } from "../schemas/responses/common/HttpStatus";
-import { ClubsResData } from "../schemas/responses/routes/clubs/ClubsResData";
-import { LeaguesResData } from "../schemas/responses/routes/leagues/LeaguesResData";
-import { PlayersResData } from "../schemas/responses/routes/players/PlayersResData";
+import { AppResponse } from "../schemas/responses/AppResponse";
+import { HttpStatus } from "../schemas/responses/app/HttpStatus";
+import { AvailableClubsRes } from "../schemas/responses/routes/available/clubs/AvailableClubsRes";
+import { AvailableLeaguesRes } from "../schemas/responses/routes/available/leagues/AvailableLeaguesRes";
+import { AvailablePlayersRes } from "../schemas/responses/routes/available/players/AvailablePlayersRes";
 
 export class AvailableService implements IAvailableService {
   public readonly availableProvider: IAvailableProvider;
@@ -25,42 +25,42 @@ export class AvailableService implements IAvailableService {
 
   public async getAvailableClubs(
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<IClubsResData[]>> {
+  ): Promise<IAppResponse<IAvailableClubsRes[]>> {
     const models: IClubModel[] =
-      await this.availableProvider.getAvailableClubModels();
-    return new GenericResponse<IClubsResData[]>(
+      await this.availableProvider.getAvailableClubs();
+    return new AppResponse<IAvailableClubsRes[]>(
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      ClubsResData.fromModels(models),
+      AvailableClubsRes.fromModels(models),
       null,
     );
   }
 
   public async getAvailableLeagues(
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<ILeaguesResData[]>> {
+  ): Promise<IAppResponse<IAvailableLeaguesRes[]>> {
     const models: ILeagueModel[] =
-      await this.availableProvider.getAvailableLeagueModels();
-    return new GenericResponse<ILeaguesResData[]>(
+      await this.availableProvider.getAvailableLeagues();
+    return new AppResponse<IAvailableLeaguesRes[]>(
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      LeaguesResData.fromModels(models),
+      AvailableLeaguesRes.fromModels(models),
       null,
     );
   }
 
   public async getAvailablePlayers(
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<IPlayersResData[]>> {
+  ): Promise<IAppResponse<IAvailablePlayersRes[]>> {
     const models: IPlayerModel[] =
-      await this.availableProvider.getAvailablePlayerModels();
-    return new GenericResponse<IPlayersResData[]>(
+      await this.availableProvider.getAvailablePlayers();
+    return new AppResponse<IAvailablePlayersRes[]>(
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      PlayersResData.fromModels(models),
+      AvailablePlayersRes.fromModels(models),
       null,
     );
   }

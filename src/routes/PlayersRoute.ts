@@ -21,7 +21,7 @@ export class PlayersRoute implements IRoute {
     );
     this.router.get(
       "/:playerId",
-      this.playersController.getPlayers$playerId.bind(this.playersController),
+      this.playersController.getPlayers$.bind(this.playersController),
     );
   }
 }

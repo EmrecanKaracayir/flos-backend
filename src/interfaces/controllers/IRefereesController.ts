@@ -10,7 +10,7 @@ export interface IRefereesController {
     next: NextFunction,
   ) => Promise<Response | void>;
 
-  getReferees$refereeId: (
+  getReferees$: (
     req: Request,
     res: Response,
     next: NextFunction,

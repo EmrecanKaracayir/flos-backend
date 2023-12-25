@@ -1,9 +1,3 @@
-export interface IVenueModel {
-  readonly venueId: number;
-  readonly name: string;
-  readonly capacity: number;
-  readonly capacityRank: string;
-  readonly email: string;
-  readonly address: string;
-  readonly imgPath: string;
-}
+import { IBaseVenueModel } from "./base/IBaseVenueModel";
+
+export interface IVenueModel extends IBaseVenueModel {}

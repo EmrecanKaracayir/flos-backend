@@ -1,20 +1,20 @@
 import { NextFunction, Request, Response } from "express";
 import { canParseToInt } from "../core/utils/strings";
 import { IRefereesController } from "../interfaces/controllers/IRefereesController";
-import { IGenericResponse } from "../interfaces/schemas/responses/IGenericResponse";
+import { IAppResponse } from "../interfaces/schemas/responses/IAppResponse";
 import {
   ClientErrorCode,
   IClientError,
-} from "../interfaces/schemas/responses/common/IClientError";
+} from "../interfaces/schemas/responses/app/IClientError";
 import {
   HttpStatusCode,
   IHttpStatus,
-} from "../interfaces/schemas/responses/common/IHttpStatus";
-import { IRefereesResData } from "../interfaces/schemas/responses/routes/referees/IRefereesResData";
+} from "../interfaces/schemas/responses/app/IHttpStatus";
+import { IRefereesRes } from "../interfaces/schemas/responses/routes/referees/IRefereesRes";
 import { IRefereesService } from "../interfaces/services/IRefereesService";
-import { GenericResponse } from "../schemas/responses/GenericResponse";
-import { ClientError } from "../schemas/responses/common/ClientError";
-import { HttpStatus } from "../schemas/responses/common/HttpStatus";
+import { AppResponse } from "../schemas/responses/AppResponse";
+import { ClientError } from "../schemas/responses/app/ClientError";
+import { HttpStatus } from "../schemas/responses/app/HttpStatus";
 import { RefereesService } from "../services/RefereesService";
 
 export class RefereesController implements IRefereesController {
@@ -34,7 +34,7 @@ export class RefereesController implements IRefereesController {
     // Logic
     try {
       // Hand over to service
-      const serviceRes: IGenericResponse<IRefereesResData[]> =
+      const serviceRes: IAppResponse<IRefereesRes[]> =
         await this.refereesService.getReferees(clientErrors);
       return res.status(serviceRes.httpStatus.code).send(serviceRes);
     } catch (error) {
@@ -42,7 +42,7 @@ export class RefereesController implements IRefereesController {
     }
   }
 
-  public async getReferees$refereeId(
+  public async getReferees$(
     req: Request,
     res: Response,
     next: NextFunction,
@@ -60,13 +60,7 @@ export class RefereesController implements IRefereesController {
         return res
           .status(httpStatus.code)
           .send(
-            new GenericResponse<null>(
-              httpStatus,
-              null,
-              clientErrors,
-              null,
-              null,
-            ),
+            new AppResponse<null>(httpStatus, null, clientErrors, null, null),
           );
       }
       if (!canParseToInt(req.params.refereeId)) {
@@ -77,18 +71,12 @@ export class RefereesController implements IRefereesController {
         return res
           .status(httpStatus.code)
           .send(
-            new GenericResponse<null>(
-              httpStatus,
-              null,
-              clientErrors,
-              null,
-              null,
-            ),
+            new AppResponse<null>(httpStatus, null, clientErrors, null, null),
           );
       }
       // Hand over to service
-      const serviceRes: IGenericResponse<IRefereesResData | null> =
-        await this.refereesService.getReferees$refereeId(
+      const serviceRes: IAppResponse<IRefereesRes | null> =
+        await this.refereesService.getReferees$(
           parseInt(req.params.refereeId),
           clientErrors,
         );

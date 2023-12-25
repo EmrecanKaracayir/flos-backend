@@ -1,8 +1,10 @@
 import { QueryResult } from "pg";
 import { pool } from "../core/database/pool";
+import { DELETABLE_CLUB_STATES } from "../core/rules/clubRules";
 import { EDITABLE_LEAGUE_STATES } from "../core/rules/leagueRules";
+import { IClubModel } from "../interfaces/models/IClubModel";
 import { IMyLeagueModel } from "../interfaces/models/IMyLeagueModel";
-import { IRecordExistsModel } from "../interfaces/models/common/IRecordExistsModel";
+import { IExistsModel } from "../interfaces/models/util/IExistsModel";
 import {
   IMyLeaguesProvider,
   MyLeaguesQueries,
@@ -10,16 +12,14 @@ import {
 import {
   ModelMismatchError,
   UnexpectedQueryResultError,
-} from "../interfaces/schemas/responses/common/IServerError";
+} from "../interfaces/schemas/responses/app/IServerError";
+import { ClubModel } from "../models/ClubModel";
+import { LeagueModel } from "../models/LeagueModel";
 import { MyLeagueModel } from "../models/MyLeagueModel";
-import { LeagueIdModel } from "../models/common/LeagueIdModel";
-import { RecordExistsModel } from "../models/common/RecordExistsModel";
-import { DELETABLE_CLUB_STATES } from "../core/rules/clubRules";
+import { ExistsModel } from "../models/util/ExistsModel";
 
 export class MyLeaguesProvider implements IMyLeaguesProvider {
-  public async getMyLeagueModels(
-    organizerId: number,
-  ): Promise<IMyLeagueModel[]> {
+  public async getMyLeagues(organizerId: number): Promise<IMyLeagueModel[]> {
     const myLeagueRes: QueryResult = await pool.query(
       MyLeaguesQueries.GET_MY_LEAGUES_$ORID,
       [organizerId],
@@ -52,7 +52,7 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
       if (!leagueIdRec) {
         throw new UnexpectedQueryResultError();
       }
-      if (!LeagueIdModel.isValidModel(leagueIdRec)) {
+      if (!LeagueModel.isValidIdModel(leagueIdRec)) {
         throw new ModelMismatchError(leagueIdRec);
       }
       // Get MyLeagueModel by leagueId
@@ -76,7 +76,7 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
     }
   }
 
-  public async getMyLeagueModelById(
+  public async getMyLeague(
     organizerId: number,
     leagueId: number,
   ): Promise<IMyLeagueModel | null> {
@@ -94,37 +94,37 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
     return myLeagueRec as IMyLeagueModel;
   }
 
-  public async doesMyLeagueExistById(
+  public async doesMyLeagueExist(
     organizerId: number,
     leagueId: number,
   ): Promise<boolean> {
-    const reRes: QueryResult = await pool.query(
+    const existsRes: QueryResult = await pool.query(
       MyLeaguesQueries.DOES_MY_LEAGUE_EXIST_$ORID_$LGID,
       [organizerId, leagueId],
     );
-    const reRec: unknown = reRes.rows[0];
-    if (!reRec) {
+    const existsRec: unknown = existsRes.rows[0];
+    if (!existsRec) {
       throw new UnexpectedQueryResultError();
     }
-    if (!RecordExistsModel.isValidModel(reRec)) {
-      throw new ModelMismatchError(reRec);
+    if (!ExistsModel.isValidModel(existsRec)) {
+      throw new ModelMismatchError(existsRec);
     }
-    return (reRec as IRecordExistsModel).recordExists;
+    return (existsRec as IExistsModel).exists;
   }
 
   public async isMyLeagueEditable(leagueId: number): Promise<boolean> {
-    const reRes: QueryResult = await pool.query(
+    const existsRes: QueryResult = await pool.query(
       MyLeaguesQueries.IS_MY_LEAGUE_IN_STATE_$PRID_$STATES,
       [leagueId, EDITABLE_LEAGUE_STATES],
     );
-    const reRec: unknown = reRes.rows[0];
-    if (!reRec) {
+    const existsRec: unknown = existsRes.rows[0];
+    if (!existsRec) {
       throw new UnexpectedQueryResultError();
     }
-    if (!RecordExistsModel.isValidModel(reRec)) {
-      throw new ModelMismatchError(reRec);
+    if (!ExistsModel.isValidModel(existsRec)) {
+      throw new ModelMismatchError(existsRec);
     }
-    return (reRec as IRecordExistsModel).recordExists;
+    return (existsRec as IExistsModel).exists;
   }
 
   public async updateMyLeague(
@@ -164,18 +164,18 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
   }
 
   public async isMyLeagueDeletable(leagueId: number): Promise<boolean> {
-    const reRes: QueryResult = await pool.query(
+    const existsRes: QueryResult = await pool.query(
       MyLeaguesQueries.IS_MY_LEAGUE_IN_STATE_$PRID_$STATES,
       [leagueId, DELETABLE_CLUB_STATES],
     );
-    const reRec: unknown = reRes.rows[0];
-    if (!reRec) {
+    const existsRec: unknown = existsRes.rows[0];
+    if (!existsRec) {
       throw new UnexpectedQueryResultError();
     }
-    if (!RecordExistsModel.isValidModel(reRec)) {
-      throw new ModelMismatchError(reRec);
+    if (!ExistsModel.isValidModel(existsRec)) {
+      throw new ModelMismatchError(existsRec);
     }
-    return (reRec as IRecordExistsModel).recordExists;
+    return (existsRec as IExistsModel).exists;
   }
 
   public async deleteMyLeague(leagueId: number): Promise<void> {
@@ -192,5 +192,20 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
       await pool.query("ROLLBACK");
       throw error;
     }
+  }
+
+  public async getMyLeagueClubs(leagueId: number): Promise<IClubModel[]> {
+    const clubsRes: QueryResult = await pool.query(
+      MyLeaguesQueries.GET_MY_LEAGUE_CLUBS_$LGID,
+      [leagueId],
+    );
+    const clubsRecs: unknown[] = clubsRes.rows;
+    if (!clubsRecs) {
+      return [];
+    }
+    if (!ClubModel.areValidModels(clubsRecs)) {
+      throw new ModelMismatchError(clubsRecs);
+    }
+    return clubsRecs as IClubModel[];
   }
 }

@@ -1,17 +1,17 @@
 import { IRefereesProvider } from "../providers/IRefereesProvider";
-import { IGenericResponse } from "../schemas/responses/IGenericResponse";
-import { IClientError } from "../schemas/responses/common/IClientError";
-import { IRefereesResData } from "../schemas/responses/routes/referees/IRefereesResData";
+import { IAppResponse } from "../schemas/responses/IAppResponse";
+import { IClientError } from "../schemas/responses/app/IClientError";
+import { IRefereesRes } from "../schemas/responses/routes/referees/IRefereesRes";
 
 export interface IRefereesService {
   readonly refereesProvider: IRefereesProvider;
 
   getReferees: (
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<IRefereesResData[]>>;
+  ) => Promise<IAppResponse<IRefereesRes[]>>;
 
-  getReferees$refereeId: (
+  getReferees$: (
     refereeId: number,
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<IRefereesResData | null>>;
+  ) => Promise<IAppResponse<IRefereesRes | null>>;
 }

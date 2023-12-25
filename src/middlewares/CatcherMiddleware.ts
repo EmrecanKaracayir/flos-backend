@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-import { ClientErrorCode } from "../interfaces/schemas/responses/common/IClientError";
-import { HttpStatusCode } from "../interfaces/schemas/responses/common/IHttpStatus";
-import { GenericResponse } from "../schemas/responses/GenericResponse";
-import { ClientError } from "../schemas/responses/common/ClientError";
-import { HttpStatus } from "../schemas/responses/common/HttpStatus";
+import { ClientErrorCode } from "../interfaces/schemas/responses/app/IClientError";
+import { HttpStatusCode } from "../interfaces/schemas/responses/app/IHttpStatus";
+import { AppResponse } from "../schemas/responses/AppResponse";
+import { ClientError } from "../schemas/responses/app/ClientError";
+import { HttpStatus } from "../schemas/responses/app/HttpStatus";
 
 export class CatcherMiddleware {
   public static resourceNotFound(
@@ -18,7 +18,7 @@ export class CatcherMiddleware {
     return res
       .status(httpStatus.code)
       .send(
-        new GenericResponse<null>(
+        new AppResponse<null>(
           httpStatus,
           null,
           [new ClientError(ClientErrorCode.RESOURCE_NOT_FOUND)],

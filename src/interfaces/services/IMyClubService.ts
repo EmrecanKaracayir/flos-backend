@@ -1,8 +1,8 @@
 import { IMyClubProvider } from "../providers/IMyClubProvider";
-import { IMyClubReqDto } from "../schemas/requests/routes/my/club/IMyClubReqDto";
-import { IGenericResponse } from "../schemas/responses/IGenericResponse";
-import { IClientError } from "../schemas/responses/common/IClientError";
-import { IMyClubResData } from "../schemas/responses/routes/my/club/IMyClubResData";
+import { IMyClubReq } from "../schemas/requests/routes/my/club/IMyClubReq";
+import { IAppResponse } from "../schemas/responses/IAppResponse";
+import { IClientError } from "../schemas/responses/app/IClientError";
+import { IMyClubRes } from "../schemas/responses/routes/my/club/IMyClubRes";
 
 export interface IMyClubService {
   readonly myClubProvider: IMyClubProvider;
@@ -10,22 +10,22 @@ export interface IMyClubService {
   getMyClub: (
     participantId: number,
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<IMyClubResData | null>>;
+  ) => Promise<IAppResponse<IMyClubRes | null>>;
 
   postMyClub: (
     participantId: number,
-    dto: IMyClubReqDto,
+    dto: IMyClubReq,
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<IMyClubResData | null>>;
+  ) => Promise<IAppResponse<IMyClubRes | null>>;
 
   putMyClub: (
     participantId: number,
-    dto: IMyClubReqDto,
+    dto: IMyClubReq,
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<IMyClubResData | null>>;
+  ) => Promise<IAppResponse<IMyClubRes | null>>;
 
   deleteMyClub: (
     participantId: number,
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<void | null>>;
+  ) => Promise<IAppResponse<void | null>>;
 }

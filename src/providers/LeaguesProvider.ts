@@ -5,11 +5,11 @@ import {
   ILeaguesProvider,
   LeaguesQueries,
 } from "../interfaces/providers/ILeaguesProvider";
-import { ModelMismatchError } from "../interfaces/schemas/responses/common/IServerError";
+import { ModelMismatchError } from "../interfaces/schemas/responses/app/IServerError";
 import { LeagueModel } from "../models/LeagueModel";
 
 export class LeaguesProvider implements ILeaguesProvider {
-  public async getLeagueModels(): Promise<ILeagueModel[]> {
+  public async getLeagues(): Promise<ILeagueModel[]> {
     const leagueRes: QueryResult = await pool.query(LeaguesQueries.GET_LEAGUES);
     const leagueRecs: unknown[] = leagueRes.rows;
     if (!leagueRecs) {
@@ -21,9 +21,7 @@ export class LeaguesProvider implements ILeaguesProvider {
     return leagueRecs as ILeagueModel[];
   }
 
-  public async getLeagueModelById(
-    leagueId: number,
-  ): Promise<ILeagueModel | null> {
+  public async getLeague(leagueId: number): Promise<ILeagueModel | null> {
     const leagueRes: QueryResult = await pool.query(
       LeaguesQueries.GET_LEAGUE_$LGID,
       [leagueId],

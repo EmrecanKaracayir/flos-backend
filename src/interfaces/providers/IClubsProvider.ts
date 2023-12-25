@@ -1,9 +1,9 @@
 import { IClubModel } from "../models/IClubModel";
 
 export interface IClubsProvider {
-  getClubModels: () => Promise<IClubModel[]>;
+  getClubs: () => Promise<IClubModel[]>;
 
-  getClubModelById: (clubId: number) => Promise<IClubModel | null>;
+  getClub: (clubId: number) => Promise<IClubModel | null>;
 }
 
 export enum ClubsQueries {

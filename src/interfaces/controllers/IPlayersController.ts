@@ -10,7 +10,7 @@ export interface IPlayersController {
     next: NextFunction,
   ) => Promise<Response | void>;
 
-  getPlayers$playerId: (
+  getPlayers$: (
     req: Request,
     res: Response,
     next: NextFunction,

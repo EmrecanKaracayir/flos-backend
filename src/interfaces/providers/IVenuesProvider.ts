@@ -1,9 +1,9 @@
 import { IVenueModel } from "../models/IVenueModel";
 
 export interface IVenuesProvider {
-  getVenueModels: () => Promise<IVenueModel[]>;
+  getVenues: () => Promise<IVenueModel[]>;
 
-  getVenueModelById: (venueId: number) => Promise<IVenueModel | null>;
+  getVenue: (venueId: number) => Promise<IVenueModel | null>;
 }
 
 export enum VenuesQueries {

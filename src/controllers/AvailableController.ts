@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import { IAvailableController } from "../interfaces/controllers/IAvailableController";
-import { IGenericResponse } from "../interfaces/schemas/responses/IGenericResponse";
-import { IClientError } from "../interfaces/schemas/responses/common/IClientError";
-import { IClubsResData } from "../interfaces/schemas/responses/routes/clubs/IClubsResData";
-import { ILeaguesResData } from "../interfaces/schemas/responses/routes/leagues/ILeaguesResData";
-import { IPlayersResData } from "../interfaces/schemas/responses/routes/players/IPlayersResData";
+import { IAppResponse } from "../interfaces/schemas/responses/IAppResponse";
+import { IClientError } from "../interfaces/schemas/responses/app/IClientError";
+import { IAvailableClubsRes } from "../interfaces/schemas/responses/routes/available/clubs/IAvailableClubsRes";
+import { IAvailableLeaguesRes } from "../interfaces/schemas/responses/routes/available/leagues/IAvailableLeaguesRes";
+import { IAvailablePlayersRes } from "../interfaces/schemas/responses/routes/available/player/IAvailablePlayersRes";
 import { IAvailableService } from "../interfaces/services/IAvailableService";
 import { AvailableService } from "../services/AvailableService";
 
@@ -25,7 +25,7 @@ export class AvailableController implements IAvailableController {
     // Logic
     try {
       // Hand over to service
-      const serviceRes: IGenericResponse<IClubsResData[]> =
+      const serviceRes: IAppResponse<IAvailableClubsRes[]> =
         await this.availableService.getAvailableClubs(clientErrors);
       return res.status(serviceRes.httpStatus.code).send(serviceRes);
     } catch (error) {
@@ -43,7 +43,7 @@ export class AvailableController implements IAvailableController {
     // Logic
     try {
       // Hand over to service
-      const serviceRes: IGenericResponse<ILeaguesResData[]> =
+      const serviceRes: IAppResponse<IAvailableLeaguesRes[]> =
         await this.availableService.getAvailableLeagues(clientErrors);
       return res.status(serviceRes.httpStatus.code).send(serviceRes);
     } catch (error) {
@@ -61,7 +61,7 @@ export class AvailableController implements IAvailableController {
     // Logic
     try {
       // Hand over to service
-      const serviceRes: IGenericResponse<IPlayersResData[]> =
+      const serviceRes: IAppResponse<IAvailablePlayersRes[]> =
         await this.availableService.getAvailablePlayers(clientErrors);
       return res.status(serviceRes.httpStatus.code).send(serviceRes);
     } catch (error) {

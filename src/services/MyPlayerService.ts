@@ -12,20 +12,20 @@ import {
 } from "../core/utils/strings";
 import { IMyPlayerModel } from "../interfaces/models/IMyPlayerModel";
 import { IMyPlayerProvider } from "../interfaces/providers/IMyPlayerProvider";
-import { IMyPlayerReqDto } from "../interfaces/schemas/requests/routes/my/player/IMyPlayerReqDto";
-import { IGenericResponse } from "../interfaces/schemas/responses/IGenericResponse";
+import { IMyPlayerReq } from "../interfaces/schemas/requests/routes/my/player/IMyPlayerReq";
+import { IAppResponse } from "../interfaces/schemas/responses/IAppResponse";
 import {
   ClientErrorCode,
   IClientError,
-} from "../interfaces/schemas/responses/common/IClientError";
-import { HttpStatusCode } from "../interfaces/schemas/responses/common/IHttpStatus";
-import { IMyPlayerResData } from "../interfaces/schemas/responses/routes/my/player/IMyPlayerResData";
+} from "../interfaces/schemas/responses/app/IClientError";
+import { HttpStatusCode } from "../interfaces/schemas/responses/app/IHttpStatus";
+import { IMyPlayerRes } from "../interfaces/schemas/responses/routes/my/player/IMyPlayerRes";
 import { IMyPlayerService } from "../interfaces/services/IMyPlayerService";
 import { MyPlayerProvider } from "../providers/MyPlayerProvider";
-import { GenericResponse } from "../schemas/responses/GenericResponse";
-import { ClientError } from "../schemas/responses/common/ClientError";
-import { HttpStatus } from "../schemas/responses/common/HttpStatus";
-import { MyPlayerResData } from "../schemas/responses/routes/my/player/MyPlayerResData";
+import { AppResponse } from "../schemas/responses/AppResponse";
+import { ClientError } from "../schemas/responses/app/ClientError";
+import { HttpStatus } from "../schemas/responses/app/HttpStatus";
+import { MyPlayerRes } from "../schemas/responses/routes/my/player/MyPlayerRes";
 
 export class MyPlayerService implements IMyPlayerService {
   public readonly myPlayerProvider: IMyPlayerProvider;
@@ -37,14 +37,14 @@ export class MyPlayerService implements IMyPlayerService {
   public async getMyPlayer(
     participantId: number,
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<IMyPlayerResData | null>> {
+  ): Promise<IAppResponse<IMyPlayerRes | null>> {
     const model: IMyPlayerModel | null =
-      await this.myPlayerProvider.getMyPlayerModel(participantId);
+      await this.myPlayerProvider.getMyPlayer(participantId);
     if (!model) {
       clientErrors.push(
         new ClientError(ClientErrorCode.PARTICIPANT_HAS_NO_PLAYER),
       );
-      return new GenericResponse<null>(
+      return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.NOT_FOUND),
         null,
         clientErrors,
@@ -52,25 +52,25 @@ export class MyPlayerService implements IMyPlayerService {
         null,
       );
     }
-    return new GenericResponse<IMyPlayerResData>(
+    return new AppResponse<IMyPlayerRes>(
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      MyPlayerResData.fromModel(model),
+      MyPlayerRes.fromModel(model),
       null,
     );
   }
 
   public async postMyPlayer(
     participantId: number,
-    dto: IMyPlayerReqDto,
+    dto: IMyPlayerReq,
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<IMyPlayerResData | null>> {
+  ): Promise<IAppResponse<IMyPlayerRes | null>> {
     if (await this.myPlayerProvider.doesMyPlayerExist(participantId)) {
       clientErrors.push(
         new ClientError(ClientErrorCode.PARTICIPANT_HAS_A_PLAYER),
       );
-      return new GenericResponse<null>(
+      return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.CONFLICT),
         null,
         clientErrors,
@@ -86,7 +86,7 @@ export class MyPlayerService implements IMyPlayerService {
       clientErrors,
     );
     if (clientErrors.length > 0) {
-      return new GenericResponse<null>(
+      return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.BAD_REQUEST),
         null,
         clientErrors,
@@ -102,25 +102,25 @@ export class MyPlayerService implements IMyPlayerService {
       dto.biography,
       dto.imgPath,
     );
-    return new GenericResponse<IMyPlayerResData>(
+    return new AppResponse<IMyPlayerRes>(
       new HttpStatus(HttpStatusCode.CREATED),
       null,
       clientErrors,
-      MyPlayerResData.fromModel(model),
+      MyPlayerRes.fromModel(model),
       null,
     );
   }
 
   public async putMyPlayer(
     participantId: number,
-    dto: IMyPlayerReqDto,
+    dto: IMyPlayerReq,
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<IMyPlayerResData | null>> {
+  ): Promise<IAppResponse<IMyPlayerRes | null>> {
     if (!(await this.myPlayerProvider.doesMyPlayerExist(participantId))) {
       clientErrors.push(
         new ClientError(ClientErrorCode.PARTICIPANT_HAS_NO_PLAYER),
       );
-      return new GenericResponse<null>(
+      return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.NOT_FOUND),
         null,
         clientErrors,
@@ -136,7 +136,7 @@ export class MyPlayerService implements IMyPlayerService {
       clientErrors,
     );
     if (clientErrors.length > 0) {
-      return new GenericResponse<null>(
+      return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.BAD_REQUEST),
         null,
         clientErrors,
@@ -152,11 +152,11 @@ export class MyPlayerService implements IMyPlayerService {
       dto.biography,
       dto.imgPath,
     );
-    return new GenericResponse<IMyPlayerResData>(
+    return new AppResponse<IMyPlayerRes>(
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      MyPlayerResData.fromModel(model),
+      MyPlayerRes.fromModel(model),
       null,
     );
   }
@@ -164,12 +164,12 @@ export class MyPlayerService implements IMyPlayerService {
   public async deleteMyPlayer(
     participantId: number,
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<void | null>> {
+  ): Promise<IAppResponse<void | null>> {
     if (!(await this.myPlayerProvider.doesMyPlayerExist(participantId))) {
       clientErrors.push(
         new ClientError(ClientErrorCode.PARTICIPANT_HAS_NO_PLAYER),
       );
-      return new GenericResponse<null>(
+      return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.NOT_FOUND),
         null,
         clientErrors,
@@ -181,7 +181,7 @@ export class MyPlayerService implements IMyPlayerService {
       clientErrors.push(
         new ClientError(ClientErrorCode.PLAYER_CANNOT_BE_DELETED),
       );
-      return new GenericResponse<null>(
+      return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.CONFLICT),
         null,
         clientErrors,
@@ -190,7 +190,7 @@ export class MyPlayerService implements IMyPlayerService {
       );
     }
     await this.myPlayerProvider.deleteMyPlayer(participantId);
-    return new GenericResponse<void>(
+    return new AppResponse<void>(
       new HttpStatus(HttpStatusCode.NO_CONTENT),
       null,
       clientErrors,

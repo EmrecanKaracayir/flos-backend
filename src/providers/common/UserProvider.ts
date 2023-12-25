@@ -1,7 +1,7 @@
 import { QueryResult } from "pg";
 import { UserRole } from "../../core/@types/helpers/authPayloadRules";
 import { pool } from "../../core/database/pool";
-import { IRecordExistsModel } from "../../interfaces/models/common/IRecordExistsModel";
+import { IExistsModel } from "../../interfaces/models/util/IExistsModel";
 import {
   IUserProvider,
   UserQueries,
@@ -10,48 +10,48 @@ import {
   ModelMismatchError,
   UnexpectedQueryResultError,
   UnexpectedUserRole,
-} from "../../interfaces/schemas/responses/common/IServerError";
-import { RecordExistsModel } from "../../models/common/RecordExistsModel";
+} from "../../interfaces/schemas/responses/app/IServerError";
+import { ExistsModel } from "../../models/util/ExistsModel";
 
 export class UserProvider implements IUserProvider {
   private static async doesOrganizerByIdExist(
     organizerId: number,
-  ): Promise<IRecordExistsModel> {
-    const reRes: QueryResult = await pool.query(
+  ): Promise<IExistsModel> {
+    const existsRes: QueryResult = await pool.query(
       UserQueries.DOES_ORGANIZER_EXIST_$ORID,
       [organizerId],
     );
-    const reRec: unknown = reRes.rows[0];
-    if (!reRec) {
+    const existsRec: unknown = existsRes.rows[0];
+    if (!existsRec) {
       throw new UnexpectedQueryResultError();
     }
-    if (!RecordExistsModel.isValidModel(reRec)) {
-      throw new ModelMismatchError(reRec);
+    if (!ExistsModel.isValidModel(existsRec)) {
+      throw new ModelMismatchError(existsRec);
     }
-    return reRec as IRecordExistsModel;
+    return existsRec as IExistsModel;
   }
 
   private static async doesParticipantByIdExist(
     participantId: number,
-  ): Promise<IRecordExistsModel> {
-    const reRes: QueryResult = await pool.query(
+  ): Promise<IExistsModel> {
+    const existsRes: QueryResult = await pool.query(
       UserQueries.DOES_PARTICIPANT_EXIST_$PRID,
       [participantId],
     );
-    const reRec: unknown = reRes.rows[0];
-    if (!reRec) {
+    const existsRec: unknown = existsRes.rows[0];
+    if (!existsRec) {
       throw new UnexpectedQueryResultError();
     }
-    if (!RecordExistsModel.isValidModel(reRec)) {
-      throw new ModelMismatchError(reRec);
+    if (!ExistsModel.isValidModel(existsRec)) {
+      throw new ModelMismatchError(existsRec);
     }
-    return reRec as IRecordExistsModel;
+    return existsRec as IExistsModel;
   }
 
   public static async doesUserExist(
     userId: number,
     userRole: UserRole,
-  ): Promise<IRecordExistsModel> {
+  ): Promise<IExistsModel> {
     switch (userRole) {
       case "organizer":
         return await UserProvider.doesOrganizerByIdExist(userId);

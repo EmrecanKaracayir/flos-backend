@@ -1,38 +1,39 @@
-import { PlayerState } from "../core/enums/playerState";
 import { IMyPlayerModel } from "../interfaces/models/IMyPlayerModel";
+import { BasePlayerModel } from "./base/BasePlayerModel";
 
-export class MyPlayerModel implements IMyPlayerModel {
+export class MyPlayerModel extends BasePlayerModel implements IMyPlayerModel {
   constructor(
-    public readonly playerId: number,
+    baseModel: BasePlayerModel,
     public readonly participantId: number,
-    public readonly clubName: string | null,
-    public readonly fullName: string,
-    public readonly state: PlayerState,
-    public readonly age: number,
-    public readonly goals: number,
-    public readonly assists: number,
-    public readonly participantEmail: string,
-    public readonly biography: string,
-    public readonly imgPath: string,
-  ) {}
+  ) {
+    super(
+      baseModel.playerId,
+      baseModel.clubName,
+      baseModel.fullName,
+      baseModel.state,
+      baseModel.age,
+      baseModel.goals,
+      baseModel.assists,
+      baseModel.participantEmail,
+      baseModel.biography,
+      baseModel.imgPath,
+    );
+  }
 
-  public static isValidModel(obj: unknown): obj is IMyPlayerModel {
-    if (typeof obj !== "object" || obj === null) {
+  public static override isValidModel(obj: unknown): obj is IMyPlayerModel {
+    if (super.isValidModel(obj) === false) {
       return false;
     }
     const model: IMyPlayerModel = obj as IMyPlayerModel;
-    return (
-      typeof model.playerId === "number" &&
-      typeof model.participantId === "number" &&
-      (typeof model.clubName === "string" || model.clubName === null) &&
-      typeof model.fullName === "string" &&
-      Object.values(PlayerState).includes(model.state as PlayerState) &&
-      typeof model.age === "number" &&
-      typeof model.goals === "number" &&
-      typeof model.assists === "number" &&
-      typeof model.participantEmail === "string" &&
-      typeof model.biography === "string" &&
-      typeof model.imgPath === "string"
-    );
+    return typeof model.participantId === "number";
+  }
+
+  public static override areValidModels(
+    objs: unknown[],
+  ): objs is IMyPlayerModel[] {
+    if (!Array.isArray(objs)) {
+      return false;
+    }
+    return objs.every((obj): boolean => MyPlayerModel.isValidModel(obj));
   }
 }

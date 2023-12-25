@@ -10,13 +10,13 @@ import {
   AvailableQueries,
   IAvailableProvider,
 } from "../interfaces/providers/IAvailableProvider";
-import { ModelMismatchError } from "../interfaces/schemas/responses/common/IServerError";
+import { ModelMismatchError } from "../interfaces/schemas/responses/app/IServerError";
 import { ClubModel } from "../models/ClubModel";
 import { LeagueModel } from "../models/LeagueModel";
 import { PlayerModel } from "../models/PlayerModel";
 
 export class AvailableProvider implements IAvailableProvider {
-  public async getAvailableClubModels(): Promise<IClubModel[]> {
+  public async getAvailableClubs(): Promise<IClubModel[]> {
     const clubRes: QueryResult = await pool.query(
       AvailableQueries.GET_AVAILABLE_CLUBS_$STATES,
       [AVAILABLE_CLUB_STATES],
@@ -31,7 +31,7 @@ export class AvailableProvider implements IAvailableProvider {
     return clubRecs as IClubModel[];
   }
 
-  public async getAvailableLeagueModels(): Promise<ILeagueModel[]> {
+  public async getAvailableLeagues(): Promise<ILeagueModel[]> {
     const leagueRes: QueryResult = await pool.query(
       AvailableQueries.GET_AVAILABLE_LEAGUES_$STATES,
       [AVAILABLE_LEAGUE_STATES],
@@ -46,7 +46,7 @@ export class AvailableProvider implements IAvailableProvider {
     return leagueRecs as ILeagueModel[];
   }
 
-  public async getAvailablePlayerModels(): Promise<IPlayerModel[]> {
+  public async getAvailablePlayers(): Promise<IPlayerModel[]> {
     const playerRes: QueryResult = await pool.query(
       AvailableQueries.GET_AVAILABLE_PLAYERS_$STATES,
       [AVAILABLE_PLAYER_STATES],

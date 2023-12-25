@@ -1,14 +1,14 @@
 import { ISearchModel } from "../interfaces/models/ISearchModel";
 import { ISearchProvider } from "../interfaces/providers/ISearchProvider";
-import { IGenericResponse } from "../interfaces/schemas/responses/IGenericResponse";
-import { IClientError } from "../interfaces/schemas/responses/common/IClientError";
-import { HttpStatusCode } from "../interfaces/schemas/responses/common/IHttpStatus";
-import { ISearchResData } from "../interfaces/schemas/responses/routes/search/ISearchResData";
+import { IAppResponse } from "../interfaces/schemas/responses/IAppResponse";
+import { IClientError } from "../interfaces/schemas/responses/app/IClientError";
+import { HttpStatusCode } from "../interfaces/schemas/responses/app/IHttpStatus";
+import { ISearchRes } from "../interfaces/schemas/responses/routes/search/ISearchRes";
 import { ISearchService } from "../interfaces/services/ISearchService";
 import { SearchProvider } from "../providers/SearchProvider";
-import { GenericResponse } from "../schemas/responses/GenericResponse";
-import { HttpStatus } from "../schemas/responses/common/HttpStatus";
-import { SearchResData } from "../schemas/responses/routes/search/SearchResData";
+import { AppResponse } from "../schemas/responses/AppResponse";
+import { HttpStatus } from "../schemas/responses/app/HttpStatus";
+import { SearchRes } from "../schemas/responses/routes/search/SearchRes";
 
 export class SearchService implements ISearchService {
   public readonly searchProvider: ISearchProvider;
@@ -20,13 +20,14 @@ export class SearchService implements ISearchService {
   public async getSearch_(
     query: string,
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<ISearchResData>> {
-    const model: ISearchModel = await this.searchProvider.getSearchModel(query);
-    return new GenericResponse<ISearchResData>(
+  ): Promise<IAppResponse<ISearchRes>> {
+    const model: ISearchModel =
+      await this.searchProvider.getSearchResults(query);
+    return new AppResponse<ISearchRes>(
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      SearchResData.fromModel(model),
+      SearchRes.fromModel(model),
       null,
     );
   }

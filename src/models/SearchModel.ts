@@ -1,22 +1,22 @@
-import { IClubModel } from "../interfaces/models/IClubModel";
-import { ILeagueModel } from "../interfaces/models/ILeagueModel";
-import { IPlayerModel } from "../interfaces/models/IPlayerModel";
-import { IRefereeModel } from "../interfaces/models/IRefereeModel";
 import { ISearchModel } from "../interfaces/models/ISearchModel";
-import { IVenueModel } from "../interfaces/models/IVenueModel";
-import { ClubModel } from "./ClubModel";
-import { LeagueModel } from "./LeagueModel";
-import { PlayerModel } from "./PlayerModel";
-import { RefereeModel } from "./RefereeModel";
-import { VenueModel } from "./VenueModel";
+import { IBaseClubModel } from "../interfaces/models/base/IBaseClubModel";
+import { IBaseLeagueModel } from "../interfaces/models/base/IBaseLeagueModel";
+import { IBasePlayerModel } from "../interfaces/models/base/IBasePlayerModel";
+import { IBaseRefereeModel } from "../interfaces/models/base/IBaseRefereeModel";
+import { IBaseVenueModel } from "../interfaces/models/base/IBaseVenueModel";
+import { BaseClubModel } from "./base/BaseClubModel";
+import { BaseLeagueModel } from "./base/BaseLeagueModel";
+import { BasePlayerModel } from "./base/BasePlayerModel";
+import { BaseRefereeModel } from "./base/BaseRefereeModel";
+import { BaseVenueModel } from "./base/IBaseVenueModel";
 
 export class SearchModel implements ISearchModel {
   constructor(
-    public readonly leagueModels: ILeagueModel[],
-    public readonly clubModels: IClubModel[],
-    public readonly playerModels: IPlayerModel[],
-    public readonly refereeModels: IRefereeModel[],
-    public readonly venueModels: IVenueModel[],
+    public readonly leagueModels: IBaseLeagueModel[],
+    public readonly clubModels: IBaseClubModel[],
+    public readonly playerModels: IBasePlayerModel[],
+    public readonly refereeModels: IBaseRefereeModel[],
+    public readonly venueModels: IBaseVenueModel[],
   ) {}
 
   public static isValidModel(obj: unknown): obj is ISearchModel {
@@ -26,15 +26,22 @@ export class SearchModel implements ISearchModel {
     const model: ISearchModel = obj as ISearchModel;
     return (
       Array.isArray(model.leagueModels) &&
-      LeagueModel.areValidModels(model.leagueModels) &&
+      BaseLeagueModel.areValidModels(model.leagueModels) &&
       Array.isArray(model.clubModels) &&
-      ClubModel.areValidModels(model.clubModels) &&
+      BaseClubModel.areValidModels(model.clubModels) &&
       Array.isArray(model.playerModels) &&
-      PlayerModel.areValidModels(model.playerModels) &&
+      BasePlayerModel.areValidModels(model.playerModels) &&
       Array.isArray(model.refereeModels) &&
-      RefereeModel.areValidModels(model.refereeModels) &&
+      BaseRefereeModel.areValidModels(model.refereeModels) &&
       Array.isArray(model.venueModels) &&
-      VenueModel.areValidModels(model.venueModels)
+      BaseVenueModel.areValidModels(model.venueModels)
     );
+  }
+
+  public static areValidModels(objs: unknown[]): objs is ISearchModel[] {
+    if (!Array.isArray(objs)) {
+      return false;
+    }
+    return objs.every((obj): boolean => SearchModel.isValidModel(obj));
   }
 }

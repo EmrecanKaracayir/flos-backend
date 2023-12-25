@@ -10,7 +10,7 @@ export interface ILeaguesController {
     next: NextFunction,
   ) => Promise<Response | void>;
 
-  getLeagues$leagueId: (
+  getLeagues$: (
     req: Request,
     res: Response,
     next: NextFunction,

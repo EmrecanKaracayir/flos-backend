@@ -1,21 +1,21 @@
 import { ISignupProvider } from "../providers/ISignupProvider";
-import { ISignupOrganizerReqDto } from "../schemas/requests/routes/signup/organizer/ISignupOrganizerReqDto";
-import { ISignupParticipantReqDto } from "../schemas/requests/routes/signup/participant/ISignupParticipantReqDto";
-import { IGenericResponse } from "../schemas/responses/IGenericResponse";
-import { IClientError } from "../schemas/responses/common/IClientError";
-import { ISignupOrganizerResData } from "../schemas/responses/routes/signup/organizer/ISignupOrganizerResData";
-import { ISignupParticipantResData } from "../schemas/responses/routes/signup/participant/ISignupParticipantResData";
+import { ISignupOrganizerReq } from "../schemas/requests/routes/signup/organizer/ISignupOrganizerReq";
+import { ISignupParticipantReq } from "../schemas/requests/routes/signup/participant/ISignupParticipantReq";
+import { IAppResponse } from "../schemas/responses/IAppResponse";
+import { IClientError } from "../schemas/responses/app/IClientError";
+import { ISignupOrganizerRes } from "../schemas/responses/routes/signup/organizer/ISignupOrganizerRes";
+import { ISignupParticipantRes } from "../schemas/responses/routes/signup/participant/ISignupParticipantRes";
 
 export interface ISignupService {
   readonly signupProvider: ISignupProvider;
 
   postSignupOrganizer: (
-    dto: ISignupOrganizerReqDto,
+    dto: ISignupOrganizerReq,
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<ISignupOrganizerResData | null>>;
+  ) => Promise<IAppResponse<ISignupOrganizerRes | null>>;
 
   postSignupParticipant: (
-    dto: ISignupParticipantReqDto,
+    dto: ISignupParticipantReq,
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<ISignupParticipantResData | null>>;
+  ) => Promise<IAppResponse<ISignupParticipantRes | null>>;
 }

@@ -10,7 +10,7 @@ export interface IVenuesController {
     next: NextFunction,
   ) => Promise<Response | void>;
 
-  getVenues$venueId: (
+  getVenues$: (
     req: Request,
     res: Response,
     next: NextFunction,

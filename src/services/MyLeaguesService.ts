@@ -9,22 +9,25 @@ import {
   isStringInLengthBetween,
   isStringMatchingRegex,
 } from "../core/utils/strings";
+import { IClubModel } from "../interfaces/models/IClubModel";
 import { IMyLeagueModel } from "../interfaces/models/IMyLeagueModel";
 import { IMyLeaguesProvider } from "../interfaces/providers/IMyLeaguesProvider";
-import { IMyLeaguesReqDto } from "../interfaces/schemas/requests/routes/my/leagues/IMyLeaguesReqDto";
-import { IGenericResponse } from "../interfaces/schemas/responses/IGenericResponse";
+import { IMyLeaguesReq } from "../interfaces/schemas/requests/routes/my/leagues/IMyLeaguesReq";
+import { IAppResponse } from "../interfaces/schemas/responses/IAppResponse";
 import {
   ClientErrorCode,
   IClientError,
-} from "../interfaces/schemas/responses/common/IClientError";
-import { HttpStatusCode } from "../interfaces/schemas/responses/common/IHttpStatus";
-import { IMyLeaguesResData } from "../interfaces/schemas/responses/routes/my/leagues/IMyLeaguesResData";
+} from "../interfaces/schemas/responses/app/IClientError";
+import { HttpStatusCode } from "../interfaces/schemas/responses/app/IHttpStatus";
+import { IMyLeagues$ClubsRes } from "../interfaces/schemas/responses/routes/my/leagues/$leagueId/clubs/IMyLeagues$ClubsRes";
+import { IMyLeaguesRes } from "../interfaces/schemas/responses/routes/my/leagues/IMyLeaguesRes";
 import { IMyLeaguesService } from "../interfaces/services/IMyLeaguesService";
 import { MyLeaguesProvider } from "../providers/MyLeaguesProvider";
-import { GenericResponse } from "../schemas/responses/GenericResponse";
-import { ClientError } from "../schemas/responses/common/ClientError";
-import { HttpStatus } from "../schemas/responses/common/HttpStatus";
-import { MyLeaguesResData } from "../schemas/responses/routes/my/leagues/MyLeaguesResData";
+import { AppResponse } from "../schemas/responses/AppResponse";
+import { ClientError } from "../schemas/responses/app/ClientError";
+import { HttpStatus } from "../schemas/responses/app/HttpStatus";
+import { MyLeagues$ClubsRes } from "../schemas/responses/routes/my/leagues/$leagueId/clubs/MyLeagues$ClubsRes";
+import { MyLeaguesRes } from "../schemas/responses/routes/my/leagues/MyLeaguesRes";
 
 export class MyLeaguesService implements IMyLeaguesService {
   public readonly myLeaguesProvider: IMyLeaguesProvider;
@@ -36,23 +39,23 @@ export class MyLeaguesService implements IMyLeaguesService {
   public async getMyLeagues(
     organizerId: number,
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<IMyLeaguesResData[]>> {
+  ): Promise<IAppResponse<IMyLeaguesRes[]>> {
     const models: IMyLeagueModel[] =
-      await this.myLeaguesProvider.getMyLeagueModels(organizerId);
-    return new GenericResponse<IMyLeaguesResData[]>(
+      await this.myLeaguesProvider.getMyLeagues(organizerId);
+    return new AppResponse<IMyLeaguesRes[]>(
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      MyLeaguesResData.fromModels(models),
+      MyLeaguesRes.fromModels(models),
       null,
     );
   }
 
   public async postMyLeagues(
     organizerId: number,
-    dto: IMyLeaguesReqDto,
+    dto: IMyLeaguesReq,
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<IMyLeaguesResData | null>> {
+  ): Promise<IAppResponse<IMyLeaguesRes | null>> {
     this.validateFields(
       dto.name,
       dto.prize,
@@ -61,7 +64,7 @@ export class MyLeaguesService implements IMyLeaguesService {
       clientErrors,
     );
     if (clientErrors.length > 0) {
-      return new GenericResponse<null>(
+      return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.BAD_REQUEST),
         null,
         clientErrors,
@@ -77,27 +80,27 @@ export class MyLeaguesService implements IMyLeaguesService {
       dto.description,
       dto.logoPath,
     );
-    return new GenericResponse<IMyLeaguesResData>(
+    return new AppResponse<IMyLeaguesRes>(
       new HttpStatus(HttpStatusCode.CREATED),
       null,
       clientErrors,
-      MyLeaguesResData.fromModel(model),
+      MyLeaguesRes.fromModel(model),
       null,
     );
   }
 
-  public async getMyLeagues$leagueId(
+  public async getMyLeagues$(
     organizerId: number,
     leagueId: number,
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<IMyLeaguesResData | null>> {
+  ): Promise<IAppResponse<IMyLeaguesRes | null>> {
     const model: IMyLeagueModel | null =
-      await this.myLeaguesProvider.getMyLeagueModelById(organizerId, leagueId);
+      await this.myLeaguesProvider.getMyLeague(organizerId, leagueId);
     if (!model) {
       clientErrors.push(
         new ClientError(ClientErrorCode.NO_LEAGUE_FOUND_IN_MY_LEAGUES),
       );
-      return new GenericResponse<null>(
+      return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.NOT_FOUND),
         null,
         clientErrors,
@@ -105,31 +108,28 @@ export class MyLeaguesService implements IMyLeaguesService {
         null,
       );
     }
-    return new GenericResponse<IMyLeaguesResData>(
+    return new AppResponse<IMyLeaguesRes>(
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      MyLeaguesResData.fromModel(model),
+      MyLeaguesRes.fromModel(model),
       null,
     );
   }
 
-  public async putMyLeagues$leagueId(
+  public async putMyLeagues$(
     organizerId: number,
     leagueId: number,
-    dto: IMyLeaguesReqDto,
+    dto: IMyLeaguesReq,
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<IMyLeaguesResData | null>> {
+  ): Promise<IAppResponse<IMyLeaguesRes | null>> {
     if (
-      !(await this.myLeaguesProvider.doesMyLeagueExistById(
-        organizerId,
-        leagueId,
-      ))
+      !(await this.myLeaguesProvider.doesMyLeagueExist(organizerId, leagueId))
     ) {
       clientErrors.push(
         new ClientError(ClientErrorCode.NO_LEAGUE_FOUND_IN_MY_LEAGUES),
       );
-      return new GenericResponse<null>(
+      return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.CONFLICT),
         null,
         clientErrors,
@@ -141,7 +141,7 @@ export class MyLeaguesService implements IMyLeaguesService {
       clientErrors.push(
         new ClientError(ClientErrorCode.LEAGUE_CANNOT_BE_EDITED),
       );
-      return new GenericResponse<null>(
+      return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.CONFLICT),
         null,
         clientErrors,
@@ -157,7 +157,7 @@ export class MyLeaguesService implements IMyLeaguesService {
       clientErrors,
     );
     if (clientErrors.length > 0) {
-      return new GenericResponse<null>(
+      return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.BAD_REQUEST),
         null,
         clientErrors,
@@ -174,30 +174,27 @@ export class MyLeaguesService implements IMyLeaguesService {
       dto.description,
       dto.logoPath,
     );
-    return new GenericResponse<IMyLeaguesResData>(
+    return new AppResponse<IMyLeaguesRes>(
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      MyLeaguesResData.fromModel(model),
+      MyLeaguesRes.fromModel(model),
       null,
     );
   }
 
-  public async deleteMyLeagues$leagueId(
+  public async deleteMyLeagues$(
     organizerId: number,
     leagueId: number,
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<void | null>> {
+  ): Promise<IAppResponse<void | null>> {
     if (
-      !(await this.myLeaguesProvider.doesMyLeagueExistById(
-        organizerId,
-        leagueId,
-      ))
+      !(await this.myLeaguesProvider.doesMyLeagueExist(organizerId, leagueId))
     ) {
       clientErrors.push(
         new ClientError(ClientErrorCode.NO_LEAGUE_FOUND_IN_MY_LEAGUES),
       );
-      return new GenericResponse<null>(
+      return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.CONFLICT),
         null,
         clientErrors,
@@ -209,7 +206,7 @@ export class MyLeaguesService implements IMyLeaguesService {
       clientErrors.push(
         new ClientError(ClientErrorCode.LEAGUE_CANNOT_BE_DELETED),
       );
-      return new GenericResponse<null>(
+      return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.CONFLICT),
         null,
         clientErrors,
@@ -218,7 +215,7 @@ export class MyLeaguesService implements IMyLeaguesService {
       );
     }
     await this.myLeaguesProvider.deleteMyLeague(leagueId);
-    return new GenericResponse<void>(
+    return new AppResponse<void>(
       new HttpStatus(HttpStatusCode.NO_CONTENT),
       null,
       clientErrors,
@@ -270,5 +267,20 @@ export class MyLeaguesService implements IMyLeaguesService {
         new ClientError(ClientErrorCode.INVALID_LEAGUE_LOGO_PATH_CONTENT),
       );
     }
+  }
+
+  public async getMyLeagues$Clubs(
+    leagueId: number,
+    clientErrors: IClientError[],
+  ): Promise<IAppResponse<IMyLeagues$ClubsRes[]>> {
+    const models: IClubModel[] =
+      await this.myLeaguesProvider.getMyLeagueClubs(leagueId);
+    return new AppResponse<IMyLeagues$ClubsRes[]>(
+      new HttpStatus(HttpStatusCode.OK),
+      null,
+      clientErrors,
+      MyLeagues$ClubsRes.fromModels(models),
+      null,
+    );
   }
 }

@@ -2,12 +2,12 @@ import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { AuthPayload, UserRole } from "../core/@types/helpers/authPayloadRules";
 import { AuthHelper } from "../core/helpers/AuthHelper";
-import { ClientErrorCode } from "../interfaces/schemas/responses/common/IClientError";
-import { HttpStatusCode } from "../interfaces/schemas/responses/common/IHttpStatus";
+import { ClientErrorCode } from "../interfaces/schemas/responses/app/IClientError";
+import { HttpStatusCode } from "../interfaces/schemas/responses/app/IHttpStatus";
 import { UserProvider } from "../providers/common/UserProvider";
-import { GenericResponse } from "../schemas/responses/GenericResponse";
-import { ClientError } from "../schemas/responses/common/ClientError";
-import { HttpStatus } from "../schemas/responses/common/HttpStatus";
+import { AppResponse } from "../schemas/responses/AppResponse";
+import { ClientError } from "../schemas/responses/app/ClientError";
+import { HttpStatus } from "../schemas/responses/app/HttpStatus";
 
 export class AuthMiddleware {
   public static verifyAuth(allowedUserRoles: Array<UserRole>) {
@@ -27,13 +27,7 @@ export class AuthMiddleware {
         return res
           .status(httpStatus.code)
           .send(
-            new GenericResponse<null>(
-              httpStatus,
-              null,
-              clientErrors,
-              null,
-              null,
-            ),
+            new AppResponse<null>(httpStatus, null, clientErrors, null, null),
           );
       }
       const token: string = authHeader.split(" ")[1];
@@ -45,13 +39,7 @@ export class AuthMiddleware {
           return res
             .status(httpStatus.code)
             .send(
-              new GenericResponse<null>(
-                httpStatus,
-                null,
-                clientErrors,
-                null,
-                null,
-              ),
+              new AppResponse<null>(httpStatus, null, clientErrors, null, null),
             );
         }
         if (
@@ -60,20 +48,14 @@ export class AuthMiddleware {
               authPayload.userId,
               authPayload.userRole,
             )
-          ).recordExists
+          ).exists
         ) {
           httpStatus = new HttpStatus(HttpStatusCode.UNAUTHORIZED);
           clientErrors.push(new ClientError(ClientErrorCode.INVALID_TOKEN));
           return res
             .status(httpStatus.code)
             .send(
-              new GenericResponse<null>(
-                httpStatus,
-                null,
-                clientErrors,
-                null,
-                null,
-              ),
+              new AppResponse<null>(httpStatus, null, clientErrors, null, null),
             );
         }
         return next();
@@ -85,7 +67,7 @@ export class AuthMiddleware {
             return res
               .status(httpStatus.code)
               .send(
-                new GenericResponse<null>(
+                new AppResponse<null>(
                   httpStatus,
                   null,
                   clientErrors,
@@ -99,7 +81,7 @@ export class AuthMiddleware {
             return res
               .status(httpStatus.code)
               .send(
-                new GenericResponse<null>(
+                new AppResponse<null>(
                   httpStatus,
                   null,
                   clientErrors,

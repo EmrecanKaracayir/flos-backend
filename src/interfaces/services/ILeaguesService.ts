@@ -1,17 +1,17 @@
 import { ILeaguesProvider } from "../providers/ILeaguesProvider";
-import { IGenericResponse } from "../schemas/responses/IGenericResponse";
-import { IClientError } from "../schemas/responses/common/IClientError";
-import { ILeaguesResData } from "../schemas/responses/routes/leagues/ILeaguesResData";
+import { IAppResponse } from "../schemas/responses/IAppResponse";
+import { IClientError } from "../schemas/responses/app/IClientError";
+import { ILeaguesRes } from "../schemas/responses/routes/leagues/ILeaguesRes";
 
 export interface ILeaguesService {
   readonly leaguesProvider: ILeaguesProvider;
 
   getLeagues: (
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<ILeaguesResData[]>>;
+  ) => Promise<IAppResponse<ILeaguesRes[]>>;
 
-  getLeagues$leagueId: (
+  getLeagues$: (
     leagueId: number,
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<ILeaguesResData | null>>;
+  ) => Promise<IAppResponse<ILeaguesRes | null>>;
 }

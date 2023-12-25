@@ -5,11 +5,11 @@ import {
   IPlayersProvider,
   PlayersQueries,
 } from "../interfaces/providers/IPlayersProvider";
-import { ModelMismatchError } from "../interfaces/schemas/responses/common/IServerError";
+import { ModelMismatchError } from "../interfaces/schemas/responses/app/IServerError";
 import { PlayerModel } from "../models/PlayerModel";
 
 export class PlayersProvider implements IPlayersProvider {
-  public async getPlayerModels(): Promise<IPlayerModel[]> {
+  public async getPlayers(): Promise<IPlayerModel[]> {
     const playerRes: QueryResult = await pool.query(PlayersQueries.GET_PLAYERS);
     const playerRecs: unknown[] = playerRes.rows;
     if (!playerRecs) {
@@ -21,9 +21,7 @@ export class PlayersProvider implements IPlayersProvider {
     return playerRecs as IPlayerModel[];
   }
 
-  public async getPlayerModelById(
-    playerId: number,
-  ): Promise<IPlayerModel | null> {
+  public async getPlayer(playerId: number): Promise<IPlayerModel | null> {
     const playerRes: QueryResult = await pool.query(
       PlayersQueries.GET_PLAYER_$PLID,
       [playerId],

@@ -16,19 +16,31 @@ export interface IMyLeaguesController {
     next: NextFunction,
   ) => Promise<Response | void>;
 
-  getMyLeagues$leagueId: (
+  getMyLeagues$: (
     req: Request,
     res: Response,
     next: NextFunction,
   ) => Promise<Response | void>;
 
-  putMyLeagues$leagueId: (
+  putMyLeagues$: (
     req: Request,
     res: Response,
     next: NextFunction,
   ) => Promise<Response | void>;
 
-  deleteMyLeagues$leagueId: (
+  deleteMyLeagues$: (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => Promise<Response | void>;
+
+  getMyLeagues$Clubs: (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => Promise<Response | void>;
+
+  postMyLeagues$Clubs: (
     req: Request,
     res: Response,
     next: NextFunction,

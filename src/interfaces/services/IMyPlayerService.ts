@@ -1,8 +1,8 @@
 import { IMyPlayerProvider } from "../providers/IMyPlayerProvider";
-import { IMyPlayerReqDto } from "../schemas/requests/routes/my/player/IMyPlayerReqDto";
-import { IGenericResponse } from "../schemas/responses/IGenericResponse";
-import { IClientError } from "../schemas/responses/common/IClientError";
-import { IMyPlayerResData } from "../schemas/responses/routes/my/player/IMyPlayerResData";
+import { IMyPlayerReq } from "../schemas/requests/routes/my/player/IMyPlayerReq";
+import { IAppResponse } from "../schemas/responses/IAppResponse";
+import { IClientError } from "../schemas/responses/app/IClientError";
+import { IMyPlayerRes } from "../schemas/responses/routes/my/player/IMyPlayerRes";
 
 export interface IMyPlayerService {
   readonly myPlayerProvider: IMyPlayerProvider;
@@ -10,22 +10,22 @@ export interface IMyPlayerService {
   getMyPlayer: (
     participantId: number,
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<IMyPlayerResData | null>>;
+  ) => Promise<IAppResponse<IMyPlayerRes | null>>;
 
   postMyPlayer: (
     participantId: number,
-    dto: IMyPlayerReqDto,
+    dto: IMyPlayerReq,
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<IMyPlayerResData | null>>;
+  ) => Promise<IAppResponse<IMyPlayerRes | null>>;
 
   putMyPlayer: (
     participantId: number,
-    dto: IMyPlayerReqDto,
+    dto: IMyPlayerReq,
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<IMyPlayerResData | null>>;
+  ) => Promise<IAppResponse<IMyPlayerRes | null>>;
 
   deleteMyPlayer: (
     participantId: number,
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<void | null>>;
+  ) => Promise<IAppResponse<void | null>>;
 }

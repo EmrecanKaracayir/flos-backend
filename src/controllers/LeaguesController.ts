@@ -1,20 +1,20 @@
 import { NextFunction, Request, Response } from "express";
 import { canParseToInt } from "../core/utils/strings";
 import { ILeaguesController } from "../interfaces/controllers/ILeaguesController";
-import { IGenericResponse } from "../interfaces/schemas/responses/IGenericResponse";
+import { IAppResponse } from "../interfaces/schemas/responses/IAppResponse";
 import {
   ClientErrorCode,
   IClientError,
-} from "../interfaces/schemas/responses/common/IClientError";
+} from "../interfaces/schemas/responses/app/IClientError";
 import {
   HttpStatusCode,
   IHttpStatus,
-} from "../interfaces/schemas/responses/common/IHttpStatus";
-import { ILeaguesResData } from "../interfaces/schemas/responses/routes/leagues/ILeaguesResData";
+} from "../interfaces/schemas/responses/app/IHttpStatus";
+import { ILeaguesRes } from "../interfaces/schemas/responses/routes/leagues/ILeaguesRes";
 import { ILeaguesService } from "../interfaces/services/ILeaguesService";
-import { GenericResponse } from "../schemas/responses/GenericResponse";
-import { ClientError } from "../schemas/responses/common/ClientError";
-import { HttpStatus } from "../schemas/responses/common/HttpStatus";
+import { AppResponse } from "../schemas/responses/AppResponse";
+import { ClientError } from "../schemas/responses/app/ClientError";
+import { HttpStatus } from "../schemas/responses/app/HttpStatus";
 import { LeaguesService } from "../services/LeaguesService";
 
 export class LeaguesController implements ILeaguesController {
@@ -34,7 +34,7 @@ export class LeaguesController implements ILeaguesController {
     // Logic
     try {
       // Hand over to service
-      const serviceRes: IGenericResponse<ILeaguesResData[]> =
+      const serviceRes: IAppResponse<ILeaguesRes[]> =
         await this.leaguesService.getLeagues(clientErrors);
       return res.status(serviceRes.httpStatus.code).send(serviceRes);
     } catch (error) {
@@ -42,7 +42,7 @@ export class LeaguesController implements ILeaguesController {
     }
   }
 
-  public async getLeagues$leagueId(
+  public async getLeagues$(
     req: Request,
     res: Response,
     next: NextFunction,
@@ -60,13 +60,7 @@ export class LeaguesController implements ILeaguesController {
         return res
           .status(httpStatus.code)
           .send(
-            new GenericResponse<null>(
-              httpStatus,
-              null,
-              clientErrors,
-              null,
-              null,
-            ),
+            new AppResponse<null>(httpStatus, null, clientErrors, null, null),
           );
       }
       if (!canParseToInt(req.params.leagueId)) {
@@ -77,18 +71,12 @@ export class LeaguesController implements ILeaguesController {
         return res
           .status(httpStatus.code)
           .send(
-            new GenericResponse<null>(
-              httpStatus,
-              null,
-              clientErrors,
-              null,
-              null,
-            ),
+            new AppResponse<null>(httpStatus, null, clientErrors, null, null),
           );
       }
       // Hand over to service
-      const serviceRes: IGenericResponse<ILeaguesResData | null> =
-        await this.leaguesService.getLeagues$leagueId(
+      const serviceRes: IAppResponse<ILeaguesRes | null> =
+        await this.leaguesService.getLeagues$(
           parseInt(req.params.leagueId),
           clientErrors,
         );

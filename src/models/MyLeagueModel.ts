@@ -1,36 +1,34 @@
-import { LeagueState } from "../core/enums/leagueState";
 import { IMyLeagueModel } from "../interfaces/models/IMyLeagueModel";
+import { IBaseLeagueModel } from "../interfaces/models/base/IBaseLeagueModel";
+import { BaseLeagueModel } from "./base/BaseLeagueModel";
 
-export class MyLeagueModel implements IMyLeagueModel {
+export class MyLeagueModel extends BaseLeagueModel implements IMyLeagueModel {
   constructor(
-    public readonly leagueId: number,
+    baseModel: IBaseLeagueModel,
     public readonly organizerId: number,
-    public readonly name: string,
-    public readonly state: LeagueState,
-    public readonly prize: number,
-    public readonly organizerEmail: string,
-    public readonly description: string,
-    public readonly logoPath: string,
-  ) {}
-
-  public static isValidModel(obj: unknown): obj is IMyLeagueModel {
-    if (typeof obj !== "object" || obj === null) {
-      return false;
-    }
-    const model: IMyLeagueModel = obj as IMyLeagueModel;
-    return (
-      typeof model.leagueId === "number" &&
-      typeof model.organizerId === "number" &&
-      typeof model.name === "string" &&
-      Object.values(LeagueState).includes(model.state as LeagueState) &&
-      typeof model.prize === "number" &&
-      typeof model.organizerEmail === "string" &&
-      typeof model.description === "string" &&
-      typeof model.logoPath === "string"
+  ) {
+    super(
+      baseModel.leagueId,
+      baseModel.name,
+      baseModel.state,
+      baseModel.prize,
+      baseModel.organizerEmail,
+      baseModel.description,
+      baseModel.logoPath,
     );
   }
 
-  public static areValidModels(objs: unknown[]): objs is IMyLeagueModel[] {
+  public static override isValidModel(obj: unknown): obj is IMyLeagueModel {
+    if (super.isValidModel(obj) === false) {
+      return false;
+    }
+    const model: IMyLeagueModel = obj as IMyLeagueModel;
+    return typeof model.organizerId === "number";
+  }
+
+  public static override areValidModels(
+    objs: unknown[],
+  ): objs is IMyLeagueModel[] {
     if (!Array.isArray(objs)) {
       return false;
     }

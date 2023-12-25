@@ -6,14 +6,12 @@ import {
   ILoginProvider,
   LoginQueries,
 } from "../interfaces/providers/ILoginProvider";
-import { ModelMismatchError } from "../interfaces/schemas/responses/common/IServerError";
+import { ModelMismatchError } from "../interfaces/schemas/responses/app/IServerError";
 import { OrganizerModel } from "../models/OrganizerModel";
 import { ParticipantModel } from "../models/ParticipantModel";
 
 export class LoginProvider implements ILoginProvider {
-  public async getOrganizerModelByUsername(
-    username: string,
-  ): Promise<IOrganizerModel | null> {
+  public async getOrganizer(username: string): Promise<IOrganizerModel | null> {
     const organizerRes: QueryResult = await pool.query(
       LoginQueries.GET_ORGANIZER_$UNAME,
       [username],
@@ -28,7 +26,7 @@ export class LoginProvider implements ILoginProvider {
     return organizerRec as IOrganizerModel;
   }
 
-  public async getParticipantModelByUsername(
+  public async getParticipant(
     username: string,
   ): Promise<IParticipantModel | null> {
     const participantRes: QueryResult = await pool.query(

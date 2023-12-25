@@ -1,9 +1,9 @@
 import { IPlayerModel } from "../models/IPlayerModel";
 
 export interface IPlayersProvider {
-  getPlayerModels: () => Promise<IPlayerModel[]>;
+  getPlayers: () => Promise<IPlayerModel[]>;
 
-  getPlayerModelById: (playerId: number) => Promise<IPlayerModel | null>;
+  getPlayer: (playerId: number) => Promise<IPlayerModel | null>;
 }
 
 export enum PlayersQueries {

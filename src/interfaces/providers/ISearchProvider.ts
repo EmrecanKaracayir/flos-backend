@@ -1,7 +1,7 @@
 import { ISearchModel } from "../models/ISearchModel";
 
 export interface ISearchProvider {
-  getSearchModel: (query: string) => Promise<ISearchModel>;
+  getSearchResults: (query: string) => Promise<ISearchModel>;
 }
 
 export enum SearchQueries {

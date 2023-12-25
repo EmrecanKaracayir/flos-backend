@@ -1,18 +1,18 @@
 import { IVenueModel } from "../interfaces/models/IVenueModel";
 import { IVenuesProvider } from "../interfaces/providers/IVenuesProvider";
-import { IGenericResponse } from "../interfaces/schemas/responses/IGenericResponse";
+import { IAppResponse } from "../interfaces/schemas/responses/IAppResponse";
 import {
   ClientErrorCode,
   IClientError,
-} from "../interfaces/schemas/responses/common/IClientError";
-import { HttpStatusCode } from "../interfaces/schemas/responses/common/IHttpStatus";
-import { IVenuesResData } from "../interfaces/schemas/responses/routes/venues/IVenuesResData";
+} from "../interfaces/schemas/responses/app/IClientError";
+import { HttpStatusCode } from "../interfaces/schemas/responses/app/IHttpStatus";
+import { IVenuesRes } from "../interfaces/schemas/responses/routes/venues/IVenuesRes";
 import { IVenuesService } from "../interfaces/services/IVenuesService";
 import { VenuesProvider } from "../providers/VenuesProvider";
-import { GenericResponse } from "../schemas/responses/GenericResponse";
-import { ClientError } from "../schemas/responses/common/ClientError";
-import { HttpStatus } from "../schemas/responses/common/HttpStatus";
-import { VenuesResData } from "../schemas/responses/routes/venues/VenuesResData";
+import { AppResponse } from "../schemas/responses/AppResponse";
+import { ClientError } from "../schemas/responses/app/ClientError";
+import { HttpStatus } from "../schemas/responses/app/HttpStatus";
+import { VenuesRes } from "../schemas/responses/routes/venues/VenuesRes";
 
 export class VenuesService implements IVenuesService {
   public readonly venuesProvider: IVenuesProvider;
@@ -23,28 +23,28 @@ export class VenuesService implements IVenuesService {
 
   public async getVenues(
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<IVenuesResData[]>> {
-    const models: IVenueModel[] = await this.venuesProvider.getVenueModels();
-    return new GenericResponse<IVenuesResData[]>(
+  ): Promise<IAppResponse<IVenuesRes[]>> {
+    const models: IVenueModel[] = await this.venuesProvider.getVenues();
+    return new AppResponse<IVenuesRes[]>(
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      VenuesResData.fromModels(models),
+      VenuesRes.fromModels(models),
       null,
     );
   }
 
-  public async getVenues$venueId(
+  public async getVenues$(
     venueId: number,
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<IVenuesResData | null>> {
+  ): Promise<IAppResponse<IVenuesRes | null>> {
     const model: IVenueModel | null =
-      await this.venuesProvider.getVenueModelById(venueId);
+      await this.venuesProvider.getVenue(venueId);
     if (!model) {
       clientErrors.push(
         new ClientError(ClientErrorCode.NO_VENUE_FOUND_IN_VENUES),
       );
-      return new GenericResponse<null>(
+      return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.NOT_FOUND),
         null,
         clientErrors,
@@ -52,11 +52,11 @@ export class VenuesService implements IVenuesService {
         null,
       );
     }
-    return new GenericResponse<IVenuesResData>(
+    return new AppResponse<IVenuesRes>(
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      VenuesResData.fromModel(model),
+      VenuesRes.fromModel(model),
       null,
     );
   }

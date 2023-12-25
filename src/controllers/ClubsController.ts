@@ -1,20 +1,20 @@
 import { NextFunction, Request, Response } from "express";
 import { canParseToInt } from "../core/utils/strings";
 import { IClubsController } from "../interfaces/controllers/IClubsController";
-import { IGenericResponse } from "../interfaces/schemas/responses/IGenericResponse";
+import { IAppResponse } from "../interfaces/schemas/responses/IAppResponse";
 import {
   ClientErrorCode,
   IClientError,
-} from "../interfaces/schemas/responses/common/IClientError";
+} from "../interfaces/schemas/responses/app/IClientError";
 import {
   HttpStatusCode,
   IHttpStatus,
-} from "../interfaces/schemas/responses/common/IHttpStatus";
-import { IClubsResData } from "../interfaces/schemas/responses/routes/clubs/IClubsResData";
+} from "../interfaces/schemas/responses/app/IHttpStatus";
+import { IClubsRes } from "../interfaces/schemas/responses/routes/clubs/IClubsRes";
 import { IClubsService } from "../interfaces/services/IClubsService";
-import { GenericResponse } from "../schemas/responses/GenericResponse";
-import { ClientError } from "../schemas/responses/common/ClientError";
-import { HttpStatus } from "../schemas/responses/common/HttpStatus";
+import { AppResponse } from "../schemas/responses/AppResponse";
+import { ClientError } from "../schemas/responses/app/ClientError";
+import { HttpStatus } from "../schemas/responses/app/HttpStatus";
 import { ClubsService } from "../services/ClubsService";
 
 export class ClubsController implements IClubsController {
@@ -34,7 +34,7 @@ export class ClubsController implements IClubsController {
     // Logic
     try {
       // Hand over to service
-      const serviceRes: IGenericResponse<IClubsResData[]> =
+      const serviceRes: IAppResponse<IClubsRes[]> =
         await this.clubsService.getClubs(clientErrors);
       return res.status(serviceRes.httpStatus.code).send(serviceRes);
     } catch (error) {
@@ -42,7 +42,7 @@ export class ClubsController implements IClubsController {
     }
   }
 
-  public async getClubs$clubId(
+  public async getClubs$(
     req: Request,
     res: Response,
     next: NextFunction,
@@ -60,13 +60,7 @@ export class ClubsController implements IClubsController {
         return res
           .status(httpStatus.code)
           .send(
-            new GenericResponse<null>(
-              httpStatus,
-              null,
-              clientErrors,
-              null,
-              null,
-            ),
+            new AppResponse<null>(httpStatus, null, clientErrors, null, null),
           );
       }
       if (!canParseToInt(req.params.clubId)) {
@@ -77,18 +71,12 @@ export class ClubsController implements IClubsController {
         return res
           .status(httpStatus.code)
           .send(
-            new GenericResponse<null>(
-              httpStatus,
-              null,
-              clientErrors,
-              null,
-              null,
-            ),
+            new AppResponse<null>(httpStatus, null, clientErrors, null, null),
           );
       }
       // Hand over to service
-      const serviceRes: IGenericResponse<IClubsResData | null> =
-        await this.clubsService.getClubs$clubId(
+      const serviceRes: IAppResponse<IClubsRes | null> =
+        await this.clubsService.getClubs$(
           parseInt(req.params.clubId),
           clientErrors,
         );

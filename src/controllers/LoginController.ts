@@ -1,25 +1,25 @@
 import { NextFunction, Request, Response } from "express";
 import { AuthHelper } from "../core/helpers/AuthHelper";
 import { ILoginController } from "../interfaces/controllers/ILoginController";
-import { ILoginOrganizerReqDto } from "../interfaces/schemas/requests/routes/login/organizer/ILoginOrganizerReqDto";
-import { ILoginParticipantReqDto } from "../interfaces/schemas/requests/routes/login/participant/ILoginParticipantReqDto";
-import { IGenericResponse } from "../interfaces/schemas/responses/IGenericResponse";
+import { ILoginOrganizerReq } from "../interfaces/schemas/requests/routes/login/organizer/ILoginOrganizerReq";
+import { ILoginParticipantReq } from "../interfaces/schemas/requests/routes/login/participant/ILoginParticipantReq";
+import { IAppResponse } from "../interfaces/schemas/responses/IAppResponse";
 import {
   ClientErrorCode,
   IClientError,
-} from "../interfaces/schemas/responses/common/IClientError";
+} from "../interfaces/schemas/responses/app/IClientError";
 import {
   HttpStatusCode,
   IHttpStatus,
-} from "../interfaces/schemas/responses/common/IHttpStatus";
-import { ILoginOrganizerResData } from "../interfaces/schemas/responses/routes/login/organizer/ILoginOrganizerResData";
-import { ILoginParticipantResData } from "../interfaces/schemas/responses/routes/login/participant/ILoginParticipantResData";
+} from "../interfaces/schemas/responses/app/IHttpStatus";
+import { ILoginOrganizerRes } from "../interfaces/schemas/responses/routes/login/organizer/ILoginOrganizerRes";
+import { ILoginParticipantRes } from "../interfaces/schemas/responses/routes/login/participant/ILoginParticipantRes";
 import { ILoginService } from "../interfaces/services/ILoginService";
-import { LoginOrganizerReqDto } from "../schemas/requests/routes/login/organizer/LoginOrganizerReqDto";
-import { LoginParticipantReqDto } from "../schemas/requests/routes/login/participant/LoginParticipantReqDto";
-import { GenericResponse } from "../schemas/responses/GenericResponse";
-import { ClientError } from "../schemas/responses/common/ClientError";
-import { HttpStatus } from "../schemas/responses/common/HttpStatus";
+import { LoginOrganizerReq } from "../schemas/requests/routes/login/organizer/LoginOrganizerReq";
+import { LoginParticipantReq } from "../schemas/requests/routes/login/participant/LoginParticipantReq";
+import { AppResponse } from "../schemas/responses/AppResponse";
+import { ClientError } from "../schemas/responses/app/ClientError";
+import { HttpStatus } from "../schemas/responses/app/HttpStatus";
 import { LoginService } from "../services/LoginService";
 
 export class LoginController implements ILoginController {
@@ -39,7 +39,7 @@ export class LoginController implements ILoginController {
     const clientErrors: Array<IClientError> = [];
     // Logic
     try {
-      if (!LoginOrganizerReqDto.isValidDto(req.body)) {
+      if (!LoginOrganizerReq.isValidReq(req.body)) {
         httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
         clientErrors.push(
           new ClientError(ClientErrorCode.INVALID_REQUEST_BODY),
@@ -47,19 +47,13 @@ export class LoginController implements ILoginController {
         return res
           .status(httpStatus.code)
           .send(
-            new GenericResponse<null>(
-              httpStatus,
-              null,
-              clientErrors,
-              null,
-              null,
-            ),
+            new AppResponse<null>(httpStatus, null, clientErrors, null, null),
           );
       }
       // Hand over to service
-      const serviceRes: IGenericResponse<ILoginOrganizerResData | null> =
+      const serviceRes: IAppResponse<ILoginOrganizerRes | null> =
         await this.loginService.postLoginOrganizer(
-          req.body as ILoginOrganizerReqDto,
+          req.body as ILoginOrganizerReq,
           clientErrors,
         );
       if (!serviceRes.httpStatus.isSuccess()) {
@@ -68,7 +62,7 @@ export class LoginController implements ILoginController {
       }
       // Respond with token
       return res.status(serviceRes.httpStatus.code).send(
-        new GenericResponse<ILoginOrganizerResData>(
+        new AppResponse<ILoginOrganizerRes>(
           serviceRes.httpStatus,
           serviceRes.serverError,
           serviceRes.clientErrors,
@@ -94,7 +88,7 @@ export class LoginController implements ILoginController {
     const clientErrors: Array<IClientError> = [];
     // Logic
     try {
-      if (!LoginParticipantReqDto.isValidDto(req.body)) {
+      if (!LoginParticipantReq.isValidReq(req.body)) {
         httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
         clientErrors.push(
           new ClientError(ClientErrorCode.INVALID_REQUEST_BODY),
@@ -102,19 +96,13 @@ export class LoginController implements ILoginController {
         return res
           .status(httpStatus.code)
           .send(
-            new GenericResponse<null>(
-              httpStatus,
-              null,
-              clientErrors,
-              null,
-              null,
-            ),
+            new AppResponse<null>(httpStatus, null, clientErrors, null, null),
           );
       }
       // Hand over to service
-      const serviceRes: IGenericResponse<ILoginParticipantResData | null> =
+      const serviceRes: IAppResponse<ILoginParticipantRes | null> =
         await this.loginService.postLoginParticipant(
-          req.body as ILoginParticipantReqDto,
+          req.body as ILoginParticipantReq,
           clientErrors,
         );
       if (!serviceRes.httpStatus.isSuccess()) {
@@ -123,7 +111,7 @@ export class LoginController implements ILoginController {
       }
       // Respond with token
       return res.status(serviceRes.httpStatus.code).send(
-        new GenericResponse<ILoginParticipantResData>(
+        new AppResponse<ILoginParticipantRes>(
           serviceRes.httpStatus,
           serviceRes.serverError,
           serviceRes.clientErrors,

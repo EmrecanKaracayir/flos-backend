@@ -1,9 +1,9 @@
 import { IRefereeModel } from "../models/IRefereeModel";
 
 export interface IRefereesProvider {
-  getRefereeModels: () => Promise<IRefereeModel[]>;
+  getReferees: () => Promise<IRefereeModel[]>;
 
-  getRefereeModelById: (refereeId: number) => Promise<IRefereeModel | null>;
+  getReferee: (refereeId: number) => Promise<IRefereeModel | null>;
 }
 
 export enum RefereesQueries {

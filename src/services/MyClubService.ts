@@ -11,20 +11,20 @@ import {
 } from "../core/utils/strings";
 import { IMyClubModel } from "../interfaces/models/IMyClubModel";
 import { IMyClubProvider } from "../interfaces/providers/IMyClubProvider";
-import { IMyClubReqDto } from "../interfaces/schemas/requests/routes/my/club/IMyClubReqDto";
-import { IGenericResponse } from "../interfaces/schemas/responses/IGenericResponse";
+import { IMyClubReq } from "../interfaces/schemas/requests/routes/my/club/IMyClubReq";
+import { IAppResponse } from "../interfaces/schemas/responses/IAppResponse";
 import {
   ClientErrorCode,
   IClientError,
-} from "../interfaces/schemas/responses/common/IClientError";
-import { HttpStatusCode } from "../interfaces/schemas/responses/common/IHttpStatus";
-import { IMyClubResData } from "../interfaces/schemas/responses/routes/my/club/IMyClubResData";
+} from "../interfaces/schemas/responses/app/IClientError";
+import { HttpStatusCode } from "../interfaces/schemas/responses/app/IHttpStatus";
+import { IMyClubRes } from "../interfaces/schemas/responses/routes/my/club/IMyClubRes";
 import { IMyClubService } from "../interfaces/services/IMyClubService";
 import { MyClubProvider } from "../providers/MyClubProvider";
-import { GenericResponse } from "../schemas/responses/GenericResponse";
-import { ClientError } from "../schemas/responses/common/ClientError";
-import { HttpStatus } from "../schemas/responses/common/HttpStatus";
-import { MyClubResData } from "../schemas/responses/routes/my/club/MyClubResData";
+import { AppResponse } from "../schemas/responses/AppResponse";
+import { ClientError } from "../schemas/responses/app/ClientError";
+import { HttpStatus } from "../schemas/responses/app/HttpStatus";
+import { MyClubRes } from "../schemas/responses/routes/my/club/MyClubRes";
 
 export class MyClubService implements IMyClubService {
   public readonly myClubProvider: IMyClubProvider;
@@ -36,14 +36,14 @@ export class MyClubService implements IMyClubService {
   public async getMyClub(
     participantId: number,
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<IMyClubResData | null>> {
+  ): Promise<IAppResponse<IMyClubRes | null>> {
     const model: IMyClubModel | null =
-      await this.myClubProvider.getMyClubModel(participantId);
+      await this.myClubProvider.getMyClub(participantId);
     if (!model) {
       clientErrors.push(
         new ClientError(ClientErrorCode.PARTICIPANT_HAS_NO_CLUB),
       );
-      return new GenericResponse<null>(
+      return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.NOT_FOUND),
         null,
         clientErrors,
@@ -51,25 +51,25 @@ export class MyClubService implements IMyClubService {
         null,
       );
     }
-    return new GenericResponse<IMyClubResData>(
+    return new AppResponse<IMyClubRes>(
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      MyClubResData.fromModel(model),
+      MyClubRes.fromModel(model),
       null,
     );
   }
 
   public async postMyClub(
     participantId: number,
-    dto: IMyClubReqDto,
+    dto: IMyClubReq,
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<IMyClubResData | null>> {
+  ): Promise<IAppResponse<IMyClubRes | null>> {
     if (await this.myClubProvider.doesMyClubExist(participantId)) {
       clientErrors.push(
         new ClientError(ClientErrorCode.PARTICIPANT_HAS_A_CLUB),
       );
-      return new GenericResponse<null>(
+      return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.CONFLICT),
         null,
         clientErrors,
@@ -81,7 +81,7 @@ export class MyClubService implements IMyClubService {
       clientErrors.push(
         new ClientError(ClientErrorCode.PARTICIPANT_HAS_NO_PLAYER_FOR_CLUB),
       );
-      return new GenericResponse<null>(
+      return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.CONFLICT),
         null,
         clientErrors,
@@ -93,7 +93,7 @@ export class MyClubService implements IMyClubService {
       clientErrors.push(
         new ClientError(ClientErrorCode.PARTICIPANT_PLAYER_IS_NOT_AVAILABLE),
       );
-      return new GenericResponse<null>(
+      return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.CONFLICT),
         null,
         clientErrors,
@@ -103,7 +103,7 @@ export class MyClubService implements IMyClubService {
     }
     this.validateFields(dto.name, dto.description, dto.logoPath, clientErrors);
     if (clientErrors.length > 0) {
-      return new GenericResponse<null>(
+      return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.BAD_REQUEST),
         null,
         clientErrors,
@@ -118,25 +118,25 @@ export class MyClubService implements IMyClubService {
       dto.description,
       dto.logoPath,
     );
-    return new GenericResponse<IMyClubResData>(
+    return new AppResponse<IMyClubRes>(
       new HttpStatus(HttpStatusCode.CREATED),
       null,
       clientErrors,
-      MyClubResData.fromModel(model),
+      MyClubRes.fromModel(model),
       null,
     );
   }
 
   public async putMyClub(
     participantId: number,
-    dto: IMyClubReqDto,
+    dto: IMyClubReq,
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<IMyClubResData | null>> {
+  ): Promise<IAppResponse<IMyClubRes | null>> {
     if (!(await this.myClubProvider.doesMyClubExist(participantId))) {
       clientErrors.push(
         new ClientError(ClientErrorCode.PARTICIPANT_HAS_NO_CLUB),
       );
-      return new GenericResponse<null>(
+      return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.NOT_FOUND),
         null,
         clientErrors,
@@ -146,7 +146,7 @@ export class MyClubService implements IMyClubService {
     }
     this.validateFields(dto.name, dto.description, dto.logoPath, clientErrors);
     if (clientErrors.length > 0) {
-      return new GenericResponse<null>(
+      return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.BAD_REQUEST),
         null,
         clientErrors,
@@ -161,11 +161,11 @@ export class MyClubService implements IMyClubService {
       dto.description,
       dto.logoPath,
     );
-    return new GenericResponse<IMyClubResData>(
+    return new AppResponse<IMyClubRes>(
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      MyClubResData.fromModel(model),
+      MyClubRes.fromModel(model),
       null,
     );
   }
@@ -173,12 +173,12 @@ export class MyClubService implements IMyClubService {
   public async deleteMyClub(
     participantId: number,
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<void | null>> {
+  ): Promise<IAppResponse<void | null>> {
     if (!(await this.myClubProvider.doesMyClubExist(participantId))) {
       clientErrors.push(
         new ClientError(ClientErrorCode.PARTICIPANT_HAS_NO_CLUB),
       );
-      return new GenericResponse<null>(
+      return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.NOT_FOUND),
         null,
         clientErrors,
@@ -190,7 +190,7 @@ export class MyClubService implements IMyClubService {
       clientErrors.push(
         new ClientError(ClientErrorCode.CLUB_CANNOT_BE_DELETED),
       );
-      return new GenericResponse<null>(
+      return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.CONFLICT),
         null,
         clientErrors,
@@ -199,7 +199,7 @@ export class MyClubService implements IMyClubService {
       );
     }
     await this.myClubProvider.deleteMyClub(participantId);
-    return new GenericResponse<void>(
+    return new AppResponse<void>(
       new HttpStatus(HttpStatusCode.NO_CONTENT),
       null,
       clientErrors,

@@ -2,7 +2,7 @@ import { QueryResult } from "pg";
 import { pool } from "../core/database/pool";
 import { IOrganizerModel } from "../interfaces/models/IOrganizerModel";
 import { IParticipantModel } from "../interfaces/models/IParticipantModel";
-import { IRecordExistsModel } from "../interfaces/models/common/IRecordExistsModel";
+import { IExistsModel } from "../interfaces/models/util/IExistsModel";
 import {
   ISignupProvider,
   SignupQueries,
@@ -10,42 +10,42 @@ import {
 import {
   ModelMismatchError,
   UnexpectedQueryResultError,
-} from "../interfaces/schemas/responses/common/IServerError";
+} from "../interfaces/schemas/responses/app/IServerError";
 import { OrganizerModel } from "../models/OrganizerModel";
 import { ParticipantModel } from "../models/ParticipantModel";
-import { RecordExistsModel } from "../models/common/RecordExistsModel";
+import { ExistsModel } from "../models/util/ExistsModel";
 
 export class SignupProvider implements ISignupProvider {
   public async doesOrganizerByUsernameExist(
     username: string,
   ): Promise<boolean> {
-    const reRes: QueryResult = await pool.query(
+    const existsRes: QueryResult = await pool.query(
       SignupQueries.DOES_ORGANIZER_EXIST_$UNAME,
       [username],
     );
-    const reRec: unknown = reRes.rows[0];
-    if (!reRec) {
+    const existsRec: unknown = existsRes.rows[0];
+    if (!existsRec) {
       throw new UnexpectedQueryResultError();
     }
-    if (!RecordExistsModel.isValidModel(reRec)) {
-      throw new ModelMismatchError(reRec);
+    if (!ExistsModel.isValidModel(existsRec)) {
+      throw new ModelMismatchError(existsRec);
     }
-    return (reRec as IRecordExistsModel).recordExists;
+    return (existsRec as IExistsModel).exists;
   }
 
   public async doesOrganizerByEmailExist(email: string): Promise<boolean> {
-    const reRes: QueryResult = await pool.query(
+    const existsRes: QueryResult = await pool.query(
       SignupQueries.DOES_ORGANIZER_EXIST_$EMAIL,
       [email],
     );
-    const reRec: unknown = reRes.rows[0];
-    if (!reRec) {
+    const existsRec: unknown = existsRes.rows[0];
+    if (!existsRec) {
       throw new UnexpectedQueryResultError();
     }
-    if (!RecordExistsModel.isValidModel(reRec)) {
-      throw new ModelMismatchError(reRec);
+    if (!ExistsModel.isValidModel(existsRec)) {
+      throw new ModelMismatchError(existsRec);
     }
-    return (reRec as IRecordExistsModel).recordExists;
+    return (existsRec as IExistsModel).exists;
   }
 
   public async createOrganizer(
@@ -70,33 +70,33 @@ export class SignupProvider implements ISignupProvider {
   public async doesParticipantByUsernameExist(
     username: string,
   ): Promise<boolean> {
-    const reRes: QueryResult = await pool.query(
+    const existsRes: QueryResult = await pool.query(
       SignupQueries.DOES_PARTICIPANT_EXIST_$UNAME,
       [username],
     );
-    const reRec: unknown = reRes.rows[0];
-    if (!reRec) {
+    const existsRec: unknown = existsRes.rows[0];
+    if (!existsRec) {
       throw new UnexpectedQueryResultError();
     }
-    if (!RecordExistsModel.isValidModel(reRec)) {
-      throw new ModelMismatchError(reRec);
+    if (!ExistsModel.isValidModel(existsRec)) {
+      throw new ModelMismatchError(existsRec);
     }
-    return (reRec as IRecordExistsModel).recordExists;
+    return (existsRec as IExistsModel).exists;
   }
 
   public async doesParticipantByEmailExist(email: string): Promise<boolean> {
-    const reRes: QueryResult = await pool.query(
+    const existsRes: QueryResult = await pool.query(
       SignupQueries.DOES_PARTICIPANT_EXIST_$EMAIL,
       [email],
     );
-    const reRec: unknown = reRes.rows[0];
-    if (!reRec) {
+    const existsRec: unknown = existsRes.rows[0];
+    if (!existsRec) {
       throw new UnexpectedQueryResultError();
     }
-    if (!RecordExistsModel.isValidModel(reRec)) {
-      throw new ModelMismatchError(reRec);
+    if (!ExistsModel.isValidModel(existsRec)) {
+      throw new ModelMismatchError(existsRec);
     }
-    return (reRec as IRecordExistsModel).recordExists;
+    return (existsRec as IExistsModel).exists;
   }
 
   public async createParticipant(

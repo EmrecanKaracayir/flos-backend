@@ -1,8 +1,9 @@
 import { IMyLeaguesProvider } from "../providers/IMyLeaguesProvider";
-import { IMyLeaguesReqDto } from "../schemas/requests/routes/my/leagues/IMyLeaguesReqDto";
-import { IGenericResponse } from "../schemas/responses/IGenericResponse";
-import { IClientError } from "../schemas/responses/common/IClientError";
-import { IMyLeaguesResData } from "../schemas/responses/routes/my/leagues/IMyLeaguesResData";
+import { IMyLeaguesReq } from "../schemas/requests/routes/my/leagues/IMyLeaguesReq";
+import { IAppResponse } from "../schemas/responses/IAppResponse";
+import { IClientError } from "../schemas/responses/app/IClientError";
+import { IMyLeagues$ClubsRes } from "../schemas/responses/routes/my/leagues/$leagueId/clubs/IMyLeagues$ClubsRes";
+import { IMyLeaguesRes } from "../schemas/responses/routes/my/leagues/IMyLeaguesRes";
 
 export interface IMyLeaguesService {
   readonly myLeaguesProvider: IMyLeaguesProvider;
@@ -10,30 +11,35 @@ export interface IMyLeaguesService {
   getMyLeagues: (
     organizerId: number,
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<IMyLeaguesResData[]>>;
+  ) => Promise<IAppResponse<IMyLeaguesRes[]>>;
 
   postMyLeagues: (
     organizerId: number,
-    dto: IMyLeaguesReqDto,
+    dto: IMyLeaguesReq,
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<IMyLeaguesResData | null>>;
+  ) => Promise<IAppResponse<IMyLeaguesRes | null>>;
 
-  getMyLeagues$leagueId: (
+  getMyLeagues$: (
     organizerId: number,
     leagueId: number,
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<IMyLeaguesResData | null>>;
+  ) => Promise<IAppResponse<IMyLeaguesRes | null>>;
 
-  putMyLeagues$leagueId: (
+  putMyLeagues$: (
     organizerId: number,
     leagueId: number,
-    dto: IMyLeaguesReqDto,
+    dto: IMyLeaguesReq,
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<IMyLeaguesResData | null>>;
+  ) => Promise<IAppResponse<IMyLeaguesRes | null>>;
 
-  deleteMyLeagues$leagueId: (
+  deleteMyLeagues$: (
     organizerId: number,
     leagueId: number,
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<void | null>>;
+  ) => Promise<IAppResponse<void | null>>;
+
+  getMyLeagues$Clubs: (
+    leagueId: number,
+    clientErrors: IClientError[],
+  ) => Promise<IAppResponse<IMyLeagues$ClubsRes[]>>;
 }

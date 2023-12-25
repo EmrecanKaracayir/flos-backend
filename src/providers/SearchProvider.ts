@@ -10,11 +10,11 @@ import {
   ISearchProvider,
   SearchQueries,
 } from "../interfaces/providers/ISearchProvider";
-import { ModelMismatchError } from "../interfaces/schemas/responses/common/IServerError";
+import { ModelMismatchError } from "../interfaces/schemas/responses/app/IServerError";
 import { SearchModel } from "../models/SearchModel";
 
 export class SearchProvider implements ISearchProvider {
-  public async getSearchModel(query: string): Promise<ISearchModel> {
+  public async getSearchResults(query: string): Promise<ISearchModel> {
     // Leagues
     let leagues: ILeagueModel[];
     const leagueRes: QueryResult = await pool.query(

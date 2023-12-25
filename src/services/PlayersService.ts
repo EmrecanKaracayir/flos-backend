@@ -1,18 +1,18 @@
 import { IPlayerModel } from "../interfaces/models/IPlayerModel";
 import { IPlayersProvider } from "../interfaces/providers/IPlayersProvider";
-import { IGenericResponse } from "../interfaces/schemas/responses/IGenericResponse";
+import { IAppResponse } from "../interfaces/schemas/responses/IAppResponse";
 import {
   ClientErrorCode,
   IClientError,
-} from "../interfaces/schemas/responses/common/IClientError";
-import { HttpStatusCode } from "../interfaces/schemas/responses/common/IHttpStatus";
-import { IPlayersResData } from "../interfaces/schemas/responses/routes/players/IPlayersResData";
+} from "../interfaces/schemas/responses/app/IClientError";
+import { HttpStatusCode } from "../interfaces/schemas/responses/app/IHttpStatus";
+import { IPlayersRes } from "../interfaces/schemas/responses/routes/players/IPlayersRes";
 import { IPlayersService } from "../interfaces/services/IPlayersService";
 import { PlayersProvider } from "../providers/PlayersProvider";
-import { GenericResponse } from "../schemas/responses/GenericResponse";
-import { ClientError } from "../schemas/responses/common/ClientError";
-import { HttpStatus } from "../schemas/responses/common/HttpStatus";
-import { PlayersResData } from "../schemas/responses/routes/players/PlayersResData";
+import { AppResponse } from "../schemas/responses/AppResponse";
+import { ClientError } from "../schemas/responses/app/ClientError";
+import { HttpStatus } from "../schemas/responses/app/HttpStatus";
+import { PlayersRes } from "../schemas/responses/routes/players/PlayersRes";
 
 export class PlayersService implements IPlayersService {
   public readonly playersProvider: IPlayersProvider;
@@ -23,28 +23,28 @@ export class PlayersService implements IPlayersService {
 
   public async getPlayers(
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<IPlayersResData[]>> {
-    const models: IPlayerModel[] = await this.playersProvider.getPlayerModels();
-    return new GenericResponse<IPlayersResData[]>(
+  ): Promise<IAppResponse<IPlayersRes[]>> {
+    const models: IPlayerModel[] = await this.playersProvider.getPlayers();
+    return new AppResponse<IPlayersRes[]>(
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      PlayersResData.fromModels(models),
+      PlayersRes.fromModels(models),
       null,
     );
   }
 
-  public async getPlayers$playerId(
+  public async getPlayers$(
     playerId: number,
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<IPlayersResData | null>> {
+  ): Promise<IAppResponse<IPlayersRes | null>> {
     const model: IPlayerModel | null =
-      await this.playersProvider.getPlayerModelById(playerId);
+      await this.playersProvider.getPlayer(playerId);
     if (!model) {
       clientErrors.push(
         new ClientError(ClientErrorCode.NO_PLAYER_FOUND_IN_PLAYERS),
       );
-      return new GenericResponse<null>(
+      return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.NOT_FOUND),
         null,
         clientErrors,
@@ -52,11 +52,11 @@ export class PlayersService implements IPlayersService {
         null,
       );
     }
-    return new GenericResponse<IPlayersResData>(
+    return new AppResponse<IPlayersRes>(
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      PlayersResData.fromModel(model),
+      PlayersRes.fromModel(model),
       null,
     );
   }

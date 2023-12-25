@@ -1,34 +1,38 @@
-import { ClubState } from "../core/enums/clubState";
 import { IMyClubModel } from "../interfaces/models/IMyClubModel";
+import { IBaseClubModel } from "../interfaces/models/base/IBaseClubModel";
+import { BaseClubModel } from "./base/BaseClubModel";
 
-export class MyClubModel implements IMyClubModel {
+export class MyClubModel extends BaseClubModel implements IMyClubModel {
   constructor(
-    public readonly clubId: number,
+    baseModel: IBaseClubModel,
     public readonly participantId: number,
-    public readonly name: string,
-    public readonly state: ClubState,
-    public readonly playerCount: number,
-    public readonly cupCount: number,
-    public readonly participantEmail: string,
-    public readonly description: string,
-    public readonly logoPath: string,
-  ) {}
+  ) {
+    super(
+      baseModel.clubId,
+      baseModel.name,
+      baseModel.state,
+      baseModel.playerCount,
+      baseModel.cupCount,
+      baseModel.participantEmail,
+      baseModel.description,
+      baseModel.logoPath,
+    );
+  }
 
-  public static isValidModel(obj: unknown): obj is IMyClubModel {
-    if (typeof obj !== "object" || obj === null) {
+  public static override isValidModel(obj: unknown): obj is IMyClubModel {
+    if (super.isValidModel(obj) === false) {
       return false;
     }
     const model: IMyClubModel = obj as IMyClubModel;
-    return (
-      typeof model.clubId === "number" &&
-      typeof model.participantId === "number" &&
-      typeof model.name === "string" &&
-      Object.values(ClubState).includes(model.state as ClubState) &&
-      typeof model.playerCount === "string" &&
-      typeof model.cupCount === "number" &&
-      typeof model.participantEmail === "string" &&
-      typeof model.description === "string" &&
-      typeof model.logoPath === "string"
-    );
+    return typeof model.participantId === "number";
+  }
+
+  public static override areValidModels(
+    objs: unknown[],
+  ): objs is IMyClubModel[] {
+    if (!Array.isArray(objs)) {
+      return false;
+    }
+    return objs.every((obj): boolean => MyClubModel.isValidModel(obj));
   }
 }

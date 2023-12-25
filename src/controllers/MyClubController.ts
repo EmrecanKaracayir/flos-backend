@@ -2,22 +2,22 @@ import { NextFunction, Request, Response } from "express";
 import { AuthPayload } from "../core/@types/helpers/authPayloadRules";
 import { AuthHelper } from "../core/helpers/AuthHelper";
 import { IMyClubController } from "../interfaces/controllers/IMyClubController";
-import { IMyClubReqDto } from "../interfaces/schemas/requests/routes/my/club/IMyClubReqDto";
-import { IGenericResponse } from "../interfaces/schemas/responses/IGenericResponse";
+import { IMyClubReq } from "../interfaces/schemas/requests/routes/my/club/IMyClubReq";
+import { IAppResponse } from "../interfaces/schemas/responses/IAppResponse";
 import {
   ClientErrorCode,
   IClientError,
-} from "../interfaces/schemas/responses/common/IClientError";
+} from "../interfaces/schemas/responses/app/IClientError";
 import {
   HttpStatusCode,
   IHttpStatus,
-} from "../interfaces/schemas/responses/common/IHttpStatus";
-import { IMyClubResData } from "../interfaces/schemas/responses/routes/my/club/IMyClubResData";
+} from "../interfaces/schemas/responses/app/IHttpStatus";
+import { IMyClubRes } from "../interfaces/schemas/responses/routes/my/club/IMyClubRes";
 import { IMyClubService } from "../interfaces/services/IMyClubService";
-import { MyClubReqDto } from "../schemas/requests/routes/my/club/MyClubReqDto";
-import { GenericResponse } from "../schemas/responses/GenericResponse";
-import { ClientError } from "../schemas/responses/common/ClientError";
-import { HttpStatus } from "../schemas/responses/common/HttpStatus";
+import { MyClubReq } from "../schemas/requests/routes/my/club/MyClubReq";
+import { AppResponse } from "../schemas/responses/AppResponse";
+import { ClientError } from "../schemas/responses/app/ClientError";
+import { HttpStatus } from "../schemas/responses/app/HttpStatus";
 import { MyClubService } from "../services/MyClubService";
 
 export class MyClubController implements IMyClubController {
@@ -41,7 +41,7 @@ export class MyClubController implements IMyClubController {
         req.headers.authorization!.split(" ")[1],
       );
       // Hand over to service
-      const serviceRes: IGenericResponse<IMyClubResData | null> =
+      const serviceRes: IAppResponse<IMyClubRes | null> =
         await this.myClubService.getMyClub(authPayload.userId, clientErrors);
       if (!serviceRes.httpStatus.isSuccess()) {
         // Respond without token
@@ -51,7 +51,7 @@ export class MyClubController implements IMyClubController {
       return res
         .status(serviceRes.httpStatus.code)
         .send(
-          new GenericResponse<IMyClubResData>(
+          new AppResponse<IMyClubRes>(
             serviceRes.httpStatus,
             serviceRes.serverError,
             serviceRes.clientErrors,
@@ -74,7 +74,7 @@ export class MyClubController implements IMyClubController {
     const clientErrors: Array<IClientError> = [];
     // Logic
     try {
-      if (!MyClubReqDto.isValidDto(req.body)) {
+      if (!MyClubReq.isValidReq(req.body)) {
         httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
         clientErrors.push(
           new ClientError(ClientErrorCode.INVALID_REQUEST_BODY),
@@ -82,13 +82,7 @@ export class MyClubController implements IMyClubController {
         return res
           .status(httpStatus.code)
           .send(
-            new GenericResponse<null>(
-              httpStatus,
-              null,
-              clientErrors,
-              null,
-              null,
-            ),
+            new AppResponse<null>(httpStatus, null, clientErrors, null, null),
           );
       }
       // Parse token (Has to be valid, otherwise it would not have reached this point)
@@ -96,10 +90,10 @@ export class MyClubController implements IMyClubController {
         req.headers.authorization!.split(" ")[1],
       );
       // Hand over to service
-      const serviceRes: IGenericResponse<IMyClubResData | null> =
+      const serviceRes: IAppResponse<IMyClubRes | null> =
         await this.myClubService.postMyClub(
           authPayload.userId,
-          req.body as IMyClubReqDto,
+          req.body as IMyClubReq,
           clientErrors,
         );
       if (!serviceRes.httpStatus.isSuccess()) {
@@ -110,7 +104,7 @@ export class MyClubController implements IMyClubController {
       return res
         .status(serviceRes.httpStatus.code)
         .send(
-          new GenericResponse<IMyClubResData>(
+          new AppResponse<IMyClubRes>(
             serviceRes.httpStatus,
             serviceRes.serverError,
             serviceRes.clientErrors,
@@ -133,7 +127,7 @@ export class MyClubController implements IMyClubController {
     const clientErrors: Array<IClientError> = [];
     // Logic
     try {
-      if (!MyClubReqDto.isValidDto(req.body)) {
+      if (!MyClubReq.isValidReq(req.body)) {
         httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
         clientErrors.push(
           new ClientError(ClientErrorCode.INVALID_REQUEST_BODY),
@@ -141,13 +135,7 @@ export class MyClubController implements IMyClubController {
         return res
           .status(httpStatus.code)
           .send(
-            new GenericResponse<null>(
-              httpStatus,
-              null,
-              clientErrors,
-              null,
-              null,
-            ),
+            new AppResponse<null>(httpStatus, null, clientErrors, null, null),
           );
       }
       // Parse token (Has to be valid, otherwise it would not have reached this point)
@@ -155,10 +143,10 @@ export class MyClubController implements IMyClubController {
         req.headers.authorization!.split(" ")[1],
       );
       // Hand over to service
-      const serviceRes: IGenericResponse<IMyClubResData | null> =
+      const serviceRes: IAppResponse<IMyClubRes | null> =
         await this.myClubService.putMyClub(
           authPayload.userId,
-          req.body as IMyClubReqDto,
+          req.body as IMyClubReq,
           clientErrors,
         );
       if (!serviceRes.httpStatus.isSuccess()) {
@@ -169,7 +157,7 @@ export class MyClubController implements IMyClubController {
       return res
         .status(serviceRes.httpStatus.code)
         .send(
-          new GenericResponse<IMyClubResData>(
+          new AppResponse<IMyClubRes>(
             serviceRes.httpStatus,
             serviceRes.serverError,
             serviceRes.clientErrors,
@@ -196,7 +184,7 @@ export class MyClubController implements IMyClubController {
         req.headers.authorization!.split(" ")[1],
       );
       // Hand over to service
-      const serviceRes: IGenericResponse<void> =
+      const serviceRes: IAppResponse<void> =
         await this.myClubService.deleteMyClub(authPayload.userId, clientErrors);
       if (!serviceRes.httpStatus.isSuccess()) {
         // Respond without token
@@ -206,7 +194,7 @@ export class MyClubController implements IMyClubController {
       return res
         .status(serviceRes.httpStatus.code)
         .send(
-          new GenericResponse<void>(
+          new AppResponse<void>(
             serviceRes.httpStatus,
             serviceRes.serverError,
             serviceRes.clientErrors,

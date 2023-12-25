@@ -1,9 +1,9 @@
 import { ILeagueModel } from "../models/ILeagueModel";
 
 export interface ILeaguesProvider {
-  getLeagueModels: () => Promise<ILeagueModel[]>;
+  getLeagues: () => Promise<ILeagueModel[]>;
 
-  getLeagueModelById: (leagueId: number) => Promise<ILeagueModel | null>;
+  getLeague: (leagueId: number) => Promise<ILeagueModel | null>;
 }
 
 export enum LeaguesQueries {

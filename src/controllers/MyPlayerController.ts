@@ -2,22 +2,22 @@ import { NextFunction, Request, Response } from "express";
 import { AuthPayload } from "../core/@types/helpers/authPayloadRules";
 import { AuthHelper } from "../core/helpers/AuthHelper";
 import { IMyPlayerController } from "../interfaces/controllers/IMyPlayerController";
-import { IMyPlayerReqDto } from "../interfaces/schemas/requests/routes/my/player/IMyPlayerReqDto";
-import { IGenericResponse } from "../interfaces/schemas/responses/IGenericResponse";
+import { IMyPlayerReq } from "../interfaces/schemas/requests/routes/my/player/IMyPlayerReq";
+import { IAppResponse } from "../interfaces/schemas/responses/IAppResponse";
 import {
   ClientErrorCode,
   IClientError,
-} from "../interfaces/schemas/responses/common/IClientError";
+} from "../interfaces/schemas/responses/app/IClientError";
 import {
   HttpStatusCode,
   IHttpStatus,
-} from "../interfaces/schemas/responses/common/IHttpStatus";
-import { IMyPlayerResData } from "../interfaces/schemas/responses/routes/my/player/IMyPlayerResData";
+} from "../interfaces/schemas/responses/app/IHttpStatus";
+import { IMyPlayerRes } from "../interfaces/schemas/responses/routes/my/player/IMyPlayerRes";
 import { IMyPlayerService } from "../interfaces/services/IMyPlayerService";
-import { MyPlayerReqDto } from "../schemas/requests/routes/my/player/MyLeaguesReqDto";
-import { GenericResponse } from "../schemas/responses/GenericResponse";
-import { ClientError } from "../schemas/responses/common/ClientError";
-import { HttpStatus } from "../schemas/responses/common/HttpStatus";
+import { MyPlayerReq } from "../schemas/requests/routes/my/player/MyPlayerReq";
+import { AppResponse } from "../schemas/responses/AppResponse";
+import { ClientError } from "../schemas/responses/app/ClientError";
+import { HttpStatus } from "../schemas/responses/app/HttpStatus";
 import { MyPlayerService } from "../services/MyPlayerService";
 
 export class MyPlayerController implements IMyPlayerController {
@@ -41,7 +41,7 @@ export class MyPlayerController implements IMyPlayerController {
         req.headers.authorization!.split(" ")[1],
       );
       // Hand over to service
-      const serviceRes: IGenericResponse<IMyPlayerResData | null> =
+      const serviceRes: IAppResponse<IMyPlayerRes | null> =
         await this.myPlayerService.getMyPlayer(
           authPayload.userId,
           clientErrors,
@@ -54,7 +54,7 @@ export class MyPlayerController implements IMyPlayerController {
       return res
         .status(serviceRes.httpStatus.code)
         .send(
-          new GenericResponse<IMyPlayerResData>(
+          new AppResponse<IMyPlayerRes>(
             serviceRes.httpStatus,
             serviceRes.serverError,
             serviceRes.clientErrors,
@@ -77,7 +77,7 @@ export class MyPlayerController implements IMyPlayerController {
     const clientErrors: Array<IClientError> = [];
     // Logic
     try {
-      if (!MyPlayerReqDto.isValidDto(req.body)) {
+      if (!MyPlayerReq.isValidReq(req.body)) {
         httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
         clientErrors.push(
           new ClientError(ClientErrorCode.INVALID_REQUEST_BODY),
@@ -85,13 +85,7 @@ export class MyPlayerController implements IMyPlayerController {
         return res
           .status(httpStatus.code)
           .send(
-            new GenericResponse<null>(
-              httpStatus,
-              null,
-              clientErrors,
-              null,
-              null,
-            ),
+            new AppResponse<null>(httpStatus, null, clientErrors, null, null),
           );
       }
       // Parse token (Has to be valid, otherwise it would not have reached this point)
@@ -99,10 +93,10 @@ export class MyPlayerController implements IMyPlayerController {
         req.headers.authorization!.split(" ")[1],
       );
       // Hand over to service
-      const serviceRes: IGenericResponse<IMyPlayerResData | null> =
+      const serviceRes: IAppResponse<IMyPlayerRes | null> =
         await this.myPlayerService.postMyPlayer(
           authPayload.userId,
-          req.body as IMyPlayerReqDto,
+          req.body as IMyPlayerReq,
           clientErrors,
         );
       if (!serviceRes.httpStatus.isSuccess()) {
@@ -113,7 +107,7 @@ export class MyPlayerController implements IMyPlayerController {
       return res
         .status(serviceRes.httpStatus.code)
         .send(
-          new GenericResponse<IMyPlayerResData>(
+          new AppResponse<IMyPlayerRes>(
             serviceRes.httpStatus,
             serviceRes.serverError,
             serviceRes.clientErrors,
@@ -136,7 +130,7 @@ export class MyPlayerController implements IMyPlayerController {
     const clientErrors: Array<IClientError> = [];
     // Logic
     try {
-      if (!MyPlayerReqDto.isValidDto(req.body)) {
+      if (!MyPlayerReq.isValidReq(req.body)) {
         httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
         clientErrors.push(
           new ClientError(ClientErrorCode.INVALID_REQUEST_BODY),
@@ -144,13 +138,7 @@ export class MyPlayerController implements IMyPlayerController {
         return res
           .status(httpStatus.code)
           .send(
-            new GenericResponse<null>(
-              httpStatus,
-              null,
-              clientErrors,
-              null,
-              null,
-            ),
+            new AppResponse<null>(httpStatus, null, clientErrors, null, null),
           );
       }
       // Parse token (Has to be valid, otherwise it would not have reached this point)
@@ -158,10 +146,10 @@ export class MyPlayerController implements IMyPlayerController {
         req.headers.authorization!.split(" ")[1],
       );
       // Hand over to service
-      const serviceRes: IGenericResponse<IMyPlayerResData | null> =
+      const serviceRes: IAppResponse<IMyPlayerRes | null> =
         await this.myPlayerService.putMyPlayer(
           authPayload.userId,
-          req.body as IMyPlayerReqDto,
+          req.body as IMyPlayerReq,
           clientErrors,
         );
       if (!serviceRes.httpStatus.isSuccess()) {
@@ -172,7 +160,7 @@ export class MyPlayerController implements IMyPlayerController {
       return res
         .status(serviceRes.httpStatus.code)
         .send(
-          new GenericResponse<IMyPlayerResData>(
+          new AppResponse<IMyPlayerRes>(
             serviceRes.httpStatus,
             serviceRes.serverError,
             serviceRes.clientErrors,
@@ -199,7 +187,7 @@ export class MyPlayerController implements IMyPlayerController {
         req.headers.authorization!.split(" ")[1],
       );
       // Hand over to service
-      const serviceRes: IGenericResponse<void | null> =
+      const serviceRes: IAppResponse<void | null> =
         await this.myPlayerService.deleteMyPlayer(
           authPayload.userId,
           clientErrors,
@@ -212,7 +200,7 @@ export class MyPlayerController implements IMyPlayerController {
       return res
         .status(serviceRes.httpStatus.code)
         .send(
-          new GenericResponse<void>(
+          new AppResponse<void>(
             serviceRes.httpStatus,
             serviceRes.serverError,
             serviceRes.clientErrors,

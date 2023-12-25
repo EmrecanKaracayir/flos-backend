@@ -1,7 +1,7 @@
 import { ISearchProvider } from "../providers/ISearchProvider";
-import { IGenericResponse } from "../schemas/responses/IGenericResponse";
-import { IClientError } from "../schemas/responses/common/IClientError";
-import { ISearchResData } from "../schemas/responses/routes/search/ISearchResData";
+import { IAppResponse } from "../schemas/responses/IAppResponse";
+import { IClientError } from "../schemas/responses/app/IClientError";
+import { ISearchRes } from "../schemas/responses/routes/search/ISearchRes";
 
 export interface ISearchService {
   readonly searchProvider: ISearchProvider;
@@ -9,5 +9,5 @@ export interface ISearchService {
   getSearch_: (
     query: string,
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<ISearchResData>>;
+  ) => Promise<IAppResponse<ISearchRes>>;
 }

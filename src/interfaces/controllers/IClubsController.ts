@@ -10,7 +10,7 @@ export interface IClubsController {
     next: NextFunction,
   ) => Promise<Response | void>;
 
-  getClubs$clubId: (
+  getClubs$: (
     req: Request,
     res: Response,
     next: NextFunction,

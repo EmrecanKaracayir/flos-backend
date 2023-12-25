@@ -1,22 +1,22 @@
 import { IAvailableProvider } from "../providers/IAvailableProvider";
-import { IGenericResponse } from "../schemas/responses/IGenericResponse";
-import { IClientError } from "../schemas/responses/common/IClientError";
-import { IClubsResData } from "../schemas/responses/routes/clubs/IClubsResData";
-import { ILeaguesResData } from "../schemas/responses/routes/leagues/ILeaguesResData";
-import { IPlayersResData } from "../schemas/responses/routes/players/IPlayersResData";
+import { IAppResponse } from "../schemas/responses/IAppResponse";
+import { IClientError } from "../schemas/responses/app/IClientError";
+import { IAvailableClubsRes } from "../schemas/responses/routes/available/clubs/IAvailableClubsRes";
+import { IAvailableLeaguesRes } from "../schemas/responses/routes/available/leagues/IAvailableLeaguesRes";
+import { IAvailablePlayersRes } from "../schemas/responses/routes/available/player/IAvailablePlayersRes";
 
 export interface IAvailableService {
   readonly availableProvider: IAvailableProvider;
 
   getAvailableClubs: (
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<IClubsResData[]>>;
+  ) => Promise<IAppResponse<IAvailableClubsRes[]>>;
 
   getAvailableLeagues: (
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<ILeaguesResData[]>>;
+  ) => Promise<IAppResponse<IAvailableLeaguesRes[]>>;
 
   getAvailablePlayers: (
     clientErrors: IClientError[],
-  ) => Promise<IGenericResponse<IPlayersResData[]>>;
+  ) => Promise<IAppResponse<IAvailablePlayersRes[]>>;
 }

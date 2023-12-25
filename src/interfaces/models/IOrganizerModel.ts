@@ -1,6 +1,3 @@
-export interface IOrganizerModel {
-  readonly organizerId: number;
-  readonly username: string;
-  readonly password: string;
-  readonly email: string;
-}
+import { IBaseOrganizerModel } from "./base/IBaseOrganizerModel";
+
+export interface IOrganizerModel extends IBaseOrganizerModel {}

@@ -1,25 +1,25 @@
 import { NextFunction, Request, Response } from "express";
 import { AuthHelper } from "../core/helpers/AuthHelper";
 import { ISignupController } from "../interfaces/controllers/ISignupController";
-import { ISignupOrganizerReqDto } from "../interfaces/schemas/requests/routes/signup/organizer/ISignupOrganizerReqDto";
-import { ISignupParticipantReqDto } from "../interfaces/schemas/requests/routes/signup/participant/ISignupParticipantReqDto";
-import { IGenericResponse } from "../interfaces/schemas/responses/IGenericResponse";
+import { ISignupOrganizerReq } from "../interfaces/schemas/requests/routes/signup/organizer/ISignupOrganizerReq";
+import { ISignupParticipantReq } from "../interfaces/schemas/requests/routes/signup/participant/ISignupParticipantReq";
+import { IAppResponse } from "../interfaces/schemas/responses/IAppResponse";
 import {
   ClientErrorCode,
   IClientError,
-} from "../interfaces/schemas/responses/common/IClientError";
+} from "../interfaces/schemas/responses/app/IClientError";
 import {
   HttpStatusCode,
   IHttpStatus,
-} from "../interfaces/schemas/responses/common/IHttpStatus";
-import { ISignupOrganizerResData } from "../interfaces/schemas/responses/routes/signup/organizer/ISignupOrganizerResData";
-import { ISignupParticipantResData } from "../interfaces/schemas/responses/routes/signup/participant/ISignupParticipantResData";
+} from "../interfaces/schemas/responses/app/IHttpStatus";
+import { ISignupOrganizerRes } from "../interfaces/schemas/responses/routes/signup/organizer/ISignupOrganizerRes";
+import { ISignupParticipantRes } from "../interfaces/schemas/responses/routes/signup/participant/ISignupParticipantRes";
 import { ISignupService } from "../interfaces/services/ISignupService";
-import { SignupOrganizerReqDto } from "../schemas/requests/routes/signup/organizer/SignupOrganizerReqDto";
-import { SignupParticipantReqDto } from "../schemas/requests/routes/signup/participant/SignupParticipantReqDto";
-import { GenericResponse } from "../schemas/responses/GenericResponse";
-import { ClientError } from "../schemas/responses/common/ClientError";
-import { HttpStatus } from "../schemas/responses/common/HttpStatus";
+import { SignupOrganizerReq } from "../schemas/requests/routes/signup/organizer/SignupOrganizerReq";
+import { SignupParticipantReq } from "../schemas/requests/routes/signup/participant/SignupParticipantReq";
+import { AppResponse } from "../schemas/responses/AppResponse";
+import { ClientError } from "../schemas/responses/app/ClientError";
+import { HttpStatus } from "../schemas/responses/app/HttpStatus";
 import { SignupService } from "../services/SignupService";
 export class SignupController implements ISignupController {
   public readonly signupService: ISignupService;
@@ -38,7 +38,7 @@ export class SignupController implements ISignupController {
     const clientErrors: Array<IClientError> = [];
     // Logic
     try {
-      if (!SignupOrganizerReqDto.isValidDto(req.body)) {
+      if (!SignupOrganizerReq.isValidReq(req.body)) {
         httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
         clientErrors.push(
           new ClientError(ClientErrorCode.INVALID_REQUEST_BODY),
@@ -46,19 +46,13 @@ export class SignupController implements ISignupController {
         return res
           .status(httpStatus.code)
           .send(
-            new GenericResponse<null>(
-              httpStatus,
-              null,
-              clientErrors,
-              null,
-              null,
-            ),
+            new AppResponse<null>(httpStatus, null, clientErrors, null, null),
           );
       }
       // Hand over to service
-      const serviceRes: IGenericResponse<ISignupOrganizerResData | null> =
+      const serviceRes: IAppResponse<ISignupOrganizerRes | null> =
         await this.signupService.postSignupOrganizer(
-          req.body as ISignupOrganizerReqDto,
+          req.body as ISignupOrganizerReq,
           clientErrors,
         );
       if (!serviceRes.httpStatus.isSuccess()) {
@@ -67,7 +61,7 @@ export class SignupController implements ISignupController {
       }
       // Respond with token
       return res.status(serviceRes.httpStatus.code).send(
-        new GenericResponse<ISignupOrganizerResData>(
+        new AppResponse<ISignupOrganizerRes>(
           serviceRes.httpStatus,
           serviceRes.serverError,
           serviceRes.clientErrors,
@@ -93,7 +87,7 @@ export class SignupController implements ISignupController {
     const clientErrors: Array<IClientError> = [];
     // Logic
     try {
-      if (!SignupParticipantReqDto.isValidDto(req.body)) {
+      if (!SignupParticipantReq.isValidReq(req.body)) {
         httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
         clientErrors.push(
           new ClientError(ClientErrorCode.INVALID_REQUEST_BODY),
@@ -101,19 +95,13 @@ export class SignupController implements ISignupController {
         return res
           .status(httpStatus.code)
           .send(
-            new GenericResponse<null>(
-              httpStatus,
-              null,
-              clientErrors,
-              null,
-              null,
-            ),
+            new AppResponse<null>(httpStatus, null, clientErrors, null, null),
           );
       }
       // Hand over to service
-      const serviceRes: IGenericResponse<ISignupParticipantResData | null> =
+      const serviceRes: IAppResponse<ISignupParticipantRes | null> =
         await this.signupService.postSignupParticipant(
-          req.body as ISignupParticipantReqDto,
+          req.body as ISignupParticipantReq,
           clientErrors,
         );
       if (!serviceRes.httpStatus.isSuccess()) {
@@ -122,7 +110,7 @@ export class SignupController implements ISignupController {
       }
       // Respond with token
       return res.status(serviceRes.httpStatus.code).send(
-        new GenericResponse<ISignupParticipantResData>(
+        new AppResponse<ISignupParticipantRes>(
           serviceRes.httpStatus,
           serviceRes.serverError,
           serviceRes.clientErrors,

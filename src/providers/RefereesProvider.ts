@@ -5,11 +5,11 @@ import {
   IRefereesProvider,
   RefereesQueries,
 } from "../interfaces/providers/IRefereesProvider";
-import { ModelMismatchError } from "../interfaces/schemas/responses/common/IServerError";
+import { ModelMismatchError } from "../interfaces/schemas/responses/app/IServerError";
 import { RefereeModel } from "../models/RefereeModel";
 
 export class RefereesProvider implements IRefereesProvider {
-  public async getRefereeModels(): Promise<IRefereeModel[]> {
+  public async getReferees(): Promise<IRefereeModel[]> {
     const refereeRes: QueryResult = await pool.query(
       RefereesQueries.GET_REFEREES,
     );
@@ -23,9 +23,7 @@ export class RefereesProvider implements IRefereesProvider {
     return refereeRecs as IRefereeModel[];
   }
 
-  public async getRefereeModelById(
-    refereeId: number,
-  ): Promise<IRefereeModel | null> {
+  public async getReferee(refereeId: number): Promise<IRefereeModel | null> {
     const refereeRes: QueryResult = await pool.query(
       RefereesQueries.GET_REFEREE_$RFID,
       [refereeId],

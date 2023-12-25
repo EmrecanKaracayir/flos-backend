@@ -1,12 +1,3 @@
-import { ClubState } from "../../core/enums/clubState";
+import { IBaseClubModel } from "./base/IBaseClubModel";
 
-export interface IClubModel {
-  readonly clubId: number;
-  readonly name: string;
-  readonly state: ClubState;
-  readonly playerCount: number;
-  readonly cupCount: number;
-  readonly participantEmail: string;
-  readonly description: string;
-  readonly logoPath: string;
-}
+export interface IClubModel extends IBaseClubModel {}

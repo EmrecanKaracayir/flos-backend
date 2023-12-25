@@ -1,18 +1,18 @@
 import { ILeagueModel } from "../interfaces/models/ILeagueModel";
 import { ILeaguesProvider } from "../interfaces/providers/ILeaguesProvider";
-import { IGenericResponse } from "../interfaces/schemas/responses/IGenericResponse";
+import { IAppResponse } from "../interfaces/schemas/responses/IAppResponse";
 import {
   ClientErrorCode,
   IClientError,
-} from "../interfaces/schemas/responses/common/IClientError";
-import { HttpStatusCode } from "../interfaces/schemas/responses/common/IHttpStatus";
-import { ILeaguesResData } from "../interfaces/schemas/responses/routes/leagues/ILeaguesResData";
+} from "../interfaces/schemas/responses/app/IClientError";
+import { HttpStatusCode } from "../interfaces/schemas/responses/app/IHttpStatus";
+import { ILeaguesRes } from "../interfaces/schemas/responses/routes/leagues/ILeaguesRes";
 import { ILeaguesService } from "../interfaces/services/ILeaguesService";
 import { LeaguesProvider } from "../providers/LeaguesProvider";
-import { GenericResponse } from "../schemas/responses/GenericResponse";
-import { ClientError } from "../schemas/responses/common/ClientError";
-import { HttpStatus } from "../schemas/responses/common/HttpStatus";
-import { LeaguesResData } from "../schemas/responses/routes/leagues/LeaguesResData";
+import { AppResponse } from "../schemas/responses/AppResponse";
+import { ClientError } from "../schemas/responses/app/ClientError";
+import { HttpStatus } from "../schemas/responses/app/HttpStatus";
+import { LeaguesRes } from "../schemas/responses/routes/leagues/LeaguesRes";
 
 export class LeaguesService implements ILeaguesService {
   public readonly leaguesProvider: ILeaguesProvider;
@@ -23,28 +23,28 @@ export class LeaguesService implements ILeaguesService {
 
   public async getLeagues(
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<ILeaguesResData[]>> {
-    const models: ILeagueModel[] = await this.leaguesProvider.getLeagueModels();
-    return new GenericResponse<ILeaguesResData[]>(
+  ): Promise<IAppResponse<ILeaguesRes[]>> {
+    const models: ILeagueModel[] = await this.leaguesProvider.getLeagues();
+    return new AppResponse<ILeaguesRes[]>(
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      LeaguesResData.fromModels(models),
+      LeaguesRes.fromModels(models),
       null,
     );
   }
 
-  public async getLeagues$leagueId(
+  public async getLeagues$(
     leagueId: number,
     clientErrors: IClientError[],
-  ): Promise<IGenericResponse<ILeaguesResData | null>> {
+  ): Promise<IAppResponse<ILeaguesRes | null>> {
     const model: ILeagueModel | null =
-      await this.leaguesProvider.getLeagueModelById(leagueId);
+      await this.leaguesProvider.getLeague(leagueId);
     if (!model) {
       clientErrors.push(
         new ClientError(ClientErrorCode.NO_LEAGUE_FOUND_IN_LEAGUES),
       );
-      return new GenericResponse<null>(
+      return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.NOT_FOUND),
         null,
         clientErrors,
@@ -52,11 +52,11 @@ export class LeaguesService implements ILeaguesService {
         null,
       );
     }
-    return new GenericResponse<ILeaguesResData>(
+    return new AppResponse<ILeaguesRes>(
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      LeaguesResData.fromModel(model),
+      LeaguesRes.fromModel(model),
       null,
     );
   }
