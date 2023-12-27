@@ -5,7 +5,7 @@
 -- Dumped from database version 16.1
 -- Dumped by pg_dump version 16.1
 
--- Started on 2023-12-25 06:58:30 +03
+-- Started on 2023-12-27 16:06:56 +03
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -800,7 +800,7 @@ COPY public."Performance" ("playerId", "fixtureId", "goalCount", "assistCount") 
 --
 
 COPY public."Player" ("playerId", "clubId", "fullName", birthday, "imgPath", goals, assists, biography) FROM stdin;
-15	\N	Test Player 1 (Edited)	2000-06-02	https://www.getautismactive.com/wp-content/uploads/2021/01/Test-Logo-Circle-black-transparent.png	0	0	This is a test player 1 (Edited) that is created for test purposes.
+15	13	Test Player 1 (Edited)	2000-06-02	https://www.getautismactive.com/wp-content/uploads/2021/01/Test-Logo-Circle-black-transparent.png	0	0	This is a test player 1 (Edited) that is created for test purposes.
 \.
 
 
@@ -850,7 +850,7 @@ COPY public."Venue" ("venueId", name, capacity, address, "imgPath", email) FROM 
 -- Name: Club_clubId_seq; Type: SEQUENCE SET; Schema: public; Owner: Emrecan
 --
 
-SELECT pg_catalog.setval('public."Club_clubId_seq"', 10, true);
+SELECT pg_catalog.setval('public."Club_clubId_seq"', 13, true);
 
 
 --
@@ -1177,7 +1177,7 @@ ALTER TABLE ONLY public."Statistics"
     ADD CONSTRAINT statistics_league_fk FOREIGN KEY ("leagueId") REFERENCES public."League"("leagueId");
 
 
--- Completed on 2023-12-25 06:58:30 +03
+-- Completed on 2023-12-27 16:06:56 +03
 
 --
 -- PostgreSQL database dump complete

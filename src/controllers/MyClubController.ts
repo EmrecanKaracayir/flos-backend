@@ -48,17 +48,18 @@ export class MyClubController implements IMyClubController {
         return res.status(serviceRes.httpStatus.code).send(serviceRes);
       }
       // Respond with token
-      return res
-        .status(serviceRes.httpStatus.code)
-        .send(
-          new AppResponse<IMyClubRes>(
-            serviceRes.httpStatus,
-            serviceRes.serverError,
-            serviceRes.clientErrors,
-            serviceRes.data,
-            AuthHelper.generateToken(authPayload),
-          ),
-        );
+      return res.status(serviceRes.httpStatus.code).send(
+        new AppResponse<IMyClubRes>(
+          serviceRes.httpStatus,
+          serviceRes.serverError,
+          serviceRes.clientErrors,
+          serviceRes.data,
+          AuthHelper.generateToken({
+            userId: authPayload.userId,
+            userRole: authPayload.userRole,
+          }),
+        ),
+      );
     } catch (error) {
       return next(error);
     }
@@ -101,17 +102,18 @@ export class MyClubController implements IMyClubController {
         return res.status(serviceRes.httpStatus.code).send(serviceRes);
       }
       // Respond with token
-      return res
-        .status(serviceRes.httpStatus.code)
-        .send(
-          new AppResponse<IMyClubRes>(
-            serviceRes.httpStatus,
-            serviceRes.serverError,
-            serviceRes.clientErrors,
-            serviceRes.data,
-            AuthHelper.generateToken(authPayload),
-          ),
-        );
+      return res.status(serviceRes.httpStatus.code).send(
+        new AppResponse<IMyClubRes>(
+          serviceRes.httpStatus,
+          serviceRes.serverError,
+          serviceRes.clientErrors,
+          serviceRes.data,
+          AuthHelper.generateToken({
+            userId: authPayload.userId,
+            userRole: authPayload.userRole,
+          }),
+        ),
+      );
     } catch (error) {
       return next(error);
     }
@@ -154,17 +156,18 @@ export class MyClubController implements IMyClubController {
         return res.status(serviceRes.httpStatus.code).send(serviceRes);
       }
       // Respond with token
-      return res
-        .status(serviceRes.httpStatus.code)
-        .send(
-          new AppResponse<IMyClubRes>(
-            serviceRes.httpStatus,
-            serviceRes.serverError,
-            serviceRes.clientErrors,
-            serviceRes.data,
-            AuthHelper.generateToken(authPayload),
-          ),
-        );
+      return res.status(serviceRes.httpStatus.code).send(
+        new AppResponse<IMyClubRes>(
+          serviceRes.httpStatus,
+          serviceRes.serverError,
+          serviceRes.clientErrors,
+          serviceRes.data,
+          AuthHelper.generateToken({
+            userId: authPayload.userId,
+            userRole: authPayload.userRole,
+          }),
+        ),
+      );
     } catch (error) {
       return next(error);
     }
@@ -191,17 +194,18 @@ export class MyClubController implements IMyClubController {
         return res.status(serviceRes.httpStatus.code).send(serviceRes);
       }
       // Respond with token
-      return res
-        .status(serviceRes.httpStatus.code)
-        .send(
-          new AppResponse<void>(
-            serviceRes.httpStatus,
-            serviceRes.serverError,
-            serviceRes.clientErrors,
-            null,
-            AuthHelper.generateToken(authPayload),
-          ),
-        );
+      return res.status(serviceRes.httpStatus.code).send(
+        new AppResponse<void>(
+          serviceRes.httpStatus,
+          serviceRes.serverError,
+          serviceRes.clientErrors,
+          null,
+          AuthHelper.generateToken({
+            userId: authPayload.userId,
+            userRole: authPayload.userRole,
+          }),
+        ),
+      );
     } catch (error) {
       return next(error);
     }

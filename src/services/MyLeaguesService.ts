@@ -12,6 +12,7 @@ import {
 import { IClubModel } from "../interfaces/models/IClubModel";
 import { IMyLeagueModel } from "../interfaces/models/IMyLeagueModel";
 import { IMyLeaguesProvider } from "../interfaces/providers/IMyLeaguesProvider";
+import { IMyLeagues$ClubsReq } from "../interfaces/schemas/requests/routes/my/leagues/$/clubs/IMyLeagues$ClubsReq";
 import { IMyLeaguesReq } from "../interfaces/schemas/requests/routes/my/leagues/IMyLeaguesReq";
 import { IAppResponse } from "../interfaces/schemas/responses/IAppResponse";
 import {
@@ -224,6 +225,122 @@ export class MyLeaguesService implements IMyLeaguesService {
     );
   }
 
+  public async getMyLeagues$Clubs(
+    organizerId: number,
+    leagueId: number,
+    clientErrors: IClientError[],
+  ): Promise<IAppResponse<IMyLeagues$ClubsRes[]>> {
+    if (
+      !(await this.myLeaguesProvider.doesMyLeagueExist(organizerId, leagueId))
+    ) {
+      clientErrors.push(
+        new ClientError(ClientErrorCode.NO_LEAGUE_FOUND_IN_MY_LEAGUES),
+      );
+      return new AppResponse<null>(
+        new HttpStatus(HttpStatusCode.CONFLICT),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    const models: IClubModel[] =
+      await this.myLeaguesProvider.getMyLeagueClubs(leagueId);
+    return new AppResponse<IMyLeagues$ClubsRes[]>(
+      new HttpStatus(HttpStatusCode.OK),
+      null,
+      clientErrors,
+      MyLeagues$ClubsRes.fromModels(models),
+      null,
+    );
+  }
+
+  public async postMyLeagues$Clubs(
+    organizerId: number,
+    leagueId: number,
+    dto: IMyLeagues$ClubsReq,
+    clientErrors: IClientError[],
+  ): Promise<IAppResponse<IMyLeagues$ClubsRes[]>> {
+    if (
+      !(await this.myLeaguesProvider.doesMyLeagueExist(organizerId, leagueId))
+    ) {
+      clientErrors.push(
+        new ClientError(ClientErrorCode.NO_LEAGUE_FOUND_IN_MY_LEAGUES),
+      );
+      return new AppResponse<null>(
+        new HttpStatus(HttpStatusCode.CONFLICT),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    if (!(await this.myLeaguesProvider.isMyLeagueEditable(leagueId))) {
+      clientErrors.push(
+        new ClientError(ClientErrorCode.LEAGUE_CANNOT_BE_EDITED),
+      );
+      return new AppResponse<null>(
+        new HttpStatus(HttpStatusCode.CONFLICT),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    const clubIds: number[] = dto.clubIds;
+    if (clubIds.length === 0) {
+      clientErrors.push(
+        new ClientError(ClientErrorCode.NO_CLUB_IDS_PROVIDED_FOR_ADDITION),
+      );
+      return new AppResponse<null>(
+        new HttpStatus(HttpStatusCode.BAD_REQUEST),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    if (!(await this.myLeaguesProvider.doAllClubsExist(clubIds))) {
+      clientErrors.push(
+        new ClientError(
+          ClientErrorCode.SOME_OR_ALL_CLUBS_NOT_FOUND_FOR_ADDITION,
+        ),
+      );
+      return new AppResponse<null>(
+        new HttpStatus(HttpStatusCode.CONFLICT),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    if (!(await this.myLeaguesProvider.areAllClubsAvailable(clubIds))) {
+      clientErrors.push(
+        new ClientError(
+          ClientErrorCode.SOME_OR_ALL_CLUBS_NOT_AVAILABLE_FOR_ADDITION,
+        ),
+      );
+      return new AppResponse<null>(
+        new HttpStatus(HttpStatusCode.CONFLICT),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    const models: IClubModel[] = await this.myLeaguesProvider.addMyLeagueClubs(
+      leagueId,
+      clubIds,
+    );
+    return new AppResponse<IMyLeagues$ClubsRes[]>(
+      new HttpStatus(HttpStatusCode.CREATED),
+      null,
+      clientErrors,
+      MyLeagues$ClubsRes.fromModels(models),
+      null,
+    );
+  }
+
   private validateFields(
     name: string,
     prize: number,
@@ -267,20 +384,5 @@ export class MyLeaguesService implements IMyLeaguesService {
         new ClientError(ClientErrorCode.INVALID_LEAGUE_LOGO_PATH_CONTENT),
       );
     }
-  }
-
-  public async getMyLeagues$Clubs(
-    leagueId: number,
-    clientErrors: IClientError[],
-  ): Promise<IAppResponse<IMyLeagues$ClubsRes[]>> {
-    const models: IClubModel[] =
-      await this.myLeaguesProvider.getMyLeagueClubs(leagueId);
-    return new AppResponse<IMyLeagues$ClubsRes[]>(
-      new HttpStatus(HttpStatusCode.OK),
-      null,
-      clientErrors,
-      MyLeagues$ClubsRes.fromModels(models),
-      null,
-    );
   }
 }

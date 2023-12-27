@@ -38,6 +38,15 @@ export interface IMyLeaguesProvider {
   deleteMyLeague: (leagueId: number) => Promise<void>;
 
   getMyLeagueClubs: (leagueId: number) => Promise<IClubModel[]>;
+
+  doAllClubsExist: (clubIds: number[]) => Promise<boolean>;
+
+  areAllClubsAvailable: (clubIds: number[]) => Promise<boolean>;
+
+  addMyLeagueClubs: (
+    leagueId: number,
+    clubIds: number[],
+  ) => Promise<IClubModel[]>;
 }
 
 export enum MyLeaguesQueries {
@@ -50,4 +59,7 @@ export enum MyLeaguesQueries {
   FREE_LEAGUE_FROM_CLUBS_$LGID = `UPDATE "Club" SET "leagueId" = NULL WHERE "leagueId" = $1`,
   DELETE_LEAGUE_$LGID = `DELETE FROM "League" WHERE "leagueId" = $1`,
   GET_MY_LEAGUE_CLUBS_$LGID = `SELECT * FROM "Club" WHERE "leagueId" = $1`,
+  DO_ALL_CLUBS_EXIST_$CLIDS = `SELECT NOT EXISTS (SELECT 1 FROM UNNEST($1::INTEGER[]) AS "testingClubId" WHERE "testingClubId" NOT IN (SELECT "clubId" FROM "Club")) AS "exists"`,
+  ARE_ALL_CLUBS_AVAILABLE_$CLID_$STATES = `SELECT NOT EXISTS (SELECT 1 FROM UNNEST($1::INTEGER[]) AS "testingClubId" WHERE NOT EXISTS (SELECT 1 FROM "ClubView" WHERE "clubId" = "testingClubId" AND "state" = ANY($2::"ClubState"[]))) AS "exists";`,
+  ADD_CLUBS_TO_LEAGUE_$LGID_$CLIDS = `UPDATE "Club" SET "leagueId" = $1 WHERE "clubId" = ANY($2::INTEGER[])`,
 }

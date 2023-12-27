@@ -92,6 +92,9 @@ export enum ClientErrorCode {
   INVALID_LEAGUE_PRIZE_VALUE = 70806,
   INVALID_LEAGUE_DESCRIPTION_LENGTH = 70807,
   INVALID_LEAGUE_LOGO_PATH_CONTENT = 70808,
+  NO_CLUB_IDS_PROVIDED_FOR_ADDITION = 70809,
+  SOME_OR_ALL_CLUBS_NOT_FOUND_FOR_ADDITION = 70810,
+  SOME_OR_ALL_CLUBS_NOT_AVAILABLE_FOR_ADDITION = 70811,
   // - - 709XX: /my/player errors
   PARTICIPANT_HAS_NO_PLAYER = 70900,
   PARTICIPANT_HAS_A_PLAYER = 70901,
@@ -203,6 +206,12 @@ export const clientErrorMessages: ClientErrorMessages = {
   [ClientErrorCode.INVALID_LEAGUE_DESCRIPTION_LENGTH]: `Provided description wasn't in the length range of ${LEAGUE_DESCRIPTION_MIN_LENGTH} to ${LEAGUE_DESCRIPTION_MAX_LENGTH}.`,
   [ClientErrorCode.INVALID_LEAGUE_LOGO_PATH_CONTENT]:
     "Provided logo path was not in the valid format. Must be a valid URL.",
+  [ClientErrorCode.NO_CLUB_IDS_PROVIDED_FOR_ADDITION]:
+    "No club ids were provided for addition.",
+  [ClientErrorCode.SOME_OR_ALL_CLUBS_NOT_FOUND_FOR_ADDITION]:
+    "Some or all of the clubs with the provided club ids were not found.",
+  [ClientErrorCode.SOME_OR_ALL_CLUBS_NOT_AVAILABLE_FOR_ADDITION]:
+    "Some or all of the clubs with the provided club ids were not available.",
   // - - 709XX: /my/player errors
   [ClientErrorCode.PARTICIPANT_HAS_NO_PLAYER]:
     "The participant has no player. A player must be created first.",

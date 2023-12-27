@@ -51,17 +51,18 @@ export class MyPlayerController implements IMyPlayerController {
         return res.status(serviceRes.httpStatus.code).send(serviceRes);
       }
       // Respond with token
-      return res
-        .status(serviceRes.httpStatus.code)
-        .send(
-          new AppResponse<IMyPlayerRes>(
-            serviceRes.httpStatus,
-            serviceRes.serverError,
-            serviceRes.clientErrors,
-            serviceRes.data,
-            AuthHelper.generateToken(authPayload),
-          ),
-        );
+      return res.status(serviceRes.httpStatus.code).send(
+        new AppResponse<IMyPlayerRes>(
+          serviceRes.httpStatus,
+          serviceRes.serverError,
+          serviceRes.clientErrors,
+          serviceRes.data,
+          AuthHelper.generateToken({
+            userId: authPayload.userId,
+            userRole: authPayload.userRole,
+          }),
+        ),
+      );
     } catch (error) {
       return next(error);
     }
@@ -104,17 +105,18 @@ export class MyPlayerController implements IMyPlayerController {
         return res.status(serviceRes.httpStatus.code).send(serviceRes);
       }
       // Respond with token
-      return res
-        .status(serviceRes.httpStatus.code)
-        .send(
-          new AppResponse<IMyPlayerRes>(
-            serviceRes.httpStatus,
-            serviceRes.serverError,
-            serviceRes.clientErrors,
-            serviceRes.data,
-            AuthHelper.generateToken(authPayload),
-          ),
-        );
+      return res.status(serviceRes.httpStatus.code).send(
+        new AppResponse<IMyPlayerRes>(
+          serviceRes.httpStatus,
+          serviceRes.serverError,
+          serviceRes.clientErrors,
+          serviceRes.data,
+          AuthHelper.generateToken({
+            userId: authPayload.userId,
+            userRole: authPayload.userRole,
+          }),
+        ),
+      );
     } catch (error) {
       return next(error);
     }
@@ -157,17 +159,18 @@ export class MyPlayerController implements IMyPlayerController {
         return res.status(serviceRes.httpStatus.code).send(serviceRes);
       }
       // Respond with token
-      return res
-        .status(serviceRes.httpStatus.code)
-        .send(
-          new AppResponse<IMyPlayerRes>(
-            serviceRes.httpStatus,
-            serviceRes.serverError,
-            serviceRes.clientErrors,
-            serviceRes.data,
-            AuthHelper.generateToken(authPayload),
-          ),
-        );
+      return res.status(serviceRes.httpStatus.code).send(
+        new AppResponse<IMyPlayerRes>(
+          serviceRes.httpStatus,
+          serviceRes.serverError,
+          serviceRes.clientErrors,
+          serviceRes.data,
+          AuthHelper.generateToken({
+            userId: authPayload.userId,
+            userRole: authPayload.userRole,
+          }),
+        ),
+      );
     } catch (error) {
       return next(error);
     }
@@ -197,17 +200,18 @@ export class MyPlayerController implements IMyPlayerController {
         return res.status(serviceRes.httpStatus.code).send(serviceRes);
       }
       // Respond with token
-      return res
-        .status(serviceRes.httpStatus.code)
-        .send(
-          new AppResponse<void>(
-            serviceRes.httpStatus,
-            serviceRes.serverError,
-            serviceRes.clientErrors,
-            serviceRes.data,
-            AuthHelper.generateToken(authPayload),
-          ),
-        );
+      return res.status(serviceRes.httpStatus.code).send(
+        new AppResponse<void>(
+          serviceRes.httpStatus,
+          serviceRes.serverError,
+          serviceRes.clientErrors,
+          serviceRes.data,
+          AuthHelper.generateToken({
+            userId: authPayload.userId,
+            userRole: authPayload.userRole,
+          }),
+        ),
+      );
     } catch (error) {
       return next(error);
     }

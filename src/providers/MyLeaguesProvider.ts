@@ -1,6 +1,9 @@
 import { QueryResult } from "pg";
 import { pool } from "../core/database/pool";
-import { DELETABLE_CLUB_STATES } from "../core/rules/clubRules";
+import {
+  AVAILABLE_CLUB_STATES,
+  DELETABLE_CLUB_STATES,
+} from "../core/rules/clubRules";
 import { EDITABLE_LEAGUE_STATES } from "../core/rules/leagueRules";
 import { IClubModel } from "../interfaces/models/IClubModel";
 import { IMyLeagueModel } from "../interfaces/models/IMyLeagueModel";
@@ -207,5 +210,67 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
       throw new ModelMismatchError(clubsRecs);
     }
     return clubsRecs as IClubModel[];
+  }
+
+  public async doAllClubsExist(clubIds: number[]): Promise<boolean> {
+    const existsRes: QueryResult = await pool.query(
+      MyLeaguesQueries.DO_ALL_CLUBS_EXIST_$CLIDS,
+      [clubIds],
+    );
+    const existsRec: unknown = existsRes.rows[0];
+    if (!existsRec) {
+      throw new UnexpectedQueryResultError();
+    }
+    if (!ExistsModel.isValidModel(existsRec)) {
+      throw new ModelMismatchError(existsRec);
+    }
+    return (existsRec as IExistsModel).exists;
+  }
+
+  public async areAllClubsAvailable(clubIds: number[]): Promise<boolean> {
+    const existsRes: QueryResult = await pool.query(
+      MyLeaguesQueries.ARE_ALL_CLUBS_AVAILABLE_$CLID_$STATES,
+      [clubIds, AVAILABLE_CLUB_STATES],
+    );
+    const existsRec: unknown = existsRes.rows[0];
+    if (!existsRec) {
+      throw new UnexpectedQueryResultError();
+    }
+    if (!ExistsModel.isValidModel(existsRec)) {
+      throw new ModelMismatchError(existsRec);
+    }
+    return (existsRec as IExistsModel).exists;
+  }
+
+  public async addMyLeagueClubs(
+    leagueId: number,
+    clubIds: number[],
+  ): Promise<IClubModel[]> {
+    await pool.query("BEGIN");
+    try {
+      // Add clubs to league
+      await pool.query(MyLeaguesQueries.ADD_CLUBS_TO_LEAGUE_$LGID_$CLIDS, [
+        leagueId,
+        clubIds,
+      ]);
+      // Get clubs by clubIds
+      const clubsRes: QueryResult = await pool.query(
+        MyLeaguesQueries.GET_MY_LEAGUE_CLUBS_$LGID,
+        [leagueId],
+      );
+      const clubsRecs: unknown[] = clubsRes.rows;
+      if (!clubsRecs) {
+        throw new UnexpectedQueryResultError();
+      }
+      if (!ClubModel.areValidModels(clubsRecs)) {
+        throw new ModelMismatchError(clubsRecs);
+      }
+      await pool.query("COMMIT");
+      // Return clubs
+      return clubsRecs as IClubModel[];
+    } catch (error) {
+      await pool.query("ROLLBACK");
+      throw error;
+    }
   }
 }

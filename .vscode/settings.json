@@ -2,6 +2,7 @@
   "cSpell.words": [
     "BDAY",
     "CLID",
+    "CLIDS",
     "codepaths",
     "dbname",
     "Emrecan",
@@ -17,6 +18,7 @@
     "psql",
     "PSWRD",
     "RFID",
+    "UNNEST",
     "VNID"
   ],
   "inlineSQL.enableDBIntegration": true,

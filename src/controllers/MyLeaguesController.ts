@@ -16,12 +16,13 @@ import {
 import { IMyLeagues$ClubsRes } from "../interfaces/schemas/responses/routes/my/leagues/$leagueId/clubs/IMyLeagues$ClubsRes";
 import { IMyLeaguesRes } from "../interfaces/schemas/responses/routes/my/leagues/IMyLeaguesRes";
 import { IMyLeaguesService } from "../interfaces/services/IMyLeaguesService";
-import { ClubModel } from "../models/ClubModel";
 import { MyLeaguesReq } from "../schemas/requests/routes/my/leagues/MyLeaguesReq";
 import { AppResponse } from "../schemas/responses/AppResponse";
 import { ClientError } from "../schemas/responses/app/ClientError";
 import { HttpStatus } from "../schemas/responses/app/HttpStatus";
 import { MyLeaguesService } from "../services/MyLeaguesService";
+import { MyLeagues$ClubsReq } from "../schemas/requests/routes/my/leagues/$/clubs/MyLeagues$ClubsRes";
+import { IMyLeagues$ClubsReq } from "../interfaces/schemas/requests/routes/my/leagues/$/clubs/IMyLeagues$ClubsReq";
 
 export class MyLeaguesController implements IMyLeaguesController {
   public readonly myLeaguesService: IMyLeaguesService;
@@ -54,17 +55,18 @@ export class MyLeaguesController implements IMyLeaguesController {
         return res.status(serviceRes.httpStatus.code).send(serviceRes);
       }
       // Respond with token
-      return res
-        .status(serviceRes.httpStatus.code)
-        .send(
-          new AppResponse<IMyLeaguesRes[]>(
-            serviceRes.httpStatus,
-            serviceRes.serverError,
-            serviceRes.clientErrors,
-            serviceRes.data,
-            AuthHelper.generateToken(authPayload),
-          ),
-        );
+      return res.status(serviceRes.httpStatus.code).send(
+        new AppResponse<IMyLeaguesRes[]>(
+          serviceRes.httpStatus,
+          serviceRes.serverError,
+          serviceRes.clientErrors,
+          serviceRes.data,
+          AuthHelper.generateToken({
+            userId: authPayload.userId,
+            userRole: authPayload.userRole,
+          }),
+        ),
+      );
     } catch (error) {
       return next(error);
     }
@@ -107,17 +109,18 @@ export class MyLeaguesController implements IMyLeaguesController {
         return res.status(serviceRes.httpStatus.code).send(serviceRes);
       }
       // Respond with token
-      return res
-        .status(serviceRes.httpStatus.code)
-        .send(
-          new AppResponse<IMyLeaguesRes>(
-            serviceRes.httpStatus,
-            serviceRes.serverError,
-            serviceRes.clientErrors,
-            serviceRes.data,
-            AuthHelper.generateToken(authPayload),
-          ),
-        );
+      return res.status(serviceRes.httpStatus.code).send(
+        new AppResponse<IMyLeaguesRes>(
+          serviceRes.httpStatus,
+          serviceRes.serverError,
+          serviceRes.clientErrors,
+          serviceRes.data,
+          AuthHelper.generateToken({
+            userId: authPayload.userId,
+            userRole: authPayload.userRole,
+          }),
+        ),
+      );
     } catch (error) {
       return next(error);
     }
@@ -171,17 +174,18 @@ export class MyLeaguesController implements IMyLeaguesController {
         return res.status(serviceRes.httpStatus.code).send(serviceRes);
       }
       // Respond with token
-      return res
-        .status(serviceRes.httpStatus.code)
-        .send(
-          new AppResponse<IMyLeaguesRes>(
-            serviceRes.httpStatus,
-            serviceRes.serverError,
-            serviceRes.clientErrors,
-            serviceRes.data,
-            AuthHelper.generateToken(authPayload),
-          ),
-        );
+      return res.status(serviceRes.httpStatus.code).send(
+        new AppResponse<IMyLeaguesRes>(
+          serviceRes.httpStatus,
+          serviceRes.serverError,
+          serviceRes.clientErrors,
+          serviceRes.data,
+          AuthHelper.generateToken({
+            userId: authPayload.userId,
+            userRole: authPayload.userRole,
+          }),
+        ),
+      );
     } catch (error) {
       return next(error);
     }
@@ -247,17 +251,18 @@ export class MyLeaguesController implements IMyLeaguesController {
         return res.status(serviceRes.httpStatus.code).send(serviceRes);
       }
       // Respond with token
-      return res
-        .status(serviceRes.httpStatus.code)
-        .send(
-          new AppResponse<IMyLeaguesRes>(
-            serviceRes.httpStatus,
-            serviceRes.serverError,
-            serviceRes.clientErrors,
-            serviceRes.data,
-            AuthHelper.generateToken(authPayload),
-          ),
-        );
+      return res.status(serviceRes.httpStatus.code).send(
+        new AppResponse<IMyLeaguesRes>(
+          serviceRes.httpStatus,
+          serviceRes.serverError,
+          serviceRes.clientErrors,
+          serviceRes.data,
+          AuthHelper.generateToken({
+            userId: authPayload.userId,
+            userRole: authPayload.userRole,
+          }),
+        ),
+      );
     } catch (error) {
       return next(error);
     }
@@ -311,17 +316,18 @@ export class MyLeaguesController implements IMyLeaguesController {
         return res.status(serviceRes.httpStatus.code).send(serviceRes);
       }
       // Respond with token
-      return res
-        .status(serviceRes.httpStatus.code)
-        .send(
-          new AppResponse<void>(
-            serviceRes.httpStatus,
-            serviceRes.serverError,
-            serviceRes.clientErrors,
-            serviceRes.data,
-            AuthHelper.generateToken(authPayload),
-          ),
-        );
+      return res.status(serviceRes.httpStatus.code).send(
+        new AppResponse<void>(
+          serviceRes.httpStatus,
+          serviceRes.serverError,
+          serviceRes.clientErrors,
+          serviceRes.data,
+          AuthHelper.generateToken({
+            userId: authPayload.userId,
+            userRole: authPayload.userRole,
+          }),
+        ),
+      );
     } catch (error) {
       return next(error);
     }
@@ -366,6 +372,7 @@ export class MyLeaguesController implements IMyLeaguesController {
       // Hand over to service
       const serviceRes: IAppResponse<IMyLeagues$ClubsRes[]> =
         await this.myLeaguesService.getMyLeagues$Clubs(
+          authPayload.userId,
           parseInt(req.params.leagueId),
           clientErrors,
         );
@@ -374,17 +381,18 @@ export class MyLeaguesController implements IMyLeaguesController {
         return res.status(serviceRes.httpStatus.code).send(serviceRes);
       }
       // Respond with token
-      return res
-        .status(serviceRes.httpStatus.code)
-        .send(
-          new AppResponse<IMyLeagues$ClubsRes[]>(
-            serviceRes.httpStatus,
-            serviceRes.serverError,
-            serviceRes.clientErrors,
-            serviceRes.data,
-            AuthHelper.generateToken(authPayload),
-          ),
-        );
+      return res.status(serviceRes.httpStatus.code).send(
+        new AppResponse<IMyLeagues$ClubsRes[]>(
+          serviceRes.httpStatus,
+          serviceRes.serverError,
+          serviceRes.clientErrors,
+          serviceRes.data,
+          AuthHelper.generateToken({
+            userId: authPayload.userId,
+            userRole: authPayload.userRole,
+          }),
+        ),
+      );
     } catch (error) {
       return next(error);
     }
@@ -426,7 +434,7 @@ export class MyLeaguesController implements IMyLeaguesController {
             new AppResponse<null>(httpStatus, null, clientErrors, null, null),
           );
       }
-      if (!ClubModel.areValidIdModels(req.body)) {
+      if (MyLeagues$ClubsReq!.isValidReq(req.body)) {
         httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
         clientErrors.push(
           new ClientError(ClientErrorCode.INVALID_REQUEST_BODY),
@@ -438,10 +446,11 @@ export class MyLeaguesController implements IMyLeaguesController {
           );
       }
       // Hand over to service
-      const serviceRes: IAppResponse<IMyLeaguesRes | null> =
-        await this.myLeaguesService.getMyLeagues$(
+      const serviceRes: IAppResponse<IMyLeagues$ClubsRes[] | null> =
+        await this.myLeaguesService.postMyLeagues$Clubs(
           authPayload.userId,
           parseInt(req.params.leagueId),
+          req.body as IMyLeagues$ClubsReq,
           clientErrors,
         );
       if (!serviceRes.httpStatus.isSuccess()) {
@@ -449,17 +458,18 @@ export class MyLeaguesController implements IMyLeaguesController {
         return res.status(serviceRes.httpStatus.code).send(serviceRes);
       }
       // Respond with token
-      return res
-        .status(serviceRes.httpStatus.code)
-        .send(
-          new AppResponse<IMyLeaguesRes>(
-            serviceRes.httpStatus,
-            serviceRes.serverError,
-            serviceRes.clientErrors,
-            serviceRes.data,
-            AuthHelper.generateToken(authPayload),
-          ),
-        );
+      return res.status(serviceRes.httpStatus.code).send(
+        new AppResponse<IMyLeagues$ClubsRes[]>(
+          serviceRes.httpStatus,
+          serviceRes.serverError,
+          serviceRes.clientErrors,
+          serviceRes.data,
+          AuthHelper.generateToken({
+            userId: authPayload.userId,
+            userRole: authPayload.userRole,
+          }),
+        ),
+      );
     } catch (error) {
       return next(error);
     }
