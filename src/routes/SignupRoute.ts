@@ -5,7 +5,7 @@ import { IRoute } from "../interfaces/routes/IRoute";
 
 export class SignupRoute implements IRoute {
   public readonly router: Router;
-  public static readonly path: string = "login";
+  public static readonly path: string = "signup";
   private readonly signupController: ISignupController;
 
   constructor() {
