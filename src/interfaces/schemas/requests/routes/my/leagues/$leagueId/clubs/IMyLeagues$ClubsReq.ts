@@ -1,3 +1,3 @@
 export interface IMyLeagues$ClubsReq {
-  readonly clubIds: number[];
+  readonly clubId: number;
 }

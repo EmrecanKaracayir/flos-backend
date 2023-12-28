@@ -13,6 +13,7 @@ import {
   HttpStatusCode,
   IHttpStatus,
 } from "../interfaces/schemas/responses/app/IHttpStatus";
+import { IMyLeagues$Clubs$Res } from "../interfaces/schemas/responses/routes/my/leagues/$leagueId/clubs/$clubId/IMyLeagues$Clubs$Res";
 import { IMyLeagues$ClubsRes } from "../interfaces/schemas/responses/routes/my/leagues/$leagueId/clubs/IMyLeagues$ClubsRes";
 import { IMyLeaguesRes } from "../interfaces/schemas/responses/routes/my/leagues/IMyLeaguesRes";
 import { IMyLeaguesService } from "../interfaces/services/IMyLeaguesService";
@@ -21,8 +22,8 @@ import { AppResponse } from "../schemas/responses/AppResponse";
 import { ClientError } from "../schemas/responses/app/ClientError";
 import { HttpStatus } from "../schemas/responses/app/HttpStatus";
 import { MyLeaguesService } from "../services/MyLeaguesService";
-import { MyLeagues$ClubsReq } from "../schemas/requests/routes/my/leagues/$/clubs/MyLeagues$ClubsRes";
-import { IMyLeagues$ClubsReq } from "../interfaces/schemas/requests/routes/my/leagues/$/clubs/IMyLeagues$ClubsReq";
+import { MyLeagues$ClubsReq } from "../schemas/requests/routes/my/leagues/$leagueId/clubs/MyLeagues$ClubsReq";
+import { IMyLeagues$ClubsReq } from "../interfaces/schemas/requests/routes/my/leagues/$leagueId/clubs/IMyLeagues$ClubsReq";
 
 export class MyLeaguesController implements IMyLeaguesController {
   public readonly myLeaguesService: IMyLeaguesService;
@@ -434,7 +435,7 @@ export class MyLeaguesController implements IMyLeaguesController {
             new AppResponse<null>(httpStatus, null, clientErrors, null, null),
           );
       }
-      if (MyLeagues$ClubsReq!.isValidReq(req.body)) {
+      if (!MyLeagues$ClubsReq.isValidReq(req.body)) {
         httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
         clientErrors.push(
           new ClientError(ClientErrorCode.INVALID_REQUEST_BODY),
@@ -446,7 +447,7 @@ export class MyLeaguesController implements IMyLeaguesController {
           );
       }
       // Hand over to service
-      const serviceRes: IAppResponse<IMyLeagues$ClubsRes[] | null> =
+      const serviceRes: IAppResponse<IMyLeagues$Clubs$Res | null> =
         await this.myLeaguesService.postMyLeagues$Clubs(
           authPayload.userId,
           parseInt(req.params.leagueId),
@@ -459,7 +460,99 @@ export class MyLeaguesController implements IMyLeaguesController {
       }
       // Respond with token
       return res.status(serviceRes.httpStatus.code).send(
-        new AppResponse<IMyLeagues$ClubsRes[]>(
+        new AppResponse<IMyLeagues$Clubs$Res>(
+          serviceRes.httpStatus,
+          serviceRes.serverError,
+          serviceRes.clientErrors,
+          serviceRes.data,
+          AuthHelper.generateToken({
+            userId: authPayload.userId,
+            userRole: authPayload.userRole,
+          }),
+        ),
+      );
+    } catch (error) {
+      return next(error);
+    }
+  }
+
+  public async deleteMyLeagues$Clubs$(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<Response | void> {
+    // Response declaration
+    let httpStatus: IHttpStatus;
+    const clientErrors: Array<IClientError> = [];
+    // Logic
+    try {
+      // Parse token (Has to be valid, otherwise it would not have reached this point)
+      const authPayload: AuthPayload = AuthHelper.verifyToken(
+        req.headers.authorization!.split(" ")[1],
+      );
+      if (!req.params.leagueId) {
+        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        clientErrors.push(
+          new ClientError(ClientErrorCode.MISSING_PARAMETER_$MY_LEAGUE_ID),
+        );
+        return res
+          .status(httpStatus.code)
+          .send(
+            new AppResponse<null>(httpStatus, null, clientErrors, null, null),
+          );
+      }
+      if (!canParseToInt(req.params.leagueId)) {
+        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        clientErrors.push(
+          new ClientError(ClientErrorCode.INVALID_PARAMETER_$MY_LEAGUE_ID),
+        );
+        return res
+          .status(httpStatus.code)
+          .send(
+            new AppResponse<null>(httpStatus, null, clientErrors, null, null),
+          );
+      }
+      if (!req.params.clubId) {
+        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        clientErrors.push(
+          new ClientError(
+            ClientErrorCode.MISSING_PARAMETER_MY_LEAGUES_$CLUB_ID,
+          ),
+        );
+        return res
+          .status(httpStatus.code)
+          .send(
+            new AppResponse<null>(httpStatus, null, clientErrors, null, null),
+          );
+      }
+      if (!canParseToInt(req.params.clubId)) {
+        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        clientErrors.push(
+          new ClientError(
+            ClientErrorCode.INVALID_PARAMETER_MY_LEAGUES_$CLUB_ID,
+          ),
+        );
+        return res
+          .status(httpStatus.code)
+          .send(
+            new AppResponse<null>(httpStatus, null, clientErrors, null, null),
+          );
+      }
+      // Hand over to service
+      const serviceRes: IAppResponse<void | null> =
+        await this.myLeaguesService.deleteMyLeagues$Clubs$(
+          authPayload.userId,
+          parseInt(req.params.leagueId),
+          parseInt(req.params.clubId),
+          clientErrors,
+        );
+      if (!serviceRes.httpStatus.isSuccess()) {
+        // Respond without token
+        return res.status(serviceRes.httpStatus.code).send(serviceRes);
+      }
+      // Respond with token
+      return res.status(serviceRes.httpStatus.code).send(
+        new AppResponse<void>(
           serviceRes.httpStatus,
           serviceRes.serverError,
           serviceRes.clientErrors,

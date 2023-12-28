@@ -45,4 +45,10 @@ export interface IMyLeaguesController {
     res: Response,
     next: NextFunction,
   ) => Promise<Response | void>;
+
+  deleteMyLeagues$Clubs$: (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => Promise<Response | void>;
 }

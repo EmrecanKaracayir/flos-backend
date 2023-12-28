@@ -212,10 +212,10 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
     return clubsRecs as IClubModel[];
   }
 
-  public async doAllClubsExist(clubIds: number[]): Promise<boolean> {
+  public async doesClubExist(clubId: number): Promise<boolean> {
     const existsRes: QueryResult = await pool.query(
-      MyLeaguesQueries.DO_ALL_CLUBS_EXIST_$CLIDS,
-      [clubIds],
+      MyLeaguesQueries.DOES_CLUB_EXIST_$CLID,
+      [clubId],
     );
     const existsRec: unknown = existsRes.rows[0];
     if (!existsRec) {
@@ -227,10 +227,10 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
     return (existsRec as IExistsModel).exists;
   }
 
-  public async areAllClubsAvailable(clubIds: number[]): Promise<boolean> {
+  public async isClubAvailable(clubId: number): Promise<boolean> {
     const existsRes: QueryResult = await pool.query(
-      MyLeaguesQueries.ARE_ALL_CLUBS_AVAILABLE_$CLID_$STATES,
-      [clubIds, AVAILABLE_CLUB_STATES],
+      MyLeaguesQueries.IS_MY_LEAGUE_IN_STATE_$PRID_$STATES,
+      [clubId, AVAILABLE_CLUB_STATES],
     );
     const existsRec: unknown = existsRes.rows[0];
     if (!existsRec) {
@@ -242,32 +242,64 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
     return (existsRec as IExistsModel).exists;
   }
 
-  public async addMyLeagueClubs(
+  public async addClubToMyLeague(
     leagueId: number,
-    clubIds: number[],
-  ): Promise<IClubModel[]> {
+    clubId: number,
+  ): Promise<IClubModel> {
     await pool.query("BEGIN");
     try {
-      // Add clubs to league
-      await pool.query(MyLeaguesQueries.ADD_CLUBS_TO_LEAGUE_$LGID_$CLIDS, [
+      // Add club to league
+      await pool.query(MyLeaguesQueries.ADD_CLUB_TO_LEAGUE_$LGID_$CLID, [
         leagueId,
-        clubIds,
+        clubId,
       ]);
-      // Get clubs by clubIds
-      const clubsRes: QueryResult = await pool.query(
-        MyLeaguesQueries.GET_MY_LEAGUE_CLUBS_$LGID,
-        [leagueId],
+      // Get ClubModel by clubId
+      const clubRes: QueryResult = await pool.query(
+        MyLeaguesQueries.GET_CLUB_$CLID,
+        [clubId],
       );
-      const clubsRecs: unknown[] = clubsRes.rows;
-      if (!clubsRecs) {
+      const clubRec: unknown = clubRes.rows[0];
+      if (!clubRec) {
         throw new UnexpectedQueryResultError();
       }
-      if (!ClubModel.areValidModels(clubsRecs)) {
-        throw new ModelMismatchError(clubsRecs);
+      if (!ClubModel.isValidModel(clubRec)) {
+        throw new ModelMismatchError(clubRec);
       }
       await pool.query("COMMIT");
-      // Return clubs
-      return clubsRecs as IClubModel[];
+      // Return ClubModel
+      return clubRec as IClubModel;
+    } catch (error) {
+      await pool.query("ROLLBACK");
+      throw error;
+    }
+  }
+
+  public async isClubInMyLeague(
+    organizerId: number,
+    clubId: number,
+  ): Promise<boolean> {
+    const existsRes: QueryResult = await pool.query(
+      MyLeaguesQueries.IS_CLUB_IN_MY_LEAGUE_$ORID_$CLID,
+      [organizerId, clubId],
+    );
+    const existsRec: unknown = existsRes.rows[0];
+    if (!existsRec) {
+      throw new UnexpectedQueryResultError();
+    }
+    if (!ExistsModel.isValidModel(existsRec)) {
+      throw new ModelMismatchError(existsRec);
+    }
+    return (existsRec as IExistsModel).exists;
+  }
+
+  public async removeClubFromLeague(clubId: number): Promise<void> {
+    await pool.query("BEGIN");
+    try {
+      // Remove club from league
+      await pool.query(MyLeaguesQueries.REMOVE_CLUB_FROM_LEAGUE_$CLID, [
+        clubId,
+      ]);
+      await pool.query("COMMIT");
     } catch (error) {
       await pool.query("ROLLBACK");
       throw error;

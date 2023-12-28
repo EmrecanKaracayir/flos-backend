@@ -39,14 +39,15 @@ export interface IMyLeaguesProvider {
 
   getMyLeagueClubs: (leagueId: number) => Promise<IClubModel[]>;
 
-  doAllClubsExist: (clubIds: number[]) => Promise<boolean>;
+  doesClubExist: (clubId: number) => Promise<boolean>;
 
-  areAllClubsAvailable: (clubIds: number[]) => Promise<boolean>;
+  isClubAvailable: (clubId: number) => Promise<boolean>;
 
-  addMyLeagueClubs: (
-    leagueId: number,
-    clubIds: number[],
-  ) => Promise<IClubModel[]>;
+  addClubToMyLeague: (leagueId: number, clubId: number) => Promise<IClubModel>;
+
+  isClubInMyLeague: (organizerId: number, clubId: number) => Promise<boolean>;
+
+  removeClubFromLeague: (clubId: number) => Promise<void>;
 }
 
 export enum MyLeaguesQueries {
@@ -59,7 +60,10 @@ export enum MyLeaguesQueries {
   FREE_LEAGUE_FROM_CLUBS_$LGID = `UPDATE "Club" SET "leagueId" = NULL WHERE "leagueId" = $1`,
   DELETE_LEAGUE_$LGID = `DELETE FROM "League" WHERE "leagueId" = $1`,
   GET_MY_LEAGUE_CLUBS_$LGID = `SELECT * FROM "Club" WHERE "leagueId" = $1`,
-  DO_ALL_CLUBS_EXIST_$CLIDS = `SELECT NOT EXISTS (SELECT 1 FROM UNNEST($1::INTEGER[]) AS "testingClubId" WHERE "testingClubId" NOT IN (SELECT "clubId" FROM "Club")) AS "exists"`,
-  ARE_ALL_CLUBS_AVAILABLE_$CLID_$STATES = `SELECT NOT EXISTS (SELECT 1 FROM UNNEST($1::INTEGER[]) AS "testingClubId" WHERE NOT EXISTS (SELECT 1 FROM "ClubView" WHERE "clubId" = "testingClubId" AND "state" = ANY($2::"ClubState"[]))) AS "exists";`,
-  ADD_CLUBS_TO_LEAGUE_$LGID_$CLIDS = `UPDATE "Club" SET "leagueId" = $1 WHERE "clubId" = ANY($2::INTEGER[])`,
+  DOES_CLUB_EXIST_$CLID = `SELECT EXISTS (SELECT * FROM "Club" WHERE "clubId" = $1) AS "exists"`,
+  IS_CLUB_IN_STATE_$CLID_$STATES = `SELECT EXISTS (SELECT "state" FROM "ClubView" WHERE "clubId" = $1 AND "state" = ANY($2::"ClubState"[])) AS "exists"`,
+  ADD_CLUB_TO_LEAGUE_$LGID_$CLID = `UPDATE "Club" SET "leagueId" = $1 WHERE "clubId" = $2`,
+  GET_CLUB_$CLID = `SELECT * FROM "ClubView" WHERE "clubId" = $1`,
+  IS_CLUB_IN_MY_LEAGUE_$ORID_$CLID = `SELECT EXISTS (SELECT "clubId" FROM "MyLeagueView" WHERE "organizerId" = $1 AND "clubId" = $2) AS "exists"`,
+  REMOVE_CLUB_FROM_LEAGUE_$CLID = `UPDATE "Club" SET "leagueId" = NULL WHERE "clubId" = $1`,
 }

@@ -1,6 +1,3 @@
-import { ClubState } from "../../../../core/enums/clubState";
-import { LeagueState } from "../../../../core/enums/leagueState";
-import { PlayerState } from "../../../../core/enums/playerState";
 import {
   EMAIL_MAX_LENGTH,
   EMAIL_MIN_LENGTH,
@@ -9,18 +6,23 @@ import {
   USERNAME_MIN_LENGTH,
 } from "../../../../core/rules/accountRules";
 import {
+  AVAILABLE_CLUB_STATES,
   CLUB_DESCRIPTION_MAX_LENGTH,
   CLUB_DESCRIPTION_MIN_LENGTH,
   CLUB_NAME_MAX_LENGTH,
   CLUB_NAME_MIN_LENGTH,
+  DELETABLE_CLUB_STATES,
 } from "../../../../core/rules/clubRules";
 import {
+  DELETABLE_LEAGUE_STATES,
+  EDITABLE_LEAGUE_STATES,
   LEAGUE_DESCRIPTION_MAX_LENGTH,
   LEAGUE_DESCRIPTION_MIN_LENGTH,
   LEAGUE_NAME_MAX_LENGTH,
   LEAGUE_NAME_MIN_LENGTH,
 } from "../../../../core/rules/leagueRules";
 import {
+  AVAILABLE_PLAYER_STATES,
   PLAYER_BIOGRAPHY_MAX_LENGTH,
   PLAYER_BIOGRAPHY_MIN_LENGTH,
   PLAYER_FULL_NAME_MAX_LENGTH,
@@ -92,9 +94,11 @@ export enum ClientErrorCode {
   INVALID_LEAGUE_PRIZE_VALUE = 70806,
   INVALID_LEAGUE_DESCRIPTION_LENGTH = 70807,
   INVALID_LEAGUE_LOGO_PATH_CONTENT = 70808,
-  NO_CLUB_IDS_PROVIDED_FOR_ADDITION = 70809,
-  SOME_OR_ALL_CLUBS_NOT_FOUND_FOR_ADDITION = 70810,
-  SOME_OR_ALL_CLUBS_NOT_AVAILABLE_FOR_ADDITION = 70811,
+  MISSING_PARAMETER_MY_LEAGUES_$CLUB_ID = 70809,
+  INVALID_PARAMETER_MY_LEAGUES_$CLUB_ID = 70810,
+  CLUB_NOT_FOUND_FOR_ADDITION = 70811,
+  CLUB_NOT_AVAILABLE_FOR_ADDITION = 70812,
+  CLUB_NOT_FOUND_FOR_REMOVAL = 70813,
   // - - 709XX: /my/player errors
   PARTICIPANT_HAS_NO_PLAYER = 70900,
   PARTICIPANT_HAS_A_PLAYER = 70901,
@@ -112,6 +116,7 @@ export enum ClientErrorCode {
   INVALID_CLUB_NAME_LENGTH = 71005,
   INVALID_DESCRIPTION_LENGTH = 71006,
   INVALID_CLUB_LOGO_PATH_CONTENT = 71007,
+  // - - 711XX: /available errors
   // - - 799XX: /* error
   RESOURCE_NOT_FOUND = 79900,
 }
@@ -198,26 +203,29 @@ export const clientErrorMessages: ClientErrorMessages = {
     "Provided parameter 'leagueId' was invalid.",
   [ClientErrorCode.NO_LEAGUE_FOUND_IN_MY_LEAGUES]:
     "The organizer has no league with the provided id.",
-  [ClientErrorCode.LEAGUE_CANNOT_BE_EDITED]: `The league cannot be edited. Its state must be one of '[${LeagueState.NOT_STARTED}]' to be editable.`,
-  [ClientErrorCode.LEAGUE_CANNOT_BE_DELETED]: `The league cannot be deleted. Its state must be one of '[${LeagueState.NOT_STARTED}]' to be deletable.`,
+  [ClientErrorCode.LEAGUE_CANNOT_BE_EDITED]: `The league cannot be edited. Its state must be one of '[${EDITABLE_LEAGUE_STATES}]' to be editable.`,
+  [ClientErrorCode.LEAGUE_CANNOT_BE_DELETED]: `The league cannot be deleted. Its state must be one of '[${DELETABLE_LEAGUE_STATES}]' to be deletable.`,
   [ClientErrorCode.INVALID_LEAGUE_NAME_LENGTH]: `Provided name wasn't in the length range of ${LEAGUE_NAME_MIN_LENGTH} to ${LEAGUE_NAME_MAX_LENGTH}.`,
   [ClientErrorCode.INVALID_LEAGUE_PRIZE_VALUE]:
     "Provided prize value was invalid. Must be a safe positive integer.",
   [ClientErrorCode.INVALID_LEAGUE_DESCRIPTION_LENGTH]: `Provided description wasn't in the length range of ${LEAGUE_DESCRIPTION_MIN_LENGTH} to ${LEAGUE_DESCRIPTION_MAX_LENGTH}.`,
   [ClientErrorCode.INVALID_LEAGUE_LOGO_PATH_CONTENT]:
     "Provided logo path was not in the valid format. Must be a valid URL.",
-  [ClientErrorCode.NO_CLUB_IDS_PROVIDED_FOR_ADDITION]:
-    "No club ids were provided for addition.",
-  [ClientErrorCode.SOME_OR_ALL_CLUBS_NOT_FOUND_FOR_ADDITION]:
-    "Some or all of the clubs with the provided club ids were not found.",
-  [ClientErrorCode.SOME_OR_ALL_CLUBS_NOT_AVAILABLE_FOR_ADDITION]:
-    "Some or all of the clubs with the provided club ids were not available.",
+  [ClientErrorCode.MISSING_PARAMETER_MY_LEAGUES_$CLUB_ID]:
+    "Parameter 'clubId' was missing.",
+  [ClientErrorCode.INVALID_PARAMETER_MY_LEAGUES_$CLUB_ID]:
+    "Provided parameter 'clubId' was invalid.",
+  [ClientErrorCode.CLUB_NOT_FOUND_FOR_ADDITION]:
+    "No club was found with the provided id.",
+  [ClientErrorCode.CLUB_NOT_AVAILABLE_FOR_ADDITION]: `The club is not available for addition. Its state must be one of '[${AVAILABLE_CLUB_STATES}]' to be added.`,
+  [ClientErrorCode.CLUB_NOT_FOUND_FOR_REMOVAL]:
+    "No club was found with the provided id in league. The club must be in the organizer's league to be removed.",
   // - - 709XX: /my/player errors
   [ClientErrorCode.PARTICIPANT_HAS_NO_PLAYER]:
     "The participant has no player. A player must be created first.",
   [ClientErrorCode.PARTICIPANT_HAS_A_PLAYER]:
     "The participant already has a player. The player must be deleted first.",
-  [ClientErrorCode.PLAYER_CANNOT_BE_DELETED]: `The player cannot be deleted. Its state must be one of '[${PlayerState.AVAILABLE}]' to be deletable.`,
+  [ClientErrorCode.PLAYER_CANNOT_BE_DELETED]: `The player cannot be deleted. Its state must be one of '[${DELETABLE_LEAGUE_STATES}]' to be deletable.`,
   [ClientErrorCode.INVALID_PLAYER_FULL_NAME_LENGTH]: `Provided full name wasn't in the length range of ${PLAYER_FULL_NAME_MIN_LENGTH} to ${PLAYER_FULL_NAME_MAX_LENGTH}.`,
   [ClientErrorCode.INVALID_DATE_CONTENT]:
     "Provided date was not in the valid format. Must be YYYY-MM-DD.",
@@ -231,12 +239,13 @@ export const clientErrorMessages: ClientErrorMessages = {
     "The participant already has a club. The club must be deleted first.",
   [ClientErrorCode.PARTICIPANT_HAS_NO_PLAYER_FOR_CLUB]:
     "The participant has no player for the club. A player must be created first.",
-  [ClientErrorCode.PARTICIPANT_PLAYER_IS_NOT_AVAILABLE]: `The participant's player is not available. The player's state must be one of '[${PlayerState.AVAILABLE}]' to create a club.`,
-  [ClientErrorCode.CLUB_CANNOT_BE_DELETED]: `The club cannot be deleted. Its state must be one of '[${ClubState.NOT_READY}, ${ClubState.READY}, ${ClubState.SIGNED}]' to be deletable.`,
+  [ClientErrorCode.PARTICIPANT_PLAYER_IS_NOT_AVAILABLE]: `The participant's player is not available. The player's state must be one of '[${AVAILABLE_PLAYER_STATES}]' to create a club.`,
+  [ClientErrorCode.CLUB_CANNOT_BE_DELETED]: `The club cannot be deleted. Its state must be one of '[${DELETABLE_CLUB_STATES}]' to be deletable.`,
   [ClientErrorCode.INVALID_CLUB_NAME_LENGTH]: `Provided name wasn't in the length range of ${CLUB_NAME_MIN_LENGTH} to ${CLUB_NAME_MAX_LENGTH}.`,
   [ClientErrorCode.INVALID_DESCRIPTION_LENGTH]: `Provided description wasn't in the length range of ${CLUB_DESCRIPTION_MIN_LENGTH} to ${CLUB_DESCRIPTION_MAX_LENGTH}.`,
   [ClientErrorCode.INVALID_CLUB_LOGO_PATH_CONTENT]:
     "Provided logo path was not in the valid format. Must be a valid URL.",
+  // - - 711XX: /available errors
   // - - 799XX: /* error
   [ClientErrorCode.RESOURCE_NOT_FOUND]:
     "The requested resource couldn't be found.",
