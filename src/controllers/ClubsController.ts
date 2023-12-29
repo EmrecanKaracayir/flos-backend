@@ -48,14 +48,13 @@ export class ClubsController implements IClubsController {
     next: NextFunction,
   ): Promise<Response | void> {
     // Response declaration
-    let httpStatus: IHttpStatus;
     const clientErrors: Array<IClientError> = [];
     // Logic
     try {
       if (!req.params.clubId) {
-        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
         clientErrors.push(
-          new ClientError(ClientErrorCode.MISSING_PARAMETER_$CLUB_ID),
+          new ClientError(ClientErrorCode.MISSING_PARAMETER_$CLID),
         );
         return res
           .status(httpStatus.code)
@@ -64,9 +63,11 @@ export class ClubsController implements IClubsController {
           );
       }
       if (!canParseToInt(req.params.clubId)) {
-        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
         clientErrors.push(
-          new ClientError(ClientErrorCode.INVALID_PARAMETER_$CLUB_ID),
+          new ClientError(ClientErrorCode.INVALID_PARAMETER_$CLID),
         );
         return res
           .status(httpStatus.code)

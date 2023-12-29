@@ -28,11 +28,11 @@ export class LoginService implements ILoginService {
   }
 
   public async postLoginOrganizer(
-    dto: ILoginOrganizerReq,
+    req: ILoginOrganizerReq,
     clientErrors: IClientError[],
   ): Promise<IAppResponse<ILoginOrganizerRes | null>> {
     const model: IOrganizerModel | null = await this.loginProvider.getOrganizer(
-      dto.username,
+      req.username,
     );
     if (!model) {
       clientErrors.push(
@@ -46,7 +46,7 @@ export class LoginService implements ILoginService {
         null,
       );
     }
-    if (!(await EncryptionHelper.compare(dto.password, model.password))) {
+    if (!(await EncryptionHelper.compare(req.password, model.password))) {
       clientErrors.push(new ClientError(ClientErrorCode.INCORRECT_PASSWORD));
       return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.UNAUTHORIZED),
@@ -66,11 +66,11 @@ export class LoginService implements ILoginService {
   }
 
   public async postLoginParticipant(
-    dto: ILoginParticipantReq,
+    req: ILoginParticipantReq,
     clientErrors: IClientError[],
   ): Promise<IAppResponse<ILoginParticipantRes | null>> {
     const model: IParticipantModel | null =
-      await this.loginProvider.getParticipant(dto.username);
+      await this.loginProvider.getParticipant(req.username);
     if (!model) {
       clientErrors.push(
         new ClientError(ClientErrorCode.NO_ACCOUNT_FOUND_IN_PARTICIPANTS),
@@ -83,7 +83,7 @@ export class LoginService implements ILoginService {
         null,
       );
     }
-    if (!(await EncryptionHelper.compare(dto.password, model.password))) {
+    if (!(await EncryptionHelper.compare(req.password, model.password))) {
       clientErrors.push(new ClientError(ClientErrorCode.INCORRECT_PASSWORD));
       return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.UNAUTHORIZED),

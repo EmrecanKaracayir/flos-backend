@@ -56,14 +56,14 @@ export class MyLeaguesService implements IMyLeaguesService {
 
   public async postMyLeagues(
     organizerId: number,
-    dto: IMyLeaguesReq,
+    req: IMyLeaguesReq,
     clientErrors: IClientError[],
   ): Promise<IAppResponse<IMyLeaguesRes | null>> {
     this.validateFields(
-      dto.name,
-      dto.prize,
-      dto.description,
-      dto.logoPath,
+      req.name,
+      req.prize,
+      req.description,
+      req.logoPath,
       clientErrors,
     );
     if (clientErrors.length > 0) {
@@ -78,10 +78,10 @@ export class MyLeaguesService implements IMyLeaguesService {
     clientErrors = [];
     const model: IMyLeagueModel = await this.myLeaguesProvider.createMyLeague(
       organizerId,
-      dto.name,
-      dto.prize,
-      dto.description,
-      dto.logoPath,
+      req.name,
+      req.prize,
+      req.description,
+      req.logoPath,
     );
     return new AppResponse<IMyLeaguesRes>(
       new HttpStatus(HttpStatusCode.CREATED),
@@ -123,7 +123,7 @@ export class MyLeaguesService implements IMyLeaguesService {
   public async putMyLeagues$(
     organizerId: number,
     leagueId: number,
-    dto: IMyLeaguesReq,
+    req: IMyLeaguesReq,
     clientErrors: IClientError[],
   ): Promise<IAppResponse<IMyLeaguesRes | null>> {
     if (
@@ -153,10 +153,10 @@ export class MyLeaguesService implements IMyLeaguesService {
       );
     }
     this.validateFields(
-      dto.name,
-      dto.prize,
-      dto.description,
-      dto.logoPath,
+      req.name,
+      req.prize,
+      req.description,
+      req.logoPath,
       clientErrors,
     );
     if (clientErrors.length > 0) {
@@ -172,10 +172,10 @@ export class MyLeaguesService implements IMyLeaguesService {
     const model: IMyLeagueModel = await this.myLeaguesProvider.updateMyLeague(
       organizerId,
       leagueId,
-      dto.name,
-      dto.prize,
-      dto.description,
-      dto.logoPath,
+      req.name,
+      req.prize,
+      req.description,
+      req.logoPath,
     );
     return new AppResponse<IMyLeaguesRes>(
       new HttpStatus(HttpStatusCode.OK),
@@ -260,7 +260,7 @@ export class MyLeaguesService implements IMyLeaguesService {
   public async postMyLeagues$Clubs(
     organizerId: number,
     leagueId: number,
-    dto: IMyLeagues$ClubsReq,
+    req: IMyLeagues$ClubsReq,
     clientErrors: IClientError[],
   ): Promise<IAppResponse<IMyLeagues$Clubs$Res>> {
     if (
@@ -289,7 +289,7 @@ export class MyLeaguesService implements IMyLeaguesService {
         null,
       );
     }
-    if (!(await this.myLeaguesProvider.doesClubExist(dto.clubId))) {
+    if (!(await this.myLeaguesProvider.doesClubExist(req.clubId))) {
       clientErrors.push(
         new ClientError(ClientErrorCode.CLUB_NOT_FOUND_FOR_ADDITION),
       );
@@ -301,7 +301,7 @@ export class MyLeaguesService implements IMyLeaguesService {
         null,
       );
     }
-    if (!(await this.myLeaguesProvider.isClubAvailable(dto.clubId))) {
+    if (!(await this.myLeaguesProvider.isClubAvailable(req.clubId))) {
       clientErrors.push(
         new ClientError(ClientErrorCode.CLUB_NOT_AVAILABLE_FOR_ADDITION),
       );
@@ -315,7 +315,7 @@ export class MyLeaguesService implements IMyLeaguesService {
     }
     const model: IClubModel = await this.myLeaguesProvider.addClubToMyLeague(
       leagueId,
-      dto.clubId,
+      req.clubId,
     );
     return new AppResponse<IMyLeagues$Clubs$Res>(
       new HttpStatus(HttpStatusCode.CREATED),
@@ -358,7 +358,7 @@ export class MyLeaguesService implements IMyLeaguesService {
         null,
       );
     }
-    if (!(await this.myLeaguesProvider.isClubInMyLeague(organizerId, clubId))) {
+    if (!(await this.myLeaguesProvider.isClubInLeague(leagueId, clubId))) {
       clientErrors.push(
         new ClientError(ClientErrorCode.CLUB_NOT_FOUND_FOR_REMOVAL),
       );
@@ -370,7 +370,7 @@ export class MyLeaguesService implements IMyLeaguesService {
         null,
       );
     }
-    await this.myLeaguesProvider.removeClubFromLeague(clubId);
+    await this.myLeaguesProvider.removeClubFromMyLeague(clubId);
     return new AppResponse<void>(
       new HttpStatus(HttpStatusCode.NO_CONTENT),
       null,

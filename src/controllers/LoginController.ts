@@ -35,12 +35,13 @@ export class LoginController implements ILoginController {
     next: NextFunction,
   ): Promise<Response | void> {
     // Response declaration
-    let httpStatus: IHttpStatus;
     const clientErrors: Array<IClientError> = [];
     // Logic
     try {
       if (!LoginOrganizerReq.isValidReq(req.body)) {
-        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
         clientErrors.push(
           new ClientError(ClientErrorCode.INVALID_REQUEST_BODY),
         );
@@ -84,12 +85,11 @@ export class LoginController implements ILoginController {
     next: NextFunction,
   ): Promise<Response | void> {
     // Response declaration
-    let httpStatus: IHttpStatus;
     const clientErrors: Array<IClientError> = [];
     // Logic
     try {
       if (!LoginParticipantReq.isValidReq(req.body)) {
-        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
         clientErrors.push(
           new ClientError(ClientErrorCode.INVALID_REQUEST_BODY),
         );

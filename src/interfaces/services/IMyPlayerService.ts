@@ -14,13 +14,13 @@ export interface IMyPlayerService {
 
   postMyPlayer: (
     participantId: number,
-    dto: IMyPlayerReq,
+    req: IMyPlayerReq,
     clientErrors: IClientError[],
   ) => Promise<IAppResponse<IMyPlayerRes | null>>;
 
   putMyPlayer: (
     participantId: number,
-    dto: IMyPlayerReq,
+    req: IMyPlayerReq,
     clientErrors: IClientError[],
   ) => Promise<IAppResponse<IMyPlayerRes | null>>;
 

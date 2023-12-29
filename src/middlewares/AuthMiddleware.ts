@@ -2,8 +2,11 @@ import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { AuthPayload, UserRole } from "../core/@types/helpers/authPayloadRules";
 import { AuthHelper } from "../core/helpers/AuthHelper";
-import { ClientErrorCode } from "../interfaces/schemas/responses/app/IClientError";
-import { HttpStatusCode } from "../interfaces/schemas/responses/app/IHttpStatus";
+import { ClientErrorCode, IClientError } from "../interfaces/schemas/responses/app/IClientError";
+import {
+  HttpStatusCode,
+  IHttpStatus,
+} from "../interfaces/schemas/responses/app/IHttpStatus";
 import { UserProvider } from "../providers/common/UserProvider";
 import { AppResponse } from "../schemas/responses/AppResponse";
 import { ClientError } from "../schemas/responses/app/ClientError";
@@ -17,12 +20,13 @@ export class AuthMiddleware {
       next: NextFunction,
     ): Promise<Response | void> => {
       // Response declaration
-      let httpStatus: HttpStatus;
-      const clientErrors: Array<ClientError> = [];
+      const clientErrors: Array<IClientError> = [];
       // Logic
       const authHeader: string | undefined = req.headers.authorization;
       if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        httpStatus = new HttpStatus(HttpStatusCode.UNAUTHORIZED);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.UNAUTHORIZED,
+        );
         clientErrors.push(new ClientError(ClientErrorCode.MISSING_TOKEN));
         return res
           .status(httpStatus.code)
@@ -34,7 +38,9 @@ export class AuthMiddleware {
       try {
         const authPayload: AuthPayload = AuthHelper.verifyToken(token);
         if (!allowedUserRoles.includes(authPayload.userRole)) {
-          httpStatus = new HttpStatus(HttpStatusCode.FORBIDDEN);
+          const httpStatus: IHttpStatus = new HttpStatus(
+            HttpStatusCode.FORBIDDEN,
+          );
           clientErrors.push(new ClientError(ClientErrorCode.FORBIDDEN_ACCESS));
           return res
             .status(httpStatus.code)
@@ -50,7 +56,9 @@ export class AuthMiddleware {
             )
           ).exists
         ) {
-          httpStatus = new HttpStatus(HttpStatusCode.UNAUTHORIZED);
+          const httpStatus: IHttpStatus = new HttpStatus(
+            HttpStatusCode.UNAUTHORIZED,
+          );
           clientErrors.push(new ClientError(ClientErrorCode.INVALID_TOKEN));
           return res
             .status(httpStatus.code)
@@ -62,7 +70,9 @@ export class AuthMiddleware {
       } catch (error) {
         if (error instanceof jwt.JsonWebTokenError) {
           if (error instanceof jwt.TokenExpiredError) {
-            httpStatus = new HttpStatus(HttpStatusCode.UNAUTHORIZED);
+            const httpStatus: IHttpStatus = new HttpStatus(
+              HttpStatusCode.UNAUTHORIZED,
+            );
             clientErrors.push(new ClientError(ClientErrorCode.EXPIRED_TOKEN));
             return res
               .status(httpStatus.code)
@@ -76,7 +86,9 @@ export class AuthMiddleware {
                 ),
               );
           } else {
-            httpStatus = new HttpStatus(HttpStatusCode.UNAUTHORIZED);
+            const httpStatus: IHttpStatus = new HttpStatus(
+              HttpStatusCode.UNAUTHORIZED,
+            );
             clientErrors.push(new ClientError(ClientErrorCode.INVALID_TOKEN));
             return res
               .status(httpStatus.code)

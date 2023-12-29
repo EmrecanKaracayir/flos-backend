@@ -2,6 +2,7 @@ import { ClubState } from "../../../core/enums/clubState";
 
 export interface IBaseClubModel {
   readonly clubId: number;
+  readonly leagueName: string | null;
   readonly name: string;
   readonly state: ClubState;
   readonly playerCount: number;

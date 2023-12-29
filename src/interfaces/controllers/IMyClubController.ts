@@ -27,4 +27,22 @@ export interface IMyClubController {
     res: Response,
     next: NextFunction,
   ) => Promise<Response | void>;
+
+  getMyClubPlayers: (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => Promise<Response | void>;
+
+  postMyClubPlayers: (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => Promise<Response | void>;
+
+  deleteMyClubPlayers$: (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => Promise<Response | void>;
 }

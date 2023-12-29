@@ -34,12 +34,13 @@ export class SignupController implements ISignupController {
     next: NextFunction,
   ): Promise<Response | void> {
     // Response declaration
-    let httpStatus: IHttpStatus;
     const clientErrors: Array<IClientError> = [];
     // Logic
     try {
       if (!SignupOrganizerReq.isValidReq(req.body)) {
-        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
         clientErrors.push(
           new ClientError(ClientErrorCode.INVALID_REQUEST_BODY),
         );
@@ -83,12 +84,13 @@ export class SignupController implements ISignupController {
     next: NextFunction,
   ): Promise<Response | void> {
     // Response declaration
-    let httpStatus: IHttpStatus;
     const clientErrors: Array<IClientError> = [];
     // Logic
     try {
       if (!SignupParticipantReq.isValidReq(req.body)) {
-        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
         clientErrors.push(
           new ClientError(ClientErrorCode.INVALID_REQUEST_BODY),
         );

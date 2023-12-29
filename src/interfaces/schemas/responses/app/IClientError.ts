@@ -12,6 +12,7 @@ import {
   CLUB_NAME_MAX_LENGTH,
   CLUB_NAME_MIN_LENGTH,
   DELETABLE_CLUB_STATES,
+  EDITABLE_CLUB_STATES,
 } from "../../../../core/rules/clubRules";
 import {
   DELETABLE_LEAGUE_STATES,
@@ -23,6 +24,7 @@ import {
 } from "../../../../core/rules/leagueRules";
 import {
   AVAILABLE_PLAYER_STATES,
+  EDITABLE_PLAYER_STATES,
   PLAYER_BIOGRAPHY_MAX_LENGTH,
   PLAYER_BIOGRAPHY_MIN_LENGTH,
   PLAYER_FULL_NAME_MAX_LENGTH,
@@ -61,32 +63,32 @@ export enum ClientErrorCode {
   INVALID_EMAIL_CONTENT = 70106,
   EMAIL_ALREADY_EXISTS = 70107,
   // - - 702XX: /referees errors
-  MISSING_PARAMETER_$REFEREE_ID = 70200,
-  INVALID_PARAMETER_$REFEREE_ID = 70201,
+  MISSING_PARAMETER_$RFID = 70200,
+  INVALID_PARAMETER_$RFID = 70201,
   NO_REFEREE_FOUND_IN_REFEREES = 70202,
   // - - 703XX: /venues errors
-  MISSING_PARAMETER_$VENUE_ID = 70300,
-  INVALID_PARAMETER_$VENUE_ID = 70301,
+  MISSING_PARAMETER_$VNID = 70300,
+  INVALID_PARAMETER_$VNID = 70301,
   NO_VENUE_FOUND_IN_VENUES = 70302,
   // - - 704XX: /leagues errors
-  MISSING_PARAMETER_$LEAGUE_ID = 70400,
-  INVALID_PARAMETER_$LEAGUE_ID = 70401,
+  MISSING_PARAMETER_$LGID = 70400,
+  INVALID_PARAMETER_$LGID = 70401,
   NO_LEAGUE_FOUND_IN_LEAGUES = 70402,
   // - - 705XX: /clubs errors
-  MISSING_PARAMETER_$CLUB_ID = 70500,
-  INVALID_PARAMETER_$CLUB_ID = 70501,
+  MISSING_PARAMETER_$CLID = 70500,
+  INVALID_PARAMETER_$CLID = 70501,
   NO_CLUB_FOUND_IN_CLUBS = 70502,
   // - - 706XX: /players errors
-  MISSING_PARAMETER_$PLAYER_ID = 70600,
-  INVALID_PARAMETER_$PLAYER_ID = 70601,
+  MISSING_PARAMETER_$PLID = 70600,
+  INVALID_PARAMETER_$PLID = 70601,
   NO_PLAYER_FOUND_IN_PLAYERS = 70602,
   // - - 707XX: /search errors
   MISSING_QUERY_$Q = 70700,
   INVALID_QUERY_$Q = 70701,
   INVALID_QUERY_LENGTH_$Q = 70702,
   // - - 708XX: /my/leagues errors
-  MISSING_PARAMETER_$MY_LEAGUE_ID = 70800,
-  INVALID_PARAMETER_$MY_LEAGUE_ID = 70801,
+  MISSING_PARAMETER_MY_LEAGUES_$LGID = 70800,
+  INVALID_PARAMETER_MY_LEAGUES_$LGID = 70801,
   NO_LEAGUE_FOUND_IN_MY_LEAGUES = 70802,
   LEAGUE_CANNOT_BE_EDITED = 70803,
   LEAGUE_CANNOT_BE_DELETED = 70804,
@@ -94,28 +96,35 @@ export enum ClientErrorCode {
   INVALID_LEAGUE_PRIZE_VALUE = 70806,
   INVALID_LEAGUE_DESCRIPTION_LENGTH = 70807,
   INVALID_LEAGUE_LOGO_PATH_CONTENT = 70808,
-  MISSING_PARAMETER_MY_LEAGUES_$CLUB_ID = 70809,
-  INVALID_PARAMETER_MY_LEAGUES_$CLUB_ID = 70810,
+  MISSING_PARAMETER_MY_LEAGUES_$CLID = 70809,
+  INVALID_PARAMETER_MY_LEAGUES_$CLID = 70810,
   CLUB_NOT_FOUND_FOR_ADDITION = 70811,
   CLUB_NOT_AVAILABLE_FOR_ADDITION = 70812,
   CLUB_NOT_FOUND_FOR_REMOVAL = 70813,
   // - - 709XX: /my/player errors
   PARTICIPANT_HAS_NO_PLAYER = 70900,
   PARTICIPANT_HAS_A_PLAYER = 70901,
-  PLAYER_CANNOT_BE_DELETED = 70902,
-  INVALID_PLAYER_FULL_NAME_LENGTH = 70903,
-  INVALID_DATE_CONTENT = 70904,
-  INVALID_BIOGRAPHY_LENGTH = 70905,
-  INVALID_PLAYER_IMAGE_PATH_CONTENT = 70906,
+  PLAYER_CANNOT_BE_EDITED = 70902,
+  PLAYER_CANNOT_BE_DELETED = 70903,
+  INVALID_PLAYER_FULL_NAME_LENGTH = 70904,
+  INVALID_PLAYER_BIRTHDAY_CONTENT = 70905,
+  INVALID_PLAYER_BIOGRAPHY_LENGTH = 70906,
+  INVALID_PLAYER_IMAGE_PATH_CONTENT = 70907,
   // - - 710XX: /my/club errors
   PARTICIPANT_HAS_NO_CLUB = 71000,
   PARTICIPANT_HAS_A_CLUB = 71001,
   PARTICIPANT_HAS_NO_PLAYER_FOR_CLUB = 71002,
   PARTICIPANT_PLAYER_IS_NOT_AVAILABLE = 71003,
-  CLUB_CANNOT_BE_DELETED = 71004,
-  INVALID_CLUB_NAME_LENGTH = 71005,
-  INVALID_DESCRIPTION_LENGTH = 71006,
-  INVALID_CLUB_LOGO_PATH_CONTENT = 71007,
+  CLUB_CANNOT_BE_EDITED = 71004,
+  CLUB_CANNOT_BE_DELETED = 71005,
+  INVALID_CLUB_NAME_LENGTH = 71006,
+  INVALID_CLUB_DESCRIPTION_LENGTH = 71007,
+  INVALID_CLUB_LOGO_PATH_CONTENT = 71008,
+  MISSING_PARAMETER_MY_CLUB_$PLID = 71009,
+  INVALID_PARAMETER_MY_CLUB_$PLID = 71010,
+  PLAYER_NOT_FOUND_FOR_ADDITION = 71011,
+  PLAYER_NOT_AVAILABLE_FOR_ADDITION = 71012,
+  PLAYER_NOT_FOUND_FOR_REMOVAL = 71013,
   // - - 711XX: /available errors
   // - - 799XX: /* error
   RESOURCE_NOT_FOUND = 79900,
@@ -158,37 +167,35 @@ export const clientErrorMessages: ClientErrorMessages = {
     "Provided email was not in the valid format. Must be a valid email address.",
   [ClientErrorCode.EMAIL_ALREADY_EXISTS]: "Provided email already exists.",
   // - - 702XX: /referees errors
-  [ClientErrorCode.MISSING_PARAMETER_$REFEREE_ID]:
+  [ClientErrorCode.MISSING_PARAMETER_$RFID]:
     "Parameter 'refereeId' was missing.",
-  [ClientErrorCode.INVALID_PARAMETER_$REFEREE_ID]:
+  [ClientErrorCode.INVALID_PARAMETER_$RFID]:
     "Provided parameter 'refereeId' was invalid.",
   [ClientErrorCode.NO_REFEREE_FOUND_IN_REFEREES]:
     "No referee was found with the provided id.",
   // - - 703XX: /venues errors
-  [ClientErrorCode.MISSING_PARAMETER_$VENUE_ID]:
-    "Parameter 'venueId' was missing.",
-  [ClientErrorCode.INVALID_PARAMETER_$VENUE_ID]:
+  [ClientErrorCode.MISSING_PARAMETER_$VNID]: "Parameter 'venueId' was missing.",
+  [ClientErrorCode.INVALID_PARAMETER_$VNID]:
     "Provided parameter 'venueId' was invalid.",
   [ClientErrorCode.NO_VENUE_FOUND_IN_VENUES]:
     "No venue was found with the provided id.",
   // - - 704XX: /leagues errors
-  [ClientErrorCode.MISSING_PARAMETER_$LEAGUE_ID]:
+  [ClientErrorCode.MISSING_PARAMETER_$LGID]:
     "Parameter 'leagueId' was missing.",
-  [ClientErrorCode.INVALID_PARAMETER_$LEAGUE_ID]:
+  [ClientErrorCode.INVALID_PARAMETER_$LGID]:
     "Provided parameter 'leagueId' was invalid.",
   [ClientErrorCode.NO_LEAGUE_FOUND_IN_LEAGUES]:
     "No league was found with the provided id.",
   // - - 705XX: /clubs errors
-  [ClientErrorCode.MISSING_PARAMETER_$CLUB_ID]:
-    "Parameter 'clubId' was missing.",
-  [ClientErrorCode.INVALID_PARAMETER_$CLUB_ID]:
+  [ClientErrorCode.MISSING_PARAMETER_$CLID]: "Parameter 'clubId' was missing.",
+  [ClientErrorCode.INVALID_PARAMETER_$CLID]:
     "Provided parameter 'clubId' was invalid.",
   [ClientErrorCode.NO_CLUB_FOUND_IN_CLUBS]:
     "No club was found with the provided id.",
   // - - 706XX: /players errors
-  [ClientErrorCode.MISSING_PARAMETER_$PLAYER_ID]:
+  [ClientErrorCode.MISSING_PARAMETER_$PLID]:
     "Parameter 'playerId' was missing.",
-  [ClientErrorCode.INVALID_PARAMETER_$PLAYER_ID]:
+  [ClientErrorCode.INVALID_PARAMETER_$PLID]:
     "Provided parameter 'playerId' was invalid.",
   [ClientErrorCode.NO_PLAYER_FOUND_IN_PLAYERS]:
     "No player was found with the provided id.",
@@ -197,9 +204,9 @@ export const clientErrorMessages: ClientErrorMessages = {
   [ClientErrorCode.INVALID_QUERY_$Q]: "Provided query 'q' was invalid.",
   [ClientErrorCode.INVALID_QUERY_LENGTH_$Q]: `Provided query 'q' was too short. Search query must be at least ${QUERY_MIN_LENGTH} characters long.`,
   // - - 708XX: /my/leagues errors
-  [ClientErrorCode.MISSING_PARAMETER_$MY_LEAGUE_ID]:
+  [ClientErrorCode.MISSING_PARAMETER_MY_LEAGUES_$LGID]:
     "Parameter 'leagueId' was missing.",
-  [ClientErrorCode.INVALID_PARAMETER_$MY_LEAGUE_ID]:
+  [ClientErrorCode.INVALID_PARAMETER_MY_LEAGUES_$LGID]:
     "Provided parameter 'leagueId' was invalid.",
   [ClientErrorCode.NO_LEAGUE_FOUND_IN_MY_LEAGUES]:
     "The organizer has no league with the provided id.",
@@ -211,9 +218,9 @@ export const clientErrorMessages: ClientErrorMessages = {
   [ClientErrorCode.INVALID_LEAGUE_DESCRIPTION_LENGTH]: `Provided description wasn't in the length range of ${LEAGUE_DESCRIPTION_MIN_LENGTH} to ${LEAGUE_DESCRIPTION_MAX_LENGTH}.`,
   [ClientErrorCode.INVALID_LEAGUE_LOGO_PATH_CONTENT]:
     "Provided logo path was not in the valid format. Must be a valid URL.",
-  [ClientErrorCode.MISSING_PARAMETER_MY_LEAGUES_$CLUB_ID]:
+  [ClientErrorCode.MISSING_PARAMETER_MY_LEAGUES_$CLID]:
     "Parameter 'clubId' was missing.",
-  [ClientErrorCode.INVALID_PARAMETER_MY_LEAGUES_$CLUB_ID]:
+  [ClientErrorCode.INVALID_PARAMETER_MY_LEAGUES_$CLID]:
     "Provided parameter 'clubId' was invalid.",
   [ClientErrorCode.CLUB_NOT_FOUND_FOR_ADDITION]:
     "No club was found with the provided id.",
@@ -225,11 +232,12 @@ export const clientErrorMessages: ClientErrorMessages = {
     "The participant has no player. A player must be created first.",
   [ClientErrorCode.PARTICIPANT_HAS_A_PLAYER]:
     "The participant already has a player. The player must be deleted first.",
+  [ClientErrorCode.PLAYER_CANNOT_BE_EDITED]: `The player cannot be edited. Its state must be one of '[${EDITABLE_PLAYER_STATES}]' to be editable.`,
   [ClientErrorCode.PLAYER_CANNOT_BE_DELETED]: `The player cannot be deleted. Its state must be one of '[${DELETABLE_LEAGUE_STATES}]' to be deletable.`,
   [ClientErrorCode.INVALID_PLAYER_FULL_NAME_LENGTH]: `Provided full name wasn't in the length range of ${PLAYER_FULL_NAME_MIN_LENGTH} to ${PLAYER_FULL_NAME_MAX_LENGTH}.`,
-  [ClientErrorCode.INVALID_DATE_CONTENT]:
+  [ClientErrorCode.INVALID_PLAYER_BIRTHDAY_CONTENT]:
     "Provided date was not in the valid format. Must be YYYY-MM-DD.",
-  [ClientErrorCode.INVALID_BIOGRAPHY_LENGTH]: `Provided biography wasn't in the length range of ${PLAYER_BIOGRAPHY_MIN_LENGTH} to ${PLAYER_BIOGRAPHY_MAX_LENGTH}.`,
+  [ClientErrorCode.INVALID_PLAYER_BIOGRAPHY_LENGTH]: `Provided biography wasn't in the length range of ${PLAYER_BIOGRAPHY_MIN_LENGTH} to ${PLAYER_BIOGRAPHY_MAX_LENGTH}.`,
   [ClientErrorCode.INVALID_PLAYER_IMAGE_PATH_CONTENT]:
     "Provided image path was not in the valid format. Must be a valid URL.",
   // - - 710XX: /my/club errors
@@ -240,11 +248,21 @@ export const clientErrorMessages: ClientErrorMessages = {
   [ClientErrorCode.PARTICIPANT_HAS_NO_PLAYER_FOR_CLUB]:
     "The participant has no player for the club. A player must be created first.",
   [ClientErrorCode.PARTICIPANT_PLAYER_IS_NOT_AVAILABLE]: `The participant's player is not available. The player's state must be one of '[${AVAILABLE_PLAYER_STATES}]' to create a club.`,
+  [ClientErrorCode.CLUB_CANNOT_BE_EDITED]: `The club cannot be edited. Its state must be one of '[${EDITABLE_CLUB_STATES}]' to be editable.`,
   [ClientErrorCode.CLUB_CANNOT_BE_DELETED]: `The club cannot be deleted. Its state must be one of '[${DELETABLE_CLUB_STATES}]' to be deletable.`,
   [ClientErrorCode.INVALID_CLUB_NAME_LENGTH]: `Provided name wasn't in the length range of ${CLUB_NAME_MIN_LENGTH} to ${CLUB_NAME_MAX_LENGTH}.`,
-  [ClientErrorCode.INVALID_DESCRIPTION_LENGTH]: `Provided description wasn't in the length range of ${CLUB_DESCRIPTION_MIN_LENGTH} to ${CLUB_DESCRIPTION_MAX_LENGTH}.`,
+  [ClientErrorCode.INVALID_CLUB_DESCRIPTION_LENGTH]: `Provided description wasn't in the length range of ${CLUB_DESCRIPTION_MIN_LENGTH} to ${CLUB_DESCRIPTION_MAX_LENGTH}.`,
   [ClientErrorCode.INVALID_CLUB_LOGO_PATH_CONTENT]:
     "Provided logo path was not in the valid format. Must be a valid URL.",
+  [ClientErrorCode.MISSING_PARAMETER_MY_CLUB_$PLID]:
+    "Parameter 'playerId' was missing.",
+  [ClientErrorCode.INVALID_PARAMETER_MY_CLUB_$PLID]:
+    "Provided parameter 'playerId' was invalid.",
+  [ClientErrorCode.PLAYER_NOT_FOUND_FOR_ADDITION]:
+    "No player was found with the provided id.",
+  [ClientErrorCode.PLAYER_NOT_AVAILABLE_FOR_ADDITION]: `The player is not available for addition. Its state must be one of '[${AVAILABLE_PLAYER_STATES}]' to be added.`,
+  [ClientErrorCode.PLAYER_NOT_FOUND_FOR_REMOVAL]:
+    "No player was found with the provided id in club. The player must be in the participant's club to be removed.",
   // - - 711XX: /available errors
   // - - 799XX: /* error
   [ClientErrorCode.RESOURCE_NOT_FOUND]:

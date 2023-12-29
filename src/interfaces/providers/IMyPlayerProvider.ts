@@ -13,6 +13,8 @@ export interface IMyPlayerProvider {
     imgPath: string,
   ) => Promise<IMyPlayerModel>;
 
+  isMyPlayerEditable: (participantId: number) => Promise<boolean>;
+
   updateMyPlayer: (
     participantId: number,
     fullName: string,

@@ -1,6 +1,6 @@
 import { QueryResult } from "pg";
 import { pool } from "../core/database/pool";
-import { DELETABLE_PLAYER_STATES } from "../core/rules/playerRules";
+import { DELETABLE_PLAYER_STATES, EDITABLE_PLAYER_STATES } from "../core/rules/playerRules";
 import { IMyPlayerModel } from "../interfaces/models/IMyPlayerModel";
 import { IExistsModel } from "../interfaces/models/util/IExistsModel";
 import {
@@ -93,6 +93,21 @@ export class MyPlayerProvider implements IMyPlayerProvider {
       await pool.query("ROLLBACK");
       throw error;
     }
+  }
+
+  public async isMyPlayerEditable(participantId: number): Promise<boolean> {
+    const existsRes: QueryResult = await pool.query(
+      MyPlayerQueries.IS_MY_PLAYER_IN_STATE_$PRID_$STATES,
+      [participantId, EDITABLE_PLAYER_STATES],
+    );
+    const existsRec: unknown = existsRes.rows[0];
+    if (!existsRec) {
+      throw new UnexpectedQueryResultError();
+    }
+    if (!ExistsModel.isValidModel(existsRec)) {
+      throw new ModelMismatchError(existsRec);
+    }
+    return (existsRec as IExistsModel).exists;
   }
 
   public async updateMyPlayer(

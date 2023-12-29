@@ -48,14 +48,15 @@ export class RefereesController implements IRefereesController {
     next: NextFunction,
   ): Promise<Response | void> {
     // Response declaration
-    let httpStatus: IHttpStatus;
     const clientErrors: Array<IClientError> = [];
     // Logic
     try {
       if (!req.params.refereeId) {
-        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
         clientErrors.push(
-          new ClientError(ClientErrorCode.MISSING_PARAMETER_$REFEREE_ID),
+          new ClientError(ClientErrorCode.MISSING_PARAMETER_$RFID),
         );
         return res
           .status(httpStatus.code)
@@ -64,9 +65,11 @@ export class RefereesController implements IRefereesController {
           );
       }
       if (!canParseToInt(req.params.refereeId)) {
-        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
         clientErrors.push(
-          new ClientError(ClientErrorCode.INVALID_PARAMETER_$REFEREE_ID),
+          new ClientError(ClientErrorCode.INVALID_PARAMETER_$RFID),
         );
         return res
           .status(httpStatus.code)

@@ -48,14 +48,15 @@ export class PlayersController implements IPlayersController {
     next: NextFunction,
   ): Promise<Response | void> {
     // Response declaration
-    let httpStatus: IHttpStatus;
     const clientErrors: Array<IClientError> = [];
     // Logic
     try {
       if (!req.params.playerId) {
-        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
         clientErrors.push(
-          new ClientError(ClientErrorCode.MISSING_PARAMETER_$PLAYER_ID),
+          new ClientError(ClientErrorCode.MISSING_PARAMETER_$PLID),
         );
         return res
           .status(httpStatus.code)
@@ -64,9 +65,11 @@ export class PlayersController implements IPlayersController {
           );
       }
       if (!canParseToInt(req.params.playerId)) {
-        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
         clientErrors.push(
-          new ClientError(ClientErrorCode.INVALID_PARAMETER_$PLAYER_ID),
+          new ClientError(ClientErrorCode.INVALID_PARAMETER_$PLID),
         );
         return res
           .status(httpStatus.code)

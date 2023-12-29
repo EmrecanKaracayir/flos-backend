@@ -10,8 +10,10 @@ import {
   isStringMatchingRegex,
 } from "../core/utils/strings";
 import { IMyClubModel } from "../interfaces/models/IMyClubModel";
+import { IPlayerModel } from "../interfaces/models/IPlayerModel";
 import { IMyClubProvider } from "../interfaces/providers/IMyClubProvider";
 import { IMyClubReq } from "../interfaces/schemas/requests/routes/my/club/IMyClubReq";
+import { IMyClubPlayersReq } from "../interfaces/schemas/requests/routes/my/club/players/IMyClubPlayersReq";
 import { IAppResponse } from "../interfaces/schemas/responses/IAppResponse";
 import {
   ClientErrorCode,
@@ -19,12 +21,14 @@ import {
 } from "../interfaces/schemas/responses/app/IClientError";
 import { HttpStatusCode } from "../interfaces/schemas/responses/app/IHttpStatus";
 import { IMyClubRes } from "../interfaces/schemas/responses/routes/my/club/IMyClubRes";
+import { IMyClubPlayersRes } from "../interfaces/schemas/responses/routes/my/club/players/IMyClubPlayersRes";
 import { IMyClubService } from "../interfaces/services/IMyClubService";
 import { MyClubProvider } from "../providers/MyClubProvider";
 import { AppResponse } from "../schemas/responses/AppResponse";
 import { ClientError } from "../schemas/responses/app/ClientError";
 import { HttpStatus } from "../schemas/responses/app/HttpStatus";
 import { MyClubRes } from "../schemas/responses/routes/my/club/MyClubRes";
+import { MyClubPlayersRes } from "../schemas/responses/routes/my/club/players/MyClubPlayersRes";
 
 export class MyClubService implements IMyClubService {
   public readonly myClubProvider: IMyClubProvider;
@@ -62,7 +66,7 @@ export class MyClubService implements IMyClubService {
 
   public async postMyClub(
     participantId: number,
-    dto: IMyClubReq,
+    req: IMyClubReq,
     clientErrors: IClientError[],
   ): Promise<IAppResponse<IMyClubRes | null>> {
     if (await this.myClubProvider.doesMyClubExist(participantId)) {
@@ -101,7 +105,7 @@ export class MyClubService implements IMyClubService {
         null,
       );
     }
-    this.validateFields(dto.name, dto.description, dto.logoPath, clientErrors);
+    this.validateFields(req.name, req.description, req.logoPath, clientErrors);
     if (clientErrors.length > 0) {
       return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.BAD_REQUEST),
@@ -114,9 +118,9 @@ export class MyClubService implements IMyClubService {
     clientErrors = [];
     const model: IMyClubModel = await this.myClubProvider.createMyClub(
       participantId,
-      dto.name,
-      dto.description,
-      dto.logoPath,
+      req.name,
+      req.description,
+      req.logoPath,
     );
     return new AppResponse<IMyClubRes>(
       new HttpStatus(HttpStatusCode.CREATED),
@@ -129,7 +133,7 @@ export class MyClubService implements IMyClubService {
 
   public async putMyClub(
     participantId: number,
-    dto: IMyClubReq,
+    req: IMyClubReq,
     clientErrors: IClientError[],
   ): Promise<IAppResponse<IMyClubRes | null>> {
     if (!(await this.myClubProvider.doesMyClubExist(participantId))) {
@@ -144,7 +148,17 @@ export class MyClubService implements IMyClubService {
         null,
       );
     }
-    this.validateFields(dto.name, dto.description, dto.logoPath, clientErrors);
+    if (!(await this.myClubProvider.isMyClubEditable(participantId))) {
+      clientErrors.push(new ClientError(ClientErrorCode.CLUB_CANNOT_BE_EDITED));
+      return new AppResponse<null>(
+        new HttpStatus(HttpStatusCode.CONFLICT),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    this.validateFields(req.name, req.description, req.logoPath, clientErrors);
     if (clientErrors.length > 0) {
       return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.BAD_REQUEST),
@@ -157,9 +171,9 @@ export class MyClubService implements IMyClubService {
     clientErrors = [];
     const model: IMyClubModel = await this.myClubProvider.updateMyClub(
       participantId,
-      dto.name,
-      dto.description,
-      dto.logoPath,
+      req.name,
+      req.description,
+      req.logoPath,
     );
     return new AppResponse<IMyClubRes>(
       new HttpStatus(HttpStatusCode.OK),
@@ -208,6 +222,160 @@ export class MyClubService implements IMyClubService {
     );
   }
 
+  public async getMyClubPlayers(
+    participantId: number,
+    clientErrors: IClientError[],
+  ): Promise<IAppResponse<IMyClubPlayersRes[] | null>> {
+    if (!(await this.myClubProvider.doesMyClubExist(participantId))) {
+      clientErrors.push(
+        new ClientError(ClientErrorCode.PARTICIPANT_HAS_NO_CLUB),
+      );
+      return new AppResponse<null>(
+        new HttpStatus(HttpStatusCode.NOT_FOUND),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    const models: IPlayerModel[] =
+      await this.myClubProvider.getMyClubPlayers(participantId);
+    return new AppResponse<IMyClubPlayersRes[]>(
+      new HttpStatus(HttpStatusCode.OK),
+      null,
+      clientErrors,
+      MyClubPlayersRes.fromModels(models),
+      null,
+    );
+  }
+
+  public async postMyClubPlayers(
+    participantId: number,
+    req: IMyClubPlayersReq,
+    clientErrors: IClientError[],
+  ): Promise<IAppResponse<IMyClubPlayersRes | null>> {
+    if (!(await this.myClubProvider.doesMyClubExist(participantId))) {
+      clientErrors.push(
+        new ClientError(ClientErrorCode.PARTICIPANT_HAS_NO_CLUB),
+      );
+      return new AppResponse<null>(
+        new HttpStatus(HttpStatusCode.NOT_FOUND),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    if (!(await this.myClubProvider.isMyClubEditable(participantId))) {
+      clientErrors.push(new ClientError(ClientErrorCode.CLUB_CANNOT_BE_EDITED));
+      return new AppResponse<null>(
+        new HttpStatus(HttpStatusCode.CONFLICT),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    if (!(await this.myClubProvider.doesPlayerExist(req.playerId))) {
+      clientErrors.push(
+        new ClientError(ClientErrorCode.PLAYER_NOT_FOUND_FOR_ADDITION),
+      );
+      return new AppResponse<null>(
+        new HttpStatus(HttpStatusCode.CONFLICT),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    if (!(await this.myClubProvider.isPlayerAvailable(req.playerId))) {
+      clientErrors.push(
+        new ClientError(ClientErrorCode.PLAYER_NOT_AVAILABLE_FOR_ADDITION),
+      );
+      return new AppResponse<null>(
+        new HttpStatus(HttpStatusCode.CONFLICT),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    const model: IPlayerModel = await this.myClubProvider.addPlayerToMyClub(
+      participantId,
+      req.playerId,
+    );
+    return new AppResponse<IMyClubPlayersRes>(
+      new HttpStatus(HttpStatusCode.CREATED),
+      null,
+      clientErrors,
+      MyClubPlayersRes.fromModel(model),
+      null,
+    );
+  }
+
+  public async deleteMyClubPlayers$(
+    participantId: number,
+    playerId: number,
+    clientErrors: IClientError[],
+  ): Promise<IAppResponse<void | null>> {
+    if (!(await this.myClubProvider.doesMyClubExist(participantId))) {
+      clientErrors.push(
+        new ClientError(ClientErrorCode.PARTICIPANT_HAS_NO_CLUB),
+      );
+      return new AppResponse<null>(
+        new HttpStatus(HttpStatusCode.NOT_FOUND),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    if (!(await this.myClubProvider.isMyClubEditable(participantId))) {
+      clientErrors.push(new ClientError(ClientErrorCode.CLUB_CANNOT_BE_EDITED));
+      return new AppResponse<null>(
+        new HttpStatus(HttpStatusCode.CONFLICT),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    if (!(await this.myClubProvider.doesPlayerExist(playerId))) {
+      clientErrors.push(
+        new ClientError(ClientErrorCode.PLAYER_NOT_FOUND_FOR_REMOVAL),
+      );
+      return new AppResponse<null>(
+        new HttpStatus(HttpStatusCode.CONFLICT),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    if (
+      !(await this.myClubProvider.isPlayerInMyClub(participantId, playerId))
+    ) {
+      clientErrors.push(
+        new ClientError(ClientErrorCode.PLAYER_NOT_FOUND_FOR_REMOVAL),
+      );
+      return new AppResponse<null>(
+        new HttpStatus(HttpStatusCode.CONFLICT),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    await this.myClubProvider.removePlayerFromMyClub(playerId);
+    return new AppResponse<void>(
+      new HttpStatus(HttpStatusCode.NO_CONTENT),
+      null,
+      clientErrors,
+      null,
+      null,
+    );
+  }
+
   private validateFields(
     name: string,
     description: string,
@@ -231,7 +399,7 @@ export class MyClubService implements IMyClubService {
       )
     ) {
       clientErrors.push(
-        new ClientError(ClientErrorCode.INVALID_BIOGRAPHY_LENGTH),
+        new ClientError(ClientErrorCode.INVALID_CLUB_DESCRIPTION_LENGTH),
       );
     }
     // Logo path validation

@@ -229,7 +229,7 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
 
   public async isClubAvailable(clubId: number): Promise<boolean> {
     const existsRes: QueryResult = await pool.query(
-      MyLeaguesQueries.IS_MY_LEAGUE_IN_STATE_$PRID_$STATES,
+      MyLeaguesQueries.IS_CLUB_IN_STATE_$CLID_$STATES,
       [clubId, AVAILABLE_CLUB_STATES],
     );
     const existsRec: unknown = existsRes.rows[0];
@@ -274,13 +274,13 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
     }
   }
 
-  public async isClubInMyLeague(
-    organizerId: number,
+  public async isClubInLeague(
+    leagueId: number,
     clubId: number,
   ): Promise<boolean> {
     const existsRes: QueryResult = await pool.query(
-      MyLeaguesQueries.IS_CLUB_IN_MY_LEAGUE_$ORID_$CLID,
-      [organizerId, clubId],
+      MyLeaguesQueries.IS_CLUB_IN_LEAGUE_$CLID_$LGID,
+      [clubId, leagueId],
     );
     const existsRec: unknown = existsRes.rows[0];
     if (!existsRec) {
@@ -292,7 +292,7 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
     return (existsRec as IExistsModel).exists;
   }
 
-  public async removeClubFromLeague(clubId: number): Promise<void> {
+  public async removeClubFromMyLeague(clubId: number): Promise<void> {
     await pool.query("BEGIN");
     try {
       // Remove club from league

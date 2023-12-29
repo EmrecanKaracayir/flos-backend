@@ -45,9 +45,9 @@ export interface IMyLeaguesProvider {
 
   addClubToMyLeague: (leagueId: number, clubId: number) => Promise<IClubModel>;
 
-  isClubInMyLeague: (organizerId: number, clubId: number) => Promise<boolean>;
+  isClubInLeague: (leagueId: number, clubId: number) => Promise<boolean>;
 
-  removeClubFromLeague: (clubId: number) => Promise<void>;
+  removeClubFromMyLeague: (clubId: number) => Promise<void>;
 }
 
 export enum MyLeaguesQueries {
@@ -64,6 +64,6 @@ export enum MyLeaguesQueries {
   IS_CLUB_IN_STATE_$CLID_$STATES = `SELECT EXISTS (SELECT "state" FROM "ClubView" WHERE "clubId" = $1 AND "state" = ANY($2::"ClubState"[])) AS "exists"`,
   ADD_CLUB_TO_LEAGUE_$LGID_$CLID = `UPDATE "Club" SET "leagueId" = $1 WHERE "clubId" = $2`,
   GET_CLUB_$CLID = `SELECT * FROM "ClubView" WHERE "clubId" = $1`,
-  IS_CLUB_IN_MY_LEAGUE_$ORID_$CLID = `SELECT EXISTS (SELECT "clubId" FROM "MyLeagueView" WHERE "organizerId" = $1 AND "clubId" = $2) AS "exists"`,
+  IS_CLUB_IN_LEAGUE_$CLID_$LGID = `SELECT EXISTS (SELECT "clubId" FROM "Club" WHERE "clubId" = $1 AND "leagueId" = $2) AS "exists"`,
   REMOVE_CLUB_FROM_LEAGUE_$CLID = `UPDATE "Club" SET "leagueId" = NULL WHERE "clubId" = $1`,
 }

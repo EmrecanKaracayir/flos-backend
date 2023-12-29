@@ -63,7 +63,7 @@ export class MyPlayerService implements IMyPlayerService {
 
   public async postMyPlayer(
     participantId: number,
-    dto: IMyPlayerReq,
+    req: IMyPlayerReq,
     clientErrors: IClientError[],
   ): Promise<IAppResponse<IMyPlayerRes | null>> {
     if (await this.myPlayerProvider.doesMyPlayerExist(participantId)) {
@@ -79,10 +79,10 @@ export class MyPlayerService implements IMyPlayerService {
       );
     }
     this.validateFields(
-      dto.fullName,
-      dto.birthday,
-      dto.biography,
-      dto.imgPath,
+      req.fullName,
+      req.birthday,
+      req.biography,
+      req.imgPath,
       clientErrors,
     );
     if (clientErrors.length > 0) {
@@ -97,10 +97,10 @@ export class MyPlayerService implements IMyPlayerService {
     clientErrors = [];
     const model: IMyPlayerModel = await this.myPlayerProvider.createMyPlayer(
       participantId,
-      dto.fullName,
-      dto.birthday,
-      dto.biography,
-      dto.imgPath,
+      req.fullName,
+      req.birthday,
+      req.biography,
+      req.imgPath,
     );
     return new AppResponse<IMyPlayerRes>(
       new HttpStatus(HttpStatusCode.CREATED),
@@ -113,7 +113,7 @@ export class MyPlayerService implements IMyPlayerService {
 
   public async putMyPlayer(
     participantId: number,
-    dto: IMyPlayerReq,
+    req: IMyPlayerReq,
     clientErrors: IClientError[],
   ): Promise<IAppResponse<IMyPlayerRes | null>> {
     if (!(await this.myPlayerProvider.doesMyPlayerExist(participantId))) {
@@ -128,11 +128,23 @@ export class MyPlayerService implements IMyPlayerService {
         null,
       );
     }
+    if (!(await this.myPlayerProvider.isMyPlayerEditable(participantId))) {
+      clientErrors.push(
+        new ClientError(ClientErrorCode.PLAYER_CANNOT_BE_EDITED),
+      );
+      return new AppResponse<null>(
+        new HttpStatus(HttpStatusCode.CONFLICT),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
     this.validateFields(
-      dto.fullName,
-      dto.birthday,
-      dto.biography,
-      dto.imgPath,
+      req.fullName,
+      req.birthday,
+      req.biography,
+      req.imgPath,
       clientErrors,
     );
     if (clientErrors.length > 0) {
@@ -147,10 +159,10 @@ export class MyPlayerService implements IMyPlayerService {
     clientErrors = [];
     const model: IMyPlayerModel = await this.myPlayerProvider.updateMyPlayer(
       participantId,
-      dto.fullName,
-      dto.birthday,
-      dto.biography,
-      dto.imgPath,
+      req.fullName,
+      req.birthday,
+      req.biography,
+      req.imgPath,
     );
     return new AppResponse<IMyPlayerRes>(
       new HttpStatus(HttpStatusCode.OK),
@@ -221,7 +233,7 @@ export class MyPlayerService implements IMyPlayerService {
     // Birthday validation
     if (!isStringMatchingRegex(birthday, DATE_MUST_REGEX)) {
       clientErrors.push(
-        new ClientError(ClientErrorCode.INVALID_USERNAME_CONTENT),
+        new ClientError(ClientErrorCode.INVALID_PLAYER_BIRTHDAY_CONTENT),
       );
     }
     // Biography validation
@@ -233,7 +245,7 @@ export class MyPlayerService implements IMyPlayerService {
       )
     ) {
       clientErrors.push(
-        new ClientError(ClientErrorCode.INVALID_BIOGRAPHY_LENGTH),
+        new ClientError(ClientErrorCode.INVALID_PLAYER_BIOGRAPHY_LENGTH),
       );
     }
     // Image path validation

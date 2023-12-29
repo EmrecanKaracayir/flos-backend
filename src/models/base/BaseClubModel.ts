@@ -4,6 +4,7 @@ import { IBaseClubModel } from "../../interfaces/models/base/IBaseClubModel";
 export class BaseClubModel implements IBaseClubModel {
   constructor(
     public readonly clubId: number,
+    public readonly leagueName: string | null,
     public readonly name: string,
     public readonly state: ClubState,
     public readonly playerCount: number,
@@ -20,6 +21,7 @@ export class BaseClubModel implements IBaseClubModel {
     const model: IBaseClubModel = obj as IBaseClubModel;
     return (
       typeof model.clubId === "number" &&
+      (model.leagueName === null || typeof model.leagueName === "string") &&
       typeof model.name === "string" &&
       Object.values(ClubState).includes(model.state as ClubState) &&
       typeof model.playerCount === "string" &&

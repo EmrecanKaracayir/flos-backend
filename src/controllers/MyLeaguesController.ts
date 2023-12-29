@@ -3,6 +3,7 @@ import { AuthPayload } from "../core/@types/helpers/authPayloadRules";
 import { AuthHelper } from "../core/helpers/AuthHelper";
 import { canParseToInt } from "../core/utils/strings";
 import { IMyLeaguesController } from "../interfaces/controllers/IMyLeaguesController";
+import { IMyLeagues$ClubsReq } from "../interfaces/schemas/requests/routes/my/leagues/$leagueId/clubs/IMyLeagues$ClubsReq";
 import { IMyLeaguesReq } from "../interfaces/schemas/requests/routes/my/leagues/IMyLeaguesReq";
 import { IAppResponse } from "../interfaces/schemas/responses/IAppResponse";
 import {
@@ -17,13 +18,12 @@ import { IMyLeagues$Clubs$Res } from "../interfaces/schemas/responses/routes/my/
 import { IMyLeagues$ClubsRes } from "../interfaces/schemas/responses/routes/my/leagues/$leagueId/clubs/IMyLeagues$ClubsRes";
 import { IMyLeaguesRes } from "../interfaces/schemas/responses/routes/my/leagues/IMyLeaguesRes";
 import { IMyLeaguesService } from "../interfaces/services/IMyLeaguesService";
+import { MyLeagues$ClubsReq } from "../schemas/requests/routes/my/leagues/$leagueId/clubs/MyLeagues$ClubsReq";
 import { MyLeaguesReq } from "../schemas/requests/routes/my/leagues/MyLeaguesReq";
 import { AppResponse } from "../schemas/responses/AppResponse";
 import { ClientError } from "../schemas/responses/app/ClientError";
 import { HttpStatus } from "../schemas/responses/app/HttpStatus";
 import { MyLeaguesService } from "../services/MyLeaguesService";
-import { MyLeagues$ClubsReq } from "../schemas/requests/routes/my/leagues/$leagueId/clubs/MyLeagues$ClubsReq";
-import { IMyLeagues$ClubsReq } from "../interfaces/schemas/requests/routes/my/leagues/$leagueId/clubs/IMyLeagues$ClubsReq";
 
 export class MyLeaguesController implements IMyLeaguesController {
   public readonly myLeaguesService: IMyLeaguesService;
@@ -79,12 +79,13 @@ export class MyLeaguesController implements IMyLeaguesController {
     next: NextFunction,
   ): Promise<Response | void> {
     // Response declaration
-    let httpStatus: IHttpStatus;
     const clientErrors: Array<IClientError> = [];
     // Logic
     try {
       if (!MyLeaguesReq.isValidReq(req.body)) {
-        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
         clientErrors.push(
           new ClientError(ClientErrorCode.INVALID_REQUEST_BODY),
         );
@@ -133,7 +134,6 @@ export class MyLeaguesController implements IMyLeaguesController {
     next: NextFunction,
   ): Promise<Response | void> {
     // Response declaration
-    let httpStatus: IHttpStatus;
     const clientErrors: Array<IClientError> = [];
     // Logic
     try {
@@ -142,9 +142,11 @@ export class MyLeaguesController implements IMyLeaguesController {
         req.headers.authorization!.split(" ")[1],
       );
       if (!req.params.leagueId) {
-        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
         clientErrors.push(
-          new ClientError(ClientErrorCode.MISSING_PARAMETER_$MY_LEAGUE_ID),
+          new ClientError(ClientErrorCode.MISSING_PARAMETER_MY_LEAGUES_$LGID),
         );
         return res
           .status(httpStatus.code)
@@ -153,9 +155,11 @@ export class MyLeaguesController implements IMyLeaguesController {
           );
       }
       if (!canParseToInt(req.params.leagueId)) {
-        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
         clientErrors.push(
-          new ClientError(ClientErrorCode.INVALID_PARAMETER_$MY_LEAGUE_ID),
+          new ClientError(ClientErrorCode.INVALID_PARAMETER_MY_LEAGUES_$LGID),
         );
         return res
           .status(httpStatus.code)
@@ -198,7 +202,6 @@ export class MyLeaguesController implements IMyLeaguesController {
     next: NextFunction,
   ): Promise<Response | void> {
     // Response declaration
-    let httpStatus: IHttpStatus;
     const clientErrors: Array<IClientError> = [];
     // Logic
     try {
@@ -207,9 +210,11 @@ export class MyLeaguesController implements IMyLeaguesController {
         req.headers.authorization!.split(" ")[1],
       );
       if (!req.params.leagueId) {
-        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
         clientErrors.push(
-          new ClientError(ClientErrorCode.MISSING_PARAMETER_$MY_LEAGUE_ID),
+          new ClientError(ClientErrorCode.MISSING_PARAMETER_MY_LEAGUES_$LGID),
         );
         return res
           .status(httpStatus.code)
@@ -218,9 +223,11 @@ export class MyLeaguesController implements IMyLeaguesController {
           );
       }
       if (!canParseToInt(req.params.leagueId)) {
-        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
         clientErrors.push(
-          new ClientError(ClientErrorCode.INVALID_PARAMETER_$MY_LEAGUE_ID),
+          new ClientError(ClientErrorCode.INVALID_PARAMETER_MY_LEAGUES_$LGID),
         );
         return res
           .status(httpStatus.code)
@@ -229,7 +236,9 @@ export class MyLeaguesController implements IMyLeaguesController {
           );
       }
       if (!MyLeaguesReq.isValidReq(req.body)) {
-        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
         clientErrors.push(
           new ClientError(ClientErrorCode.INVALID_REQUEST_BODY),
         );
@@ -275,7 +284,6 @@ export class MyLeaguesController implements IMyLeaguesController {
     next: NextFunction,
   ): Promise<Response | void> {
     // Response declaration
-    let httpStatus: IHttpStatus;
     const clientErrors: Array<IClientError> = [];
     // Logic
     try {
@@ -284,9 +292,11 @@ export class MyLeaguesController implements IMyLeaguesController {
         req.headers.authorization!.split(" ")[1],
       );
       if (!req.params.leagueId) {
-        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
         clientErrors.push(
-          new ClientError(ClientErrorCode.MISSING_PARAMETER_$MY_LEAGUE_ID),
+          new ClientError(ClientErrorCode.MISSING_PARAMETER_MY_LEAGUES_$LGID),
         );
         return res
           .status(httpStatus.code)
@@ -295,9 +305,11 @@ export class MyLeaguesController implements IMyLeaguesController {
           );
       }
       if (!canParseToInt(req.params.leagueId)) {
-        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
         clientErrors.push(
-          new ClientError(ClientErrorCode.INVALID_PARAMETER_$MY_LEAGUE_ID),
+          new ClientError(ClientErrorCode.INVALID_PARAMETER_MY_LEAGUES_$LGID),
         );
         return res
           .status(httpStatus.code)
@@ -340,7 +352,6 @@ export class MyLeaguesController implements IMyLeaguesController {
     next: NextFunction,
   ): Promise<Response | void> {
     // Response declaration
-    let httpStatus: IHttpStatus;
     const clientErrors: Array<IClientError> = [];
     // Logic
     try {
@@ -349,9 +360,11 @@ export class MyLeaguesController implements IMyLeaguesController {
         req.headers.authorization!.split(" ")[1],
       );
       if (!req.params.leagueId) {
-        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
         clientErrors.push(
-          new ClientError(ClientErrorCode.MISSING_PARAMETER_$MY_LEAGUE_ID),
+          new ClientError(ClientErrorCode.MISSING_PARAMETER_MY_LEAGUES_$LGID),
         );
         return res
           .status(httpStatus.code)
@@ -360,9 +373,11 @@ export class MyLeaguesController implements IMyLeaguesController {
           );
       }
       if (!canParseToInt(req.params.leagueId)) {
-        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
         clientErrors.push(
-          new ClientError(ClientErrorCode.INVALID_PARAMETER_$MY_LEAGUE_ID),
+          new ClientError(ClientErrorCode.INVALID_PARAMETER_MY_LEAGUES_$LGID),
         );
         return res
           .status(httpStatus.code)
@@ -405,7 +420,6 @@ export class MyLeaguesController implements IMyLeaguesController {
     next: NextFunction,
   ): Promise<Response | void> {
     // Response declaration
-    let httpStatus: IHttpStatus;
     const clientErrors: Array<IClientError> = [];
     // Logic
     try {
@@ -414,9 +428,11 @@ export class MyLeaguesController implements IMyLeaguesController {
         req.headers.authorization!.split(" ")[1],
       );
       if (!req.params.leagueId) {
-        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
         clientErrors.push(
-          new ClientError(ClientErrorCode.MISSING_PARAMETER_$MY_LEAGUE_ID),
+          new ClientError(ClientErrorCode.MISSING_PARAMETER_MY_LEAGUES_$LGID),
         );
         return res
           .status(httpStatus.code)
@@ -425,9 +441,11 @@ export class MyLeaguesController implements IMyLeaguesController {
           );
       }
       if (!canParseToInt(req.params.leagueId)) {
-        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
         clientErrors.push(
-          new ClientError(ClientErrorCode.INVALID_PARAMETER_$MY_LEAGUE_ID),
+          new ClientError(ClientErrorCode.INVALID_PARAMETER_MY_LEAGUES_$LGID),
         );
         return res
           .status(httpStatus.code)
@@ -436,7 +454,9 @@ export class MyLeaguesController implements IMyLeaguesController {
           );
       }
       if (!MyLeagues$ClubsReq.isValidReq(req.body)) {
-        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
         clientErrors.push(
           new ClientError(ClientErrorCode.INVALID_REQUEST_BODY),
         );
@@ -482,7 +502,6 @@ export class MyLeaguesController implements IMyLeaguesController {
     next: NextFunction,
   ): Promise<Response | void> {
     // Response declaration
-    let httpStatus: IHttpStatus;
     const clientErrors: Array<IClientError> = [];
     // Logic
     try {
@@ -491,9 +510,11 @@ export class MyLeaguesController implements IMyLeaguesController {
         req.headers.authorization!.split(" ")[1],
       );
       if (!req.params.leagueId) {
-        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
         clientErrors.push(
-          new ClientError(ClientErrorCode.MISSING_PARAMETER_$MY_LEAGUE_ID),
+          new ClientError(ClientErrorCode.MISSING_PARAMETER_MY_LEAGUES_$LGID),
         );
         return res
           .status(httpStatus.code)
@@ -502,9 +523,11 @@ export class MyLeaguesController implements IMyLeaguesController {
           );
       }
       if (!canParseToInt(req.params.leagueId)) {
-        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
         clientErrors.push(
-          new ClientError(ClientErrorCode.INVALID_PARAMETER_$MY_LEAGUE_ID),
+          new ClientError(ClientErrorCode.INVALID_PARAMETER_MY_LEAGUES_$LGID),
         );
         return res
           .status(httpStatus.code)
@@ -513,11 +536,11 @@ export class MyLeaguesController implements IMyLeaguesController {
           );
       }
       if (!req.params.clubId) {
-        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
         clientErrors.push(
-          new ClientError(
-            ClientErrorCode.MISSING_PARAMETER_MY_LEAGUES_$CLUB_ID,
-          ),
+          new ClientError(ClientErrorCode.MISSING_PARAMETER_MY_LEAGUES_$CLID),
         );
         return res
           .status(httpStatus.code)
@@ -526,11 +549,11 @@ export class MyLeaguesController implements IMyLeaguesController {
           );
       }
       if (!canParseToInt(req.params.clubId)) {
-        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
         clientErrors.push(
-          new ClientError(
-            ClientErrorCode.INVALID_PARAMETER_MY_LEAGUES_$CLUB_ID,
-          ),
+          new ClientError(ClientErrorCode.INVALID_PARAMETER_MY_LEAGUES_$CLID),
         );
         return res
           .status(httpStatus.code)

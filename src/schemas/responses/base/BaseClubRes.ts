@@ -6,6 +6,7 @@ import { IBaseClubRes } from "../../../interfaces/schemas/responses/base/IBaseCl
 export class BaseClubRes implements IBaseClubRes {
   constructor(
     public readonly clubId: number,
+    public readonly leagueName: string | null,
     public readonly name: string,
     public readonly state: ClubState,
     public readonly playerCount: number,
@@ -21,6 +22,7 @@ export class BaseClubRes implements IBaseClubRes {
     }
     return new BaseClubRes(
       model.clubId,
+      model.leagueName,
       model.name,
       model.state,
       Number(model.playerCount),

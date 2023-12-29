@@ -30,7 +30,7 @@ export interface IMyLeaguesService {
   putMyLeagues$: (
     organizerId: number,
     leagueId: number,
-    dto: IMyLeaguesReq,
+    req: IMyLeaguesReq,
     clientErrors: IClientError[],
   ) => Promise<IAppResponse<IMyLeaguesRes | null>>;
 
@@ -49,7 +49,7 @@ export interface IMyLeaguesService {
   postMyLeagues$Clubs: (
     organizerId: number,
     leagueId: number,
-    dto: IMyLeagues$ClubsReq,
+    req: IMyLeagues$ClubsReq,
     clientErrors: IClientError[],
   ) => Promise<IAppResponse<IMyLeagues$Clubs$Res>>;
 

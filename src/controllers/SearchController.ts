@@ -31,12 +31,13 @@ export class SearchController implements ISearchController {
     next: NextFunction,
   ): Promise<Response | void> {
     // Response declaration
-    let httpStatus: IHttpStatus;
     const clientErrors: Array<IClientError> = [];
     // Logic
     try {
       if (!req.query.q) {
-        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
         clientErrors.push(new ClientError(ClientErrorCode.MISSING_QUERY_$Q));
         return res
           .status(httpStatus.code)
@@ -45,7 +46,9 @@ export class SearchController implements ISearchController {
           );
       }
       if (typeof req.query.q !== "string") {
-        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
         clientErrors.push(new ClientError(ClientErrorCode.INVALID_QUERY_$Q));
         return res
           .status(httpStatus.code)
@@ -60,7 +63,9 @@ export class SearchController implements ISearchController {
           QUERY_MAX_LENGTH,
         )
       ) {
-        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
         clientErrors.push(
           new ClientError(ClientErrorCode.INVALID_QUERY_LENGTH_$Q),
         );

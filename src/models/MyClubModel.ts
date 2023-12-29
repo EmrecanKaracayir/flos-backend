@@ -9,6 +9,7 @@ export class MyClubModel extends BaseClubModel implements IMyClubModel {
   ) {
     super(
       baseModel.clubId,
+      baseModel.leagueName,
       baseModel.name,
       baseModel.state,
       baseModel.playerCount,

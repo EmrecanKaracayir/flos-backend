@@ -43,12 +43,12 @@ export class SignupService implements ISignupService {
   }
 
   public async postSignupOrganizer(
-    dto: ISignupOrganizerReq,
+    req: ISignupOrganizerReq,
     clientErrors: IClientError[],
   ): Promise<IAppResponse<ISignupOrganizerRes | null>> {
-    const username: string = dto.username.toLowerCase();
-    const password: string = dto.password;
-    const email: string = dto.email.toLowerCase();
+    const username: string = req.username.toLowerCase();
+    const password: string = req.password;
+    const email: string = req.email.toLowerCase();
     this.validateFields(username, password, email, clientErrors);
     if (clientErrors.length > 0) {
       return new AppResponse<null>(
@@ -93,12 +93,12 @@ export class SignupService implements ISignupService {
   }
 
   public async postSignupParticipant(
-    dto: ISignupParticipantReq,
+    req: ISignupParticipantReq,
     clientErrors: IClientError[],
   ): Promise<IAppResponse<ISignupParticipantRes | null>> {
-    const username: string = dto.username.toLowerCase();
-    const password: string = dto.password;
-    const email: string = dto.email.toLowerCase();
+    const username: string = req.username.toLowerCase();
+    const password: string = req.password;
+    const email: string = req.email.toLowerCase();
     this.validateFields(username, password, email, clientErrors);
     if (clientErrors.length > 0) {
       return new AppResponse<null>(

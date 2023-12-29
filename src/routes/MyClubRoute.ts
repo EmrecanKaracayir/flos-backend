@@ -31,5 +31,17 @@ export class MyClubRoute implements IRoute {
       "/",
       this.myClubController.deleteMyClub.bind(this.myClubController),
     );
+    this.router.get(
+      "/players",
+      this.myClubController.getMyClubPlayers.bind(this.myClubController),
+    );
+    this.router.post(
+      "/players",
+      this.myClubController.postMyClubPlayers.bind(this.myClubController),
+    );
+    this.router.delete(
+      "/players/:playerId",
+      this.myClubController.deleteMyClubPlayers$.bind(this.myClubController),
+    );
   }
 }

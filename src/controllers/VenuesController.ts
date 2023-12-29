@@ -48,14 +48,15 @@ export class VenuesController implements IVenuesController {
     next: NextFunction,
   ): Promise<Response | void> {
     // Response declaration
-    let httpStatus: IHttpStatus;
     const clientErrors: Array<IClientError> = [];
     // Logic
     try {
       if (!req.params.venueId) {
-        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
         clientErrors.push(
-          new ClientError(ClientErrorCode.MISSING_PARAMETER_$VENUE_ID),
+          new ClientError(ClientErrorCode.MISSING_PARAMETER_$VNID),
         );
         return res
           .status(httpStatus.code)
@@ -64,9 +65,11 @@ export class VenuesController implements IVenuesController {
           );
       }
       if (!canParseToInt(req.params.venueId)) {
-        httpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
         clientErrors.push(
-          new ClientError(ClientErrorCode.INVALID_PARAMETER_$VENUE_ID),
+          new ClientError(ClientErrorCode.INVALID_PARAMETER_$VNID),
         );
         return res
           .status(httpStatus.code)
