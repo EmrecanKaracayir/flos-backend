@@ -41,7 +41,10 @@ export interface IMyClubProvider {
     playerId: number,
   ) => Promise<IPlayerModel>;
 
-  isPlayerInMyClub: (participantId: number, playerId: number) => Promise<boolean>;
+  isPlayerInMyClub: (
+    participantId: number,
+    playerId: number,
+  ) => Promise<boolean>;
 
   removePlayerFromMyClub: (playerId: number) => Promise<void>;
 }

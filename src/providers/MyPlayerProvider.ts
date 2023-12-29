@@ -1,6 +1,9 @@
 import { QueryResult } from "pg";
 import { pool } from "../core/database/pool";
-import { DELETABLE_PLAYER_STATES, EDITABLE_PLAYER_STATES } from "../core/rules/playerRules";
+import {
+  DELETABLE_PLAYER_STATES,
+  EDITABLE_PLAYER_STATES,
+} from "../core/rules/playerRules";
 import { IMyPlayerModel } from "../interfaces/models/IMyPlayerModel";
 import { IExistsModel } from "../interfaces/models/util/IExistsModel";
 import {

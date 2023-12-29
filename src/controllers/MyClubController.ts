@@ -268,7 +268,9 @@ export class MyClubController implements IMyClubController {
     // Logic
     try {
       if (!MyClubPlayersReq.isValidReq(req.body)) {
-        const httpStatus: IHttpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
         clientErrors.push(
           new ClientError(ClientErrorCode.INVALID_REQUEST_BODY),
         );
@@ -325,7 +327,9 @@ export class MyClubController implements IMyClubController {
         req.headers.authorization!.split(" ")[1],
       );
       if (!req.params.playerId) {
-        const httpStatus: IHttpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
         clientErrors.push(
           new ClientError(ClientErrorCode.MISSING_PARAMETER_MY_CLUB_$PLID),
         );
@@ -336,7 +340,9 @@ export class MyClubController implements IMyClubController {
           );
       }
       if (!canParseToInt(req.params.playerId)) {
-        const httpStatus: IHttpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
         clientErrors.push(
           new ClientError(ClientErrorCode.INVALID_PARAMETER_MY_CLUB_$PLID),
         );

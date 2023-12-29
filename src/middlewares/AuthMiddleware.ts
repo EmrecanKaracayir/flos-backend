@@ -2,7 +2,10 @@ import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { AuthPayload, UserRole } from "../core/@types/helpers/authPayloadRules";
 import { AuthHelper } from "../core/helpers/AuthHelper";
-import { ClientErrorCode, IClientError } from "../interfaces/schemas/responses/app/IClientError";
+import {
+  ClientErrorCode,
+  IClientError,
+} from "../interfaces/schemas/responses/app/IClientError";
 import {
   HttpStatusCode,
   IHttpStatus,

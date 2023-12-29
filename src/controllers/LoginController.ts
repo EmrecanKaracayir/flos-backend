@@ -89,7 +89,9 @@ export class LoginController implements ILoginController {
     // Logic
     try {
       if (!LoginParticipantReq.isValidReq(req.body)) {
-        const httpStatus: IHttpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
         clientErrors.push(
           new ClientError(ClientErrorCode.INVALID_REQUEST_BODY),
         );

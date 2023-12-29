@@ -52,7 +52,9 @@ export class ClubsController implements IClubsController {
     // Logic
     try {
       if (!req.params.clubId) {
-        const httpStatus: IHttpStatus = new HttpStatus(HttpStatusCode.BAD_REQUEST);
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
         clientErrors.push(
           new ClientError(ClientErrorCode.MISSING_PARAMETER_$CLID),
         );

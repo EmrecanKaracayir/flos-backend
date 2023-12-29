@@ -5,7 +5,7 @@
 -- Dumped from database version 16.1
 -- Dumped by pg_dump version 16.1
 
--- Started on 2023-12-28 22:02:27 +03
+-- Started on 2023-12-29 04:54:11 +03
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -19,7 +19,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 929 (class 1247 OID 16792)
+-- TOC entry 923 (class 1247 OID 16792)
 -- Name: ClubState; Type: TYPE; Schema: public; Owner: Emrecan
 --
 
@@ -152,12 +152,13 @@ CREATE TABLE public."Player" (
 ALTER TABLE public."Player" OWNER TO "Emrecan";
 
 --
--- TOC entry 238 (class 1259 OID 16801)
+-- TOC entry 240 (class 1259 OID 16831)
 -- Name: ClubView; Type: VIEW; Schema: public; Owner: Emrecan
 --
 
 CREATE VIEW public."ClubView" AS
  SELECT "Club"."clubId",
+    "League".name AS "leagueName",
     "Club".name,
         CASE
             WHEN (("Club"."leagueId" IS NULL) AND ("playerByClub".count > 7)) THEN 'Ready'::public."ClubState"
@@ -336,13 +337,14 @@ ALTER SEQUENCE public."League_organizerId_seq" OWNED BY public."League"."organiz
 
 
 --
--- TOC entry 241 (class 1259 OID 16820)
+-- TOC entry 241 (class 1259 OID 16837)
 -- Name: MyClubView; Type: VIEW; Schema: public; Owner: Emrecan
 --
 
 CREATE VIEW public."MyClubView" AS
  SELECT "Club"."clubId",
     "Participant"."participantId",
+    "League".name AS "leagueName",
     "Club".name,
         CASE
             WHEN (("Club"."leagueId" IS NULL) AND ("playerByClub".count > 7)) THEN 'Ready'::public."ClubState"
@@ -367,7 +369,7 @@ CREATE VIEW public."MyClubView" AS
 ALTER VIEW public."MyClubView" OWNER TO "Emrecan";
 
 --
--- TOC entry 239 (class 1259 OID 16810)
+-- TOC entry 238 (class 1259 OID 16810)
 -- Name: MyLeagueView; Type: VIEW; Schema: public; Owner: Emrecan
 --
 
@@ -387,7 +389,7 @@ CREATE VIEW public."MyLeagueView" AS
 ALTER VIEW public."MyLeagueView" OWNER TO "Emrecan";
 
 --
--- TOC entry 240 (class 1259 OID 16815)
+-- TOC entry 239 (class 1259 OID 16815)
 -- Name: MyPlayerView; Type: VIEW; Schema: public; Owner: Emrecan
 --
 
@@ -737,7 +739,6 @@ ALTER TABLE ONLY public."Venue" ALTER COLUMN "venueId" SET DEFAULT nextval('publ
 --
 
 COPY public."Club" ("clubId", name, description, "logoPath", "leagueId", "cupCount") FROM stdin;
-15	Test Club 1	This is a test club 1 that is created for test purposes.	https://www.getautismactive.com/wp-content/uploads/2021/01/Test-Logo-Circle-black-transparent.png	\N	0
 \.
 
 
@@ -758,7 +759,6 @@ COPY public."Fixture" ("fixtureId", "leagueId", "homeClubId", "awayClubId", "hom
 --
 
 COPY public."League" ("leagueId", "organizerId", name, prize, description, "logoPath", state) FROM stdin;
-9	18	Test League 1	24000000	This is a test league 1 from organizer with id 18 that is created for test purposes.	https://www.getautismactive.com/wp-content/uploads/2021/01/Test-Logo-Circle-black-transparent.png	Not started
 \.
 
 
@@ -769,7 +769,6 @@ COPY public."League" ("leagueId", "organizerId", name, prize, description, "logo
 --
 
 COPY public."Organizer" ("organizerId", username, password, email) FROM stdin;
-18	organizer_1	$2b$10$dwnezfqHzyU03/.RTn6UAOAirhmyZCl7C3BpGBS7LgRSkWzMBKLcK	organizer_1@flos.com
 \.
 
 
@@ -780,7 +779,6 @@ COPY public."Organizer" ("organizerId", username, password, email) FROM stdin;
 --
 
 COPY public."Participant" ("participantId", username, password, email, "playerId", "clubId") FROM stdin;
-9	participant_1	$2b$10$OaCwvyGELi2c4ModNLijrOc5eoeVSs457vaGnGwMWmyqD86xtiMa6	participant_1@flos.com	15	15
 \.
 
 
@@ -801,7 +799,6 @@ COPY public."Performance" ("playerId", "fixtureId", "goalCount", "assistCount") 
 --
 
 COPY public."Player" ("playerId", "clubId", "fullName", birthday, "imgPath", goals, assists, biography) FROM stdin;
-15	15	Test Player 1 (Edited)	2000-06-02	https://www.getautismactive.com/wp-content/uploads/2021/01/Test-Logo-Circle-black-transparent.png	0	0	This is a test player 1 (Edited) that is created for test purposes.
 \.
 
 
@@ -812,11 +809,6 @@ COPY public."Player" ("playerId", "clubId", "fullName", birthday, "imgPath", goa
 --
 
 COPY public."Referee" ("refereeId", "fullName", birthday, email, "imgPath", "licenseType") FROM stdin;
-1	Halil Umut Meler	1986-08-01	h.u.meler@flos.com	https://iasbh.tmgrup.com.tr/71eca0/366/366/271/0/990/720?u=https://isbh.tmgrup.com.tr/sbh/2022/11/05/son-dakika-haberi-galatasaray-besiktas-derbisinin-hakemi-halil-umut-meler-hangi-takimli-gercek-ortaya-cikti-1667633167985.jpg	Category S
-4	Fırat Aydınus	1973-10-25	f.aydinus@flos.com	https://yandex-images.clstorage.net/fx98G4d01/dabf9eDGKRd/gFuaJxy1Suh8nZRwOnE6OgOgjDNrOI_L8I9rHcHjbfXSTzLDzCdcaqHUx4MsPY-H0np8PPfctuHmXI5DxF4yDRSIiSHbJohoPJ1XMnyze_jBo04ybjlPXeVX8ICcvbaqikWvnRL0XH30lRWRuSgZ3Al_PG5qiOV-NgheW9GCrJvL3Rauk26E7fPM0vLwMzp3nWpNv_l2k4t9UPvLkXtwoQJEp9Zb-lZ-8R8QRvgoVBOKJ3jraENpPLvM1tWQC-5ZjpiQYtlmQOS9xth6u7v9N9ulj3d78hZM-dz9jdf0uqiGS-PX3_iZ87RXngP46dcXhWPwoSUJIzC-hVfc0got1UhfESpTp8PjckgTs7J7OXUWI8l39vTbRfjZcoGSeTslTIntFhW5XHgw35FJcOXc30YkO-gpjyFxdEfd21kIohBFnZxlmyLMYPiLG_W4sjJ6Wu5AdXhwlgtyk7oJ3385LErGK9oU_ho3tdDVjHsglJ-EZfmlocBlNnjDF9bbCCVRRJcZp9CrxS9zC1n-83T79VSpQbD8dpPBcpR1y5bzvSHCj6KUX_7fdzHXE0R3ohcfDSp1rOJIYXz4AJFcU00s2YseUiPUpAnjvI0RNPq2Mbqao441eTMZRfwcPUOXufGvBwtjW9w7F7p_19CP9GqRX0LtfaUgy-h2MomR0NlJ7ZSCW1vnm-MC5byL2bg0cn83FGZOsvE7VQ171r-IXXn17AiCqtQccx8y-B7TD7iu198LZrtj5Uwn-bcCURuTjS5Tzp9a79brCSBxyh9wPPNytlTohn21tN4JM5C3DFp08ahMQqvbUfhWcz6QEAl_pxBWhal2bC3A5z55RNbbFQVuFQETWaqT7ANkPMAbdnCwdf_baYE89fZWArrYukgfMf0szEXsFB83Ff15ml_JuqBem4Qm-KtqAm52tE0d3NZBYlkNn19okmCBI_REETo9_XC10iPIcvyx00HzUjTMn0	Category S
-3	Cüneyt Çakır	1976-11-23	c.cakir@flos.com	https://avatars.mds.yandex.net/i?id=d65b8482c370c9e4dabd7c21688f7646-5220648-images-thumbs&n=13	Category FIFA
-2	Anthony Taylor	1978-10-20	a.taylor@flos.com	https://avatars.mds.yandex.net/i?id=cf11d34f691fe14af83c2e34a79d6088-5722855-images-thumbs&n=13	Category FIFA
-5	Pierluigi Collina	1960-02-13	p.collina@flos.com	https://cdn.allfamous.org/people/avatars/pierluigi-collina-wkkn-allfamous.org.jpg	Category FIFA
 \.
 
 
@@ -837,11 +829,6 @@ COPY public."Statistics" ("clubId", "leagueId", "winCount", "drawCount", "loseCo
 --
 
 COPY public."Venue" ("venueId", name, capacity, address, "imgPath", email) FROM stdin;
-2	Allianz Arena	75024	Werner-Heisenberg-Allee 25, 80939	https://img.welt.de/img/sport/fussball/mobile244457748/6992507277-ci102l-w1024/Allianz-Arena-Muenchen.jpg	contact@bm.com
-4	Stadio San Siro	75817	Via Piccolomini 5, 20151 Milan	https://icdn.sempreinter.com/wp-content/uploads/2015/02/San_Siro_4.jpg	contact@acm.com
-1	Şükrü Saraçoğlu Stadyumu	50530	Fenerbahce Tesisleri, Kadiköy, Istanbul	https://i.pinimg.com/originals/de/8d/5d/de8d5dc01022d91144a8d79d1760842e.jpg	contact@fb.com
-3	Stade de France	81338	Zac du Cornillon Nord, 93200 Saint-Denis	https://cdn.idntimes.com/content-images/community/2022/05/whatsapp-image-2022-05-04-at-124847-c1d6eabaf1aef128b8a26b6b996d2eda-248186d588b62ecdc2d76d5802ff7228.jpeg	contact@psg.com
-5	Spotify Camp Nou	99354	Avinguda Aristides Maillol, s/n, 08028, Barcelona	https://yt3.ggpht.com/ytc/AKedOLRCkb2tQJruC0VMBGgxYYoQVJoUceV_OghzN1py=s900-c-k-c0x00ffffff-no-rj	contact@barca.com
 \.
 
 
@@ -1178,7 +1165,7 @@ ALTER TABLE ONLY public."Statistics"
     ADD CONSTRAINT statistics_league_fk FOREIGN KEY ("leagueId") REFERENCES public."League"("leagueId");
 
 
--- Completed on 2023-12-28 22:02:27 +03
+-- Completed on 2023-12-29 04:54:11 +03
 
 --
 -- PostgreSQL database dump complete
