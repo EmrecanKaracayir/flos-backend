@@ -211,6 +211,54 @@ export class MyPlayerService implements IMyPlayerService {
     );
   }
 
+  public async deleteMyPlayerResign(
+    participantId: number,
+    clientErrors: IClientError[],
+  ): Promise<IAppResponse<void | null>> {
+    if (!(await this.myPlayerProvider.doesMyPlayerExist(participantId))) {
+      clientErrors.push(
+        new ClientError(ClientErrorCode.PARTICIPANT_HAS_NO_PLAYER),
+      );
+      return new AppResponse<null>(
+        new HttpStatus(HttpStatusCode.NOT_FOUND),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    if (await this.myPlayerProvider.amITheCaptain(participantId)) {
+      clientErrors.push(
+        new ClientError(ClientErrorCode.PLAYER_CANNOT_RESIGN_AS_CAPTAIN),
+      );
+      return new AppResponse<null>(
+        new HttpStatus(HttpStatusCode.CONFLICT),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    if (!(await this.myPlayerProvider.isClubEditable(participantId))) {
+      clientErrors.push(new ClientError(ClientErrorCode.PLAYER_CANNOT_RESIGN));
+      return new AppResponse<null>(
+        new HttpStatus(HttpStatusCode.CONFLICT),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    await this.myPlayerProvider.resignFromClub(participantId);
+    return new AppResponse<void>(
+      new HttpStatus(HttpStatusCode.NO_CONTENT),
+      null,
+      clientErrors,
+      null,
+      null,
+    );
+  }
+
   private validateFields(
     fullName: string,
     birthday: string,

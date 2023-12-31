@@ -1,4 +1,5 @@
 import { IMyClubModel } from "../models/IMyClubModel";
+import { IMyClubPlayerModel } from "../models/IMyClubPlayerModel";
 import { IPlayerModel } from "../models/IPlayerModel";
 
 export interface IMyClubProvider {
@@ -30,7 +31,7 @@ export interface IMyClubProvider {
 
   deleteMyClub: (participantId: number) => Promise<void>;
 
-  getMyClubPlayers: (participantId: number) => Promise<IPlayerModel[]>;
+  getMyClubPlayers: (participantId: number) => Promise<IMyClubPlayerModel[]>;
 
   doesPlayerExist: (playerId: number) => Promise<boolean>;
 
@@ -45,6 +46,8 @@ export interface IMyClubProvider {
     participantId: number,
     playerId: number,
   ) => Promise<boolean>;
+
+  isPlayerMine: (participantId: number, playerId: number) => Promise<boolean>;
 
   removePlayerFromMyClub: (playerId: number) => Promise<void>;
 }
@@ -63,11 +66,12 @@ export enum MyClubQueries {
   FREE_CLUB_FROM_PARTICIPANT_$PRID = `UPDATE "Participant" SET "clubId" = NULL WHERE "participantId" = $1`,
   FREE_CLUB_FROM_PLAYERS_$CLID = `UPDATE "Player" SET "clubId" = NULL WHERE "clubId" = $1`,
   DELETE_CLUB_$CLID = `DELETE FROM "Club" WHERE "clubId" = $1`,
-  GET_MY_CLUB_PLAYERS_$PRID = `SELECT * FROM "Player" WHERE "clubId" = (SELECT "clubId" FROM "Participant" WHERE "participantId" = $1)`,
+  GET_MY_CLUB_PLAYERS_$PRID = `SELECT * FROM "MyClubPlayerView" WHERE "clubId" = (SELECT "clubId" FROM "Participant" WHERE "participantId" = $1)`,
   DOES_PLAYER_EXIST_$PLID = `SELECT EXISTS (SELECT * FROM "Player" WHERE "playerId" = $1) AS "exists"`,
   IS_PLAYER_IN_STATE_$PLID_$STATES = `SELECT EXISTS (SELECT "state" FROM "PlayerView" WHERE "playerId" = $1 AND "state" = ANY($2::"PlayerState"[])) AS "exists"`,
   ADD_PLAYER_TO_CLUB_$CLID_$PLID = `UPDATE "Player" SET "clubId" = $1 WHERE "playerId" = $2`,
   GET_PLAYER_$PLID = `SELECT * FROM "PlayerView" WHERE "playerId" = $1`,
-  IS_PLAYER_IN_MY_CLUB_$PRID_$CLID = `SELECT EXISTS (SELECT "playerId" FROM "Player" WHERE "playerId" = $1 AND "clubId" = (SELECT "clubId" FROM "MyClubView" WHERE "participantId" = $1)) AS "exists"`,
+  IS_PLAYER_IN_MY_CLUB_$PRID_$PLID = `SELECT EXISTS (SELECT "playerId" FROM "Player" WHERE "playerId" = $2 AND "clubId" = (SELECT "clubId" FROM "MyClubView" WHERE "participantId" = $1)) AS "exists"`,
+  IS_PLAYER_MINE_$PRID_$PLID = `SELECT EXISTS (SELECT "playerId" FROM "Participant" WHERE "participantId" = $1 AND "playerId" = $2) AS "exists"`,
   REMOVE_PLAYER_FROM_CLUB_$PLID = `UPDATE "Player" SET "clubId" = NULL WHERE "playerId" = $1`,
 }

@@ -1,5 +1,6 @@
 import { QueryResult } from "pg";
 import { pool } from "../core/database/pool";
+import { EDITABLE_CLUB_STATES } from "../core/rules/clubRules";
 import {
   DELETABLE_PLAYER_STATES,
   EDITABLE_PLAYER_STATES,
@@ -14,6 +15,7 @@ import {
   ModelMismatchError,
   UnexpectedQueryResultError,
 } from "../interfaces/schemas/responses/app/IServerError";
+import { ClubModel } from "../models/ClubModel";
 import { MyPlayerModel } from "../models/MyPlayerModel";
 import { PlayerModel } from "../models/PlayerModel";
 import { ExistsModel } from "../models/util/ExistsModel";
@@ -198,6 +200,66 @@ export class MyPlayerProvider implements IMyPlayerProvider {
       await pool.query(MyPlayerQueries.DELETE_PLAYER_$PLID, [
         playerIdRec.playerId,
       ]);
+      await pool.query("COMMIT");
+    } catch (error) {
+      await pool.query("ROLLBACK");
+      throw error;
+    }
+  }
+
+  public async isClubEditable(participantId: number): Promise<boolean> {
+    await pool.query("BEGIN");
+    try {
+      const clubIdRes: QueryResult = await pool.query(
+        MyPlayerQueries.GET_CLUB_ID_$PRID,
+        [participantId],
+      );
+      const clubIdRec: unknown = clubIdRes.rows[0];
+      if (!clubIdRec) {
+        throw new UnexpectedQueryResultError();
+      }
+      if (!ClubModel.isValidIdModel(clubIdRec)) {
+        throw new ModelMismatchError(clubIdRec);
+      }
+      const existsRes: QueryResult = await pool.query(
+        MyPlayerQueries.IS_CLUB_IN_STATE_$CLID_$STATES,
+        [clubIdRec.clubId, EDITABLE_CLUB_STATES],
+      );
+      const existsRec: unknown = existsRes.rows[0];
+      if (!existsRec) {
+        throw new UnexpectedQueryResultError();
+      }
+      if (!ExistsModel.isValidModel(existsRec)) {
+        throw new ModelMismatchError(existsRec);
+      }
+      await pool.query("COMMIT");
+      return (existsRec as IExistsModel).exists;
+    } catch (error) {
+      await pool.query("ROLLBACK");
+      throw error;
+    }
+  }
+
+  public async amITheCaptain(participantId: number): Promise<boolean> {
+    const existsRes: QueryResult = await pool.query(
+      MyPlayerQueries.AM_I_THE_CAPTAIN_$PRID,
+      [participantId],
+    );
+    const existsRec: unknown = existsRes.rows[0];
+    if (!existsRec) {
+      throw new UnexpectedQueryResultError();
+    }
+    if (!ExistsModel.isValidModel(existsRec)) {
+      throw new ModelMismatchError(existsRec);
+    }
+    return (existsRec as IExistsModel).exists;
+  }
+
+  public async resignFromClub(participantId: number): Promise<void> {
+    await pool.query("BEGIN");
+    try {
+      // Set clubId to null
+      await pool.query(MyPlayerQueries.RESIGN_FROM_CLUB_$PRID, [participantId]);
       await pool.query("COMMIT");
     } catch (error) {
       await pool.query("ROLLBACK");

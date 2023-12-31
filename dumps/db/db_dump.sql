@@ -5,7 +5,7 @@
 -- Dumped from database version 16.1
 -- Dumped by pg_dump version 16.1
 
--- Started on 2023-12-30 08:46:13 +03
+-- Started on 2023-12-31 03:17:16 +03
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -19,7 +19,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 920 (class 1247 OID 16792)
+-- TOC entry 919 (class 1247 OID 16792)
 -- Name: ClubState; Type: TYPE; Schema: public; Owner: Emrecan
 --
 
@@ -34,7 +34,7 @@ CREATE TYPE public."ClubState" AS ENUM (
 ALTER TYPE public."ClubState" OWNER TO "Emrecan";
 
 --
--- TOC entry 897 (class 1247 OID 16607)
+-- TOC entry 899 (class 1247 OID 16607)
 -- Name: LeagueState; Type: TYPE; Schema: public; Owner: Emrecan
 --
 
@@ -48,7 +48,7 @@ CREATE TYPE public."LeagueState" AS ENUM (
 ALTER TYPE public."LeagueState" OWNER TO "Emrecan";
 
 --
--- TOC entry 900 (class 1247 OID 16615)
+-- TOC entry 902 (class 1247 OID 16615)
 -- Name: PlayerState; Type: TYPE; Schema: public; Owner: Emrecan
 --
 
@@ -61,7 +61,7 @@ CREATE TYPE public."PlayerState" AS ENUM (
 ALTER TYPE public."PlayerState" OWNER TO "Emrecan";
 
 --
--- TOC entry 903 (class 1247 OID 16595)
+-- TOC entry 905 (class 1247 OID 16595)
 -- Name: RefereeLicenseCategory; Type: TYPE; Schema: public; Owner: Emrecan
 --
 
@@ -161,7 +161,7 @@ CREATE VIEW public."ClubView" AS
     "League".name AS "leagueName",
     "Club".name,
         CASE
-            WHEN (("Club"."leagueId" IS NULL) AND ("playerByClub".count > 7)) THEN 'Ready'::public."ClubState"
+            WHEN (("Club"."leagueId" IS NULL) AND ("playerByClub".count >= 7)) THEN 'Ready'::public."ClubState"
             WHEN (("Club"."leagueId" IS NULL) AND ("playerByClub".count < 7)) THEN 'Not ready'::public."ClubState"
             WHEN (("Club"."leagueId" IS NOT NULL) AND ("League".state = 'Not started'::public."LeagueState")) THEN 'Signed'::public."ClubState"
             ELSE 'In a league'::public."ClubState"
@@ -199,7 +199,7 @@ CREATE SEQUENCE public."Club_clubId_seq"
 ALTER SEQUENCE public."Club_clubId_seq" OWNER TO "Emrecan";
 
 --
--- TOC entry 3790 (class 0 OID 0)
+-- TOC entry 3800 (class 0 OID 0)
 -- Dependencies: 230
 -- Name: Club_clubId_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Emrecan
 --
@@ -244,7 +244,7 @@ CREATE SEQUENCE public."Fixture_fixtureId_seq"
 ALTER SEQUENCE public."Fixture_fixtureId_seq" OWNER TO "Emrecan";
 
 --
--- TOC entry 3791 (class 0 OID 0)
+-- TOC entry 3801 (class 0 OID 0)
 -- Dependencies: 233
 -- Name: Fixture_fixtureId_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Emrecan
 --
@@ -303,7 +303,7 @@ CREATE SEQUENCE public."League_leagueId_seq"
 ALTER SEQUENCE public."League_leagueId_seq" OWNER TO "Emrecan";
 
 --
--- TOC entry 3792 (class 0 OID 0)
+-- TOC entry 3802 (class 0 OID 0)
 -- Dependencies: 223
 -- Name: League_leagueId_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Emrecan
 --
@@ -328,13 +328,40 @@ CREATE SEQUENCE public."League_organizerId_seq"
 ALTER SEQUENCE public."League_organizerId_seq" OWNER TO "Emrecan";
 
 --
--- TOC entry 3793 (class 0 OID 0)
+-- TOC entry 3803 (class 0 OID 0)
 -- Dependencies: 224
 -- Name: League_organizerId_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Emrecan
 --
 
 ALTER SEQUENCE public."League_organizerId_seq" OWNED BY public."League"."organizerId";
 
+
+--
+-- TOC entry 242 (class 1259 OID 16876)
+-- Name: MyClubPlayerView; Type: VIEW; Schema: public; Owner: Emrecan
+--
+
+CREATE VIEW public."MyClubPlayerView" AS
+ SELECT "Player"."playerId",
+    "Club"."clubId",
+    "Club".name AS "clubName",
+    "Player"."fullName",
+    (EXTRACT(year FROM age(("Player".birthday)::timestamp with time zone)))::integer AS age,
+    "Player".goals,
+    "Player".assists,
+    "Participant".email AS "participantEmail",
+    "Player".biography,
+    "Player"."imgPath",
+        CASE
+            WHEN ("Player"."clubId" IS NULL) THEN 'Available'::public."PlayerState"
+            ELSE 'In a club'::public."PlayerState"
+        END AS state
+   FROM ((public."Player"
+     JOIN public."Participant" ON (("Player"."playerId" = "Participant"."playerId")))
+     LEFT JOIN public."Club" ON (("Player"."clubId" = "Club"."clubId")));
+
+
+ALTER VIEW public."MyClubPlayerView" OWNER TO "Emrecan";
 
 --
 -- TOC entry 240 (class 1259 OID 16837)
@@ -347,7 +374,7 @@ CREATE VIEW public."MyClubView" AS
     "League".name AS "leagueName",
     "Club".name,
         CASE
-            WHEN (("Club"."leagueId" IS NULL) AND ("playerByClub".count > 7)) THEN 'Ready'::public."ClubState"
+            WHEN (("Club"."leagueId" IS NULL) AND ("playerByClub".count >= 7)) THEN 'Ready'::public."ClubState"
             WHEN (("Club"."leagueId" IS NULL) AND ("playerByClub".count < 7)) THEN 'Not ready'::public."ClubState"
             WHEN (("Club"."leagueId" IS NOT NULL) AND ("League".state = 'Not started'::public."LeagueState")) THEN 'Signed'::public."ClubState"
             ELSE 'In a league'::public."ClubState"
@@ -367,6 +394,38 @@ CREATE VIEW public."MyClubView" AS
 
 
 ALTER VIEW public."MyClubView" OWNER TO "Emrecan";
+
+--
+-- TOC entry 243 (class 1259 OID 16881)
+-- Name: MyLeagueClubView; Type: VIEW; Schema: public; Owner: Emrecan
+--
+
+CREATE VIEW public."MyLeagueClubView" AS
+ SELECT "Club"."clubId",
+    "League"."leagueId",
+    "League".name AS "leagueName",
+    "Club".name,
+        CASE
+            WHEN (("Club"."leagueId" IS NULL) AND ("playerByClub".count >= 7)) THEN 'Ready'::public."ClubState"
+            WHEN (("Club"."leagueId" IS NULL) AND ("playerByClub".count < 7)) THEN 'Not ready'::public."ClubState"
+            WHEN (("Club"."leagueId" IS NOT NULL) AND ("League".state = 'Not started'::public."LeagueState")) THEN 'Signed'::public."ClubState"
+            ELSE 'In a league'::public."ClubState"
+        END AS state,
+    "playerByClub".count AS "playerCount",
+    "Club"."cupCount",
+    "Participant".email AS "participantEmail",
+    "Club".description,
+    "Club"."logoPath"
+   FROM (((public."Club"
+     JOIN public."Participant" ON (("Club"."clubId" = "Participant"."clubId")))
+     LEFT JOIN ( SELECT "Player"."clubId",
+            count(*) AS count
+           FROM public."Player"
+          GROUP BY "Player"."clubId") "playerByClub" ON (("playerByClub"."clubId" = "Club"."clubId")))
+     LEFT JOIN public."League" ON (("Club"."leagueId" = "League"."leagueId")));
+
+
+ALTER VIEW public."MyLeagueClubView" OWNER TO "Emrecan";
 
 --
 -- TOC entry 237 (class 1259 OID 16810)
@@ -432,7 +491,7 @@ CREATE SEQUENCE public."Organizer_organizerId_seq"
 ALTER SEQUENCE public."Organizer_organizerId_seq" OWNER TO "Emrecan";
 
 --
--- TOC entry 3794 (class 0 OID 0)
+-- TOC entry 3804 (class 0 OID 0)
 -- Dependencies: 216
 -- Name: Organizer_organizerId_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Emrecan
 --
@@ -457,7 +516,7 @@ CREATE SEQUENCE public."Participant_participantId_seq"
 ALTER SEQUENCE public."Participant_participantId_seq" OWNER TO "Emrecan";
 
 --
--- TOC entry 3795 (class 0 OID 0)
+-- TOC entry 3805 (class 0 OID 0)
 -- Dependencies: 217
 -- Name: Participant_participantId_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Emrecan
 --
@@ -523,7 +582,7 @@ CREATE SEQUENCE public."Player_playerId_seq"
 ALTER SEQUENCE public."Player_playerId_seq" OWNER TO "Emrecan";
 
 --
--- TOC entry 3796 (class 0 OID 0)
+-- TOC entry 3806 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: Player_playerId_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Emrecan
 --
@@ -582,7 +641,7 @@ CREATE SEQUENCE public."Referee_refereeId_seq"
 ALTER SEQUENCE public."Referee_refereeId_seq" OWNER TO "Emrecan";
 
 --
--- TOC entry 3797 (class 0 OID 0)
+-- TOC entry 3807 (class 0 OID 0)
 -- Dependencies: 219
 -- Name: Referee_refereeId_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Emrecan
 --
@@ -660,7 +719,7 @@ CREATE SEQUENCE public."Venue_venueId_seq"
 ALTER SEQUENCE public."Venue_venueId_seq" OWNER TO "Emrecan";
 
 --
--- TOC entry 3798 (class 0 OID 0)
+-- TOC entry 3808 (class 0 OID 0)
 -- Dependencies: 221
 -- Name: Venue_venueId_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Emrecan
 --
@@ -669,7 +728,7 @@ ALTER SEQUENCE public."Venue_venueId_seq" OWNED BY public."Venue"."venueId";
 
 
 --
--- TOC entry 3562 (class 2604 OID 16677)
+-- TOC entry 3570 (class 2604 OID 16677)
 -- Name: Club clubId; Type: DEFAULT; Schema: public; Owner: Emrecan
 --
 
@@ -677,7 +736,7 @@ ALTER TABLE ONLY public."Club" ALTER COLUMN "clubId" SET DEFAULT nextval('public
 
 
 --
--- TOC entry 3569 (class 2604 OID 16717)
+-- TOC entry 3577 (class 2604 OID 16717)
 -- Name: Fixture fixtureId; Type: DEFAULT; Schema: public; Owner: Emrecan
 --
 
@@ -685,7 +744,7 @@ ALTER TABLE ONLY public."Fixture" ALTER COLUMN "fixtureId" SET DEFAULT nextval('
 
 
 --
--- TOC entry 3557 (class 2604 OID 16576)
+-- TOC entry 3565 (class 2604 OID 16576)
 -- Name: League leagueId; Type: DEFAULT; Schema: public; Owner: Emrecan
 --
 
@@ -693,7 +752,7 @@ ALTER TABLE ONLY public."League" ALTER COLUMN "leagueId" SET DEFAULT nextval('pu
 
 
 --
--- TOC entry 3553 (class 2604 OID 16455)
+-- TOC entry 3561 (class 2604 OID 16455)
 -- Name: Organizer organizerId; Type: DEFAULT; Schema: public; Owner: Emrecan
 --
 
@@ -701,7 +760,7 @@ ALTER TABLE ONLY public."Organizer" ALTER COLUMN "organizerId" SET DEFAULT nextv
 
 
 --
--- TOC entry 3554 (class 2604 OID 16446)
+-- TOC entry 3562 (class 2604 OID 16446)
 -- Name: Participant participantId; Type: DEFAULT; Schema: public; Owner: Emrecan
 --
 
@@ -709,7 +768,7 @@ ALTER TABLE ONLY public."Participant" ALTER COLUMN "participantId" SET DEFAULT n
 
 
 --
--- TOC entry 3559 (class 2604 OID 16623)
+-- TOC entry 3567 (class 2604 OID 16623)
 -- Name: Player playerId; Type: DEFAULT; Schema: public; Owner: Emrecan
 --
 
@@ -717,7 +776,7 @@ ALTER TABLE ONLY public."Player" ALTER COLUMN "playerId" SET DEFAULT nextval('pu
 
 
 --
--- TOC entry 3555 (class 2604 OID 16525)
+-- TOC entry 3563 (class 2604 OID 16525)
 -- Name: Referee refereeId; Type: DEFAULT; Schema: public; Owner: Emrecan
 --
 
@@ -725,7 +784,7 @@ ALTER TABLE ONLY public."Referee" ALTER COLUMN "refereeId" SET DEFAULT nextval('
 
 
 --
--- TOC entry 3556 (class 2604 OID 16536)
+-- TOC entry 3564 (class 2604 OID 16536)
 -- Name: Venue venueId; Type: DEFAULT; Schema: public; Owner: Emrecan
 --
 
@@ -733,17 +792,67 @@ ALTER TABLE ONLY public."Venue" ALTER COLUMN "venueId" SET DEFAULT nextval('publ
 
 
 --
--- TOC entry 3780 (class 0 OID 16674)
+-- TOC entry 3790 (class 0 OID 16674)
 -- Dependencies: 231
 -- Data for Name: Club; Type: TABLE DATA; Schema: public; Owner: Emrecan
 --
 
 COPY public."Club" ("clubId", name, description, "logoPath", "leagueId", "cupCount") FROM stdin;
+26	Kocaelispor FK	⚽ Kocaelispor FC | Shake the Green Earth, Sky in Black | Established 1966 | 📍 Kocaeli | 🟩⬛ Dynamic Play, Steady Progress | Join #KocaelisporJourney 🔝	https://i.goalzz.com/?i=o%2ft%2f3%2f298%2fkocaelispor-1.png	\N	0
+27	Kurtalan Spor	⚽ Kurtalan Spor FC | Power & Persistence | Est. 1957 | 📍 Kurtalan, Siirt | 🟦⚪ Where passion takes the lead | We are #KurtalanSporUnite 🔝	https://i.goalzz.com/?i=o%2ft%2f24%2f559%2fkurtalan-spor-1.png	\N	0
+28	Merzifonspor FK	⚽ Merzifonspor FC | Born to Play, Built to Win | Est. 1954 | 📍 Merzifon, Amasya | 🔵⚪ Marching Forward with Harmony | Experience our journey #MerzifonsporPride 🔝	https://i.goalzz.com/?i=o%2ft%2f22%2f180%2fmerzifonspor-1.png	\N	0
+24	Hazettepe Spor	⚽ Hacettepe Spor | Est. 1954 | 📍 Ankara | 🟪⚪ Passion & Precision | Empowering Youth | Share our journey: #HacettepeRising 🔝	https://i.goalzz.com/?i=4_safi_only%2fturk%2fhacettepelogo.gif	12	0
+18	Darıca Gençler FK	⚽ Darıca Gençler FC | Young Hearts, Bold Spirits | Est. 1967 | 📍 Darıca, Kocaeli | Champions in Progress | 🟢🟡 | Join our journey 	https://i.goalzz.com/?i=o%2ft%2f2%2f982%2fdarica-genclerbirlig-1.png	\N	0
+19	Düzcespor FK	⚽ Düzce Spor FC | Passion Meets Powerful Play | Est. 1967 | 📍 Düzce City | Determination and Dedication | 🔵🔴 | #DüzceSporRising🔝	https://i.goalzz.com/?i=o%2ft%2f28%2f640%2fduzce-spor-1.png	\N	0
+20	Eğirdirspor FK	⚽ Eğirdirspor FC | Where Passion Plays | Est. 1984 | 📍 Eğirdir, Isparta | Embodying Resilience | 🔵🔴 | Track our journey #EğirdirsporRising 🔝	https://i.goalzz.com/?i=o%2ft%2f24%2f556%2fegirdir-spor-1.png	\N	0
+22	Foça Belediyespor	⚽ Foça Belediyespor FC | Football & Community | Est. 1959 | 📍 Foça, Izmir | 🟢🔵 United Under One Goal | Join the journey: #FoçaVictoryRise 🔝	https://i.goalzz.com/?i=zizzzo%2f50732.jpg	\N	0
+23	Gebzespor FK	⚽ Gebzespor FC | Founded 1955 | 📍 Gebze, Kocaeli | 🟣⚪ Celebrating Our Colors | Strength in Unity | Follow Our Stride: #GebzesporStrong 🔝	https://i.goalzz.com/?i=o%2ft%2f9%2f518%2fgebzespor-1.png	\N	0
+25	Karşıyaka FK	⚽ Karşıyaka FC | Heart & Hustle | Est. 1912 | 📍 Karşıyaka, Izmir | 🔴🟢 Where Legacy Lives On | Be part of the journey: #KarşıyakaUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f2%2f393%2fkarsiyaka-1.png	\N	0
+29	Patnos Gençlikspor	⚽ Patnos Gençlik Spor FC | Est. 1984 | Raising Stars in Patnos | 📍 Patnos, Ağrı | Uniting 🟦⭐ for the beautiful game | Follow our story: #PatnosGençlikRising 🔝	https://i.goalzz.com/?i=o%2ft%2f20%2f679%2fpatnos-genclik-spor-1.png	\N	0
+30	Pazarspor FK	⚽ Pazarspor FC | Fuelled by Passion, Driven by Ambition | Est. 1968 | 📍 Pazar, Rize | 🔵⚪ Wave of the Northern Black Sea | Join the wave: #PazarsporUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f7%2f536%2fpazarspor-1.png	\N	0
+31	Turgutluspor	⚽ Turgutluspor FC | Passion in Each Play | Founded 1922 | 📍 Turgutlu, Manisa | 🔴⚪ Where Spirit Meets Sport | Follow our progress at #TurgutluRising 🔝	https://i.goalzz.com/?i=o%2ft%2f7%2f535%2fturgutluspor-1.png	\N	0
+32	Trabzon Kanuni FK	⚽ Trabzon Kanuni FC | Tradition Meets Triumph | Est. 1982 | 📍 Trabzon | 🔴🔵 Embracing the Game | Join the journey #TrabzonKanuniUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f20%2f671%2fkanunispor-1.png	\N	0
+33	Torbalıspor FK	⚽ Torbalıspor FC | Heritage and Heart | Est. 1954 | 📍 Torbalı, Izmir | 🔴⚪ Fueling Passion | Chart our journey: #TorbalısporRising 🔝	https://i.goalzz.com/?i=o%2ft%2f16%2f649%2ftorbalispor-1.png	\N	0
+34	Tirespor 1922	⚽ Tirespor 1922 FC | Rooted in Tradition, Reaching for Triumph | Est. 1922 | 📍 Tire, Izmir | 🔴⚪ Upholding Legacy | Be part of the story: #Tire1922Rise 🔝	https://i.goalzz.com/?i=o%2ft%2f24%2f602%2ftirespor-1922-1.png	\N	0
+35	ALG Spor	⚽ ALG Spor FC | Established 1980 | 📍 Gaziantep | 💛⚪ Inspiring Change, Building Future | Ignite the passion with #ALGSporUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f38%2f617%2falg-spor-1.png	\N	0
+41	Bergama BS	⚽ Bergama Belediyespor FC | Red Heart, Blue Spirit | Founded 1959 | 📍 Bergama, Izmir | 🔴🔵 Building a Better Game | Stand with us: #BergamaUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f22%2f160%2fbergama-belediyespor-1.png	\N	0
+42	Bağcılar SK	⚽ Bağcılar SK | United in Blue & White | Founded in 1989 | 📍 Bağcılar, Istanbul | 🔵⚪ Dedicated to the Beautiful Game | Join us at #BağcılarRise 🔝	https://i.goalzz.com/?i=o%2ft%2f34%2f518%2fbagcilar-spor-kulubu-1.png	\N	0
+43	Bigospro SK	⚽ Bigaspor SK | Forging Champions | Established 1930 | 📍 Biga, Çanakkale | 🔵⚪ Blues Conquering the Field | Follow our stride: #BigasporRising 🔝	https://i.goalzz.com/?i=o%2ft%2f37%2f217%2fbigaspor-1.png	\N	0
+44	Çayırova Spor	⚽ Çayırova Spor FC | Green Power, Black Strength | Established 1980 | 📍 Çayırova, Kocaeli | 🟢⚫ Where Passion Plays | Share our journey: #ÇayırovaRising 🔝	https://i.goalzz.com/?i=o%2ft%2f37%2f219%2fcayirova-spor-1.png	\N	0
+40	Aydınspor FK	⚽ Aydınspor FC | Unity in Black & White | Established 1923 | 📍 Aydın | ⚫⚪ Legacy, Passion, Power | All for the Game: #AydınsporRising 🔝	https://i.goalzz.com/?i=ash03%2faydinspor.jpg	12	0
+39	Beşiktaş Çarşı	⚽ Beşiktaş Çarşı | The Heartbeat of Beşiktaş | Est. 1982 | 📍 İstanbul | ⚫⚪ Where Fan Passion Meets Football | Join the chorus: #ÇarşıUnited 🔝	https://i.goalzz.com/?i=katkotati%2fequipe%2ftur%2fbesiktas.gif	12	0
+37	Fenerbahçe GFB	⚽ Fenerbahçe GFB | 💙💛 Passion Burns Here | Founded 1907 | 📍 Istanbul | Rising to Every Challenge | Follow the Flame: #FenerbahçeGFB 	https://i.goalzz.com/?i=katkotati%2fequipe%2ftur%2ffenerbahce.gif	12	0
+38	Galatasaray UA	⚽ Galatasaray UltraAslan | 🔴🟡 Roaring Spirit of Istanbul | Est. 1980 | 📍 Istanbul | Fan Power Unleashed | Stand with us: #UltraAslanUnited 🔝	https://i.goalzz.com/?i=katkotati%2fequipe%2ftur%2fgalatasaray.jpg	12	0
+21	Esenler Erokspor	⚽ Esenler Erokspor FC | Unity in Football | Established 1984 | 📍 Esenler, Istanbul | 💚💛 Fierce on the Field | Tag along: #EroksporRising 🔝	https://i.goalzz.com/?i=medalss%2f45269.jpg	12	0
+36	Araklıspor	⚽ Araklıspor FC | Strength in Stripes, Power in Play | Est. 1954 | 📍 Araklı, Trabzon | ⚫🟢 Where Passion Thrives | Gear up for glory: #AraklısporUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f11%2f116%2faraklispor-1.png	12	0
+16	Beykozspor FK	⚽ Beykozspor FC | Since 1908 |📍 Istanbul | 🏆 Passion & Talent | #Beykozspor 🔴🟡	https://i.goalzz.com/?i=o%2ft%2f12%2f406%2fbeykozspor-1.png	12	0
+45	Erbaaspor SK	⚽ Erbaaspor FC | United in Blue & White | Est. 1968 | 📍 Erbaa, Tokat | 🔵⚪ Rising Determination, Steadfast Spirit | Be part of #ErbaasporJourney 🔝	https://i.goalzz.com/?i=o%2ft%2f31%2f640%2ferbaaspor-1.png	\N	0
+46	Gölcükspor FK	⚽ Gölcükspor FC | Strength In Stripes | Est. 1964 | 📍 Gölcük, Kocaeli | ⚫🔴 Triumph through Teamwork | Join the journey: #GölcüksporUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f20%2f666%2fgolcukspor-1.png	\N	0
+47	Hendek Spor	⚽ Hendekspor FC | Embracing the Green Spirit | Established 1958 | 📍 Hendek, Sakarya | ⚪🟢 Building Tomorrow's Champions | Stand with us: #HendekUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f41%2f35%2fhendek-spor-1.png	\N	0
+48	Hoçvan Spor	⚽ Hoçvan Spor FC | Excellence Through Effort | Est. 1980 | 📍 Van | 🔴⚪ Where Passion Plays | Blaze the trail with #HoçvanUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f41%2f32%2fhocvan-spor-1.png	\N	0
+49	İçel İdman Yurdu	⚽ İçel İdman Yurdu FC | Power, Passion, Pride | Est. 1985 | 📍 Mersin | 🔴🟡 Carrying the Torch | Forward together: #İçelİdmanYurduUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f41%2f38%2ficel-idmanyurdu-1.png	\N	0
+50	Haçka Spor	⚽ Hacka Spor FC | Red Devotion, White Purity, Blue Ambition | Est. 1980 | 🔴⚪🔵 Building Champions | Join the rise: #HackaSporUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f22%2f188%2fhacka-spor-1.png	\N	0
+51	Keçiören Sportif	⚽ Keçiören Sportif | United in Blue | Est. 1988 | 📍 Keçiören, Ankara | 🔵 Nurturing Talent, Igniting Passion | Stand with us: #KeçiörenSportifRising 🔝	https://i.goalzz.com/?i=o%2ft%2f16%2f651%2fkecioren-sportif-1.png	\N	0
+52	Ödemişspor FK	⚽ Ödemişspor FC | Blue Power, White Pride | Founded in 1966 | 📍 Ödemiş, Izmir | 🔵⚪ Stride in Unity | Keep the flame alive: #ÖdemişsporUnite 🔝	https://i.goalzz.com/?i=o%2ft%2f37%2f218%2fodemisspor-1.png	\N	0
+53	Sidespor FK	⚽ Side Spor FC | United in Strength | Est. 1968 | 📍 Manavgat, Antalya | ⚪🟡 Celebrating Heritage, Creating Future | Follow our path: #SideSporRising 🔝	https://i.goalzz.com/?i=o%2ft%2f2%2f980%2fsidespor-1.png	\N	0
+54	Soma Spor FK	⚽ Somaspor FC | Established 1979 | 📍 Soma, Manisa | ⚫⚪ Where Tradition Meets Tenacity | Be part of the journey: #SomasporUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f40%2f146%2fsoma-spor-dernegi-1.png	\N	0
+55	Jetpa Spor	⚽ Jetpa Spor FC | Fueled by Passion, Flying High | Founded 1993 | ⚪🟡 Where Will Meets Skill | On the rise: #JetpaSporFlight 🔝	https://i.goalzz.com/?i=o%2ft%2f3%2f567%2fsiirt-jetpa-spor-1.png	\N	0
+56	1074 Çankırıspor	⚽ 1074 Çankırıspor FC | ⚫🔴 Steadfast Spirit, Determined Play | Est. 1956 | 📍 Çankırı | Where Heart Beats for the Game | Join us: #ÇankırısporUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f2%2f979%2f1074-cankiri-spor-1.png	\N	0
+57	Ağrı Gençler FK	⚽ Ağrı Gençler FK | Passionate Play ⚫🔴 | Est. 1970 | 📍 Ağrı | Fostering Future Stars | Make waves with us: #AğrıGençlerFK 🔝	https://i.goalzz.com/?i=o%2ft%2f28%2f547%2fagri-genclerbirligi-1.png	\N	0
+59	Dardanelspor	⚽ Ankara Dardanelspor FC | White Purity, Red Passion, Blue Depth | Established 1967 | 📍 Ankara | Uniting Colors for the love of the game | Join us: #DardanelsporUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f3%2f871%2fdardanelspor-1.png	\N	0
+60	Çubuk SK	⚽ Çubuk SK | Forging Future in Blue & Yellow | Founded 1947 | 📍 Çubuk, Ankara | 🔵🟡 Growth, Grit, Glory | Keep pace with us: #ÇubukSKRising 🔝	https://i.goalzz.com/?i=o%2ft%2f41%2f26%2fcubuk-spor-kulubu-1.png	\N	0
+61	Boyabat 1868 SK	⚽ Boyabat 1868 SK | Unity in Blue, Yellow, White | Est. 1970 | 📍 Boyabat, Sinop | 🔵🟡⚪ Where tradition & transformation meet | Join our journey: #Boyabat1868United 🔝	https://i.goalzz.com/?i=o%2ft%2f41%2f30%2fboyabat-1868-spor-1.png	\N	0
+62	Erzin Spor	⚽ Erzin Spor FC | United in Orange & White | Established 1966 | 📍 Erzin, Hatay | 🟠⚪ Igniting Football Passion | Be part of the story: #ErzinSporRising 🔝	https://i.goalzz.com/?i=o%2ft%2f24%2f600%2ferzin-spor-1.png	\N	0
+63	Dudulluspor	⚽ Dudulluspor FC | Green Strength, White Spirit | Est. 1954 | 📍 Ümraniye, Istanbul | 🟢⚪ Fueling the Future of Football | Join the charge: #DudullusporUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f49%2f274%2fdudulluspor-1.png	\N	0
+64	Fethiyespor	⚽ Fethiyespor FC | Red Passion, White Purity, Purple Pride | Founded 1933 | 📍 Fethiye, Muğla | 🔴⚪🟣 Ignite, Unite, Fight! | Rise with us: #FethiyesporUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f18%2f753%2ffethiyespor-1.png	\N	0
+65	Edirne Gençlik SK	⚽ Edirne Gençlik FK | Fusing Blue Determination, Red Passion, Black Strength | Est. 1987 | 📍 Edirne | 🔵🔴⚫ Crafting Tomorrow's Champions | Join the rally: #EdirneGençlikFK 🔝	https://i.goalzz.com/?i=o%2ft%2f22%2f165%2fedirnespor-genclik-1.png	\N	0
+17	Bucaspor FK	⚽ Bucaspor FC | Est. 1928 | 📍 Buca, Izmir | 🏆 Grit & Glory | 🔵🟡 Empowering talent | Follow our journey #BucasporRising 🔝	https://i.goalzz.com/?i=-vitchmen-%2fbuca.jpg	12	0
+66	Adliyespor FK	⚽ Ankara Adliyespor FK | 🔴⚪ Where Justice Meets Joy of the Game | Est. 1952 | 📍 Ankara | Upholding Values, Breaking Boundaries | On the move: #AdliyesporRising	https://i.goalzz.com/?i=ash04%2fadliyespor+.jpg	12	0
 \.
 
 
 --
--- TOC entry 3783 (class 0 OID 16714)
+-- TOC entry 3793 (class 0 OID 16714)
 -- Dependencies: 234
 -- Data for Name: Fixture; Type: TABLE DATA; Schema: public; Owner: Emrecan
 --
@@ -753,17 +862,37 @@ COPY public."Fixture" ("fixtureId", "leagueId", "homeClubId", "awayClubId", "hom
 
 
 --
--- TOC entry 3776 (class 0 OID 16573)
+-- TOC entry 3786 (class 0 OID 16573)
 -- Dependencies: 225
 -- Data for Name: League; Type: TABLE DATA; Schema: public; Owner: Emrecan
 --
 
 COPY public."League" ("leagueId", "organizerId", name, prize, description, "logoPath", state) FROM stdin;
+22	43	Yozgat Amatör Ligi	500000	⚽️ Official Yozgat Amatör Lig 🏆 | Fostering local football spirit since 2023 | Yozgat, Turkey 📍 🇹🇷 | #YozgatAmatorLigi 🏟️⚽	https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLGf-WbGNugQMM0ecDIPwFaWZDoNHhlTyesNC7u3XGAj0IC8ao0ubWtfP1h42ZlCtrxow&usqp=CAU	Not started
+23	44	Trendyol SüperLig	32000000	⚽️ Official Trendyol SüperLig 🏆 | Igniting the amateur football scene since 2023 | Turkey 📍🇹🇷 | #TrendyolSuperLig 🔥⚽️	https://www.tff.org/Resources/TFF/Images/0000000015/TFF/TFF-Logolar/2023-trendyol/trendyol-super-lig-dikey.png	Not started
+24	45	Fortis Türkiye Kupası	12000000	🏆 Official Fortis Türkiye Kupası | Showcasing the best of amateur football since 2023 | Turkey 📍🇹🇷 | #FortisTurkiyeKupasi ⚽️🏅	https://seeklogo.com/images/F/fortis-turkiye-kupasi-logo-DBA9CD55F6-seeklogo.com.png	Not started
+25	46	Turkcell Süper Kupa	8000000	🏆 Official Turkcell Super Kupa | Fueling amateur football excellence since 2023 | Turkey 📍🇹🇷 | #TurkcellSuperKupa ⚽️🔝	https://upload.wikimedia.org/wikipedia/tr/4/47/Türkiye_Süper_Kupası_2016.png	Not started
+10	31	İzmir U12 Cup	125000	🏆 Izmir U12 Cup Official 🚀 | Empowering young football talent 🌟 | Izmir, Turkey 📍 | #IzmirU12Cup ⚽️	https://play-lh.googleusercontent.com/N6N3m3iCj3Z4Wkbq-EDyzq2ad0dICdG4hFqTJJCw-nGpxNT53hRMJiHfKZ9RUa77Q1I=w600-h300-pc0xffffff-pd	Not started
+11	32	Turkcell Kadınlar Ligi	5200000	Turkcell Women's Football Super League 🏆 | Breaking the mold in women's amateur football since 2023 👭 | Turkey 🇹🇷 | #TurkcellKadinFutbolSuperLigi 💫	https://upload.wikimedia.org/wikipedia/tr/c/c4/Turkcell_Kadın_Futbol_Süper_Ligi.png	Not started
+12	33	Trendyol 1. Lig	9600000	⚽️ Official of Trendyol 1. Lig 🏆 | Unleashing amateur football passion since 2023 🥇 | Turkey 📍 🇹🇷 | #Trendyol1Lig 🔥	https://upload.wikimedia.org/wikipedia/commons/5/5c/Trendyol_1.Lig_Logo.png	Not started
+13	34	Misli.com 2. Lig	6400000	⚽️ Misli.com 2. Lig Official 🏆 | Elevating amateur football since 2023 | From Turkey with passion 📍🇹🇷 | #MisliCom2Lig 🚀	https://upload.wikimedia.org/wikipedia/tr/2/25/Spor_Toto_2._Lig_logo.png	Not started
+14	35	Master Futbol Ligi	50000	⚽ Mastering the game at Istanbul Masters Football League 🏆 | Showcasing seasoned talent since 2023 | Istanbul, Turkey 📍🇹🇷 | #IstanbulMasterFutbolLigi 💪	https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXxTK969jzgMW_hXFoCzK8VZNGIuefHp46lg&usqp=CAU	Not started
+15	36	Şirketler Futbol Ligi	750000	⚽️ Şirketler Futbol Ligi Official 🏆 | Corporate teams clashing on the pitch since 2023 | Turkey 📍🇹🇷 | #SirketlerFutbolLigi 💼⚽	https://www.sirketlerligi.com/pic_lib/bigSize/icerikler/6836/ahmet-naci-dizman_6836_300504.jpg	Not started
+16	37	Misli.com 3. Lig	4500000	⚽️ Misli.com 3. Lig Official 🏆 | Amplifying every kick in amateur football since 2023 | Turkey 📍🇹🇷 | #MisliCom3Lig 🎉⚽	https://upload.wikimedia.org/wikipedia/tr/4/47/TFF3_kopya.png	Not started
+17	38	Korumalı Futbol Ligi	75000	⚽️ Türkiye Korumalı Futbol Ligi Official 🏆 | Upholding football tradition since 2023 | Turkey 📍🇹🇷 | #TurkiyeKorumaliFutbolLigi ✊🔥	https://upload.wikimedia.org/wikipedia/tr/5/52/Tkfl1.lig_resmi_logo.png	Not started
+18	39	ÜniLig 2024	25000	⚽️ Official ÜniLig 🏆 | Sparking university football rivalries since 2013 | Turkey 📍🇹🇷 | #UniLig 📚⚽️	https://pbs.twimg.com/profile_images/725695352599404546/TwOzd0hS_400x400.jpg	Not started
+19	40	Bilyoner Rakipbul Ligi	2000000	⚽️ Official Bilyoner Rakipbul Ligi 🏆 | Spotting football competitors since 2023 | Turkey 📍🇹🇷 | #BilyonerRakipbulLigi ⚔️⚽	https://pbs.twimg.com/profile_images/1326270414474063876/CbeNwZx4_400x400.jpg	Not started
+20	41	İddaa Rakipbul Ligi	3200000	⚽️ Official İddaa Rakipbul Ligi 🏆 | Challenging the norm in amateur football since 2023 | Turkey 📍🇹🇷 | #IddaaRakipbulLigi 🎯⚽️	https://i1.sndcdn.com/avatars-000316151146-jcf1jp-t500x500.jpg	Not started
+21	42	TFF BAL Ligi	800000	⚽️ Official TFF Bölgesel Amatör Lig 🏆 | Celebrating regional amateur football talent since 2023 | Turkey 📍 🇹🇷 | #TFFBolgeselAmatorLigi 🌍⚽	https://www.tff.org/Resources/TFF/Auto/4ba182485742400bbb1a3d1738d107e2.jpg	Not started
+26	47	Ziraat Türkiye Kupası	10000000	🏆 Official Ziraat Türkiye Kupası | Cultivating amateur football dreams since 2023 | Turkey 📍🇹🇷 | #ZiraatTurkiyeKupasi ⚽️🎖️	https://upload.wikimedia.org/wikipedia/tr/6/61/Ziraat_Türkiye_Kupası_logosu.png	Not started
+27	48	TFF Kadın Futbolu	1250000	⚽️ Official TFF Kadın Futbolu 🏆 | Shaping the future of women's amateur football since 2023 | Turkey 📍🇹🇷 | #TFFKadinFutbolu 👩⚽️💫	https://iconape.com/wp-content/png_logo_vector/tff-kadinlar-futbol-ligi-logo.png	Not started
+28	54	Bitci Türkiye Kupası	7500000	🏆 Official Bitci Türkiye Kupası | Pushing the boundary in amateur football since 2023 | Turkey 📍🇹🇷 | #BitciTurkiyeKupasi ⚽️🥇	https://upload.wikimedia.org/wikipedia/tr/c/ca/2022_Türkiye_basketbol_kupası_logo.jpg	Not started
+29	55	11. Fetih Kupası	100000	🏆 Official 11. Fetih Kupası | Honoring football conquests since 2023 | Turkey 📍🇹🇷 | #11FetihKupasi ⚽️🎖️	https://extranet.worldarchery.sport/CompetitionLogos/25739.png	Not started
 \.
 
 
 --
--- TOC entry 3766 (class 0 OID 16392)
+-- TOC entry 3776 (class 0 OID 16392)
 -- Dependencies: 215
 -- Data for Name: Organizer; Type: TABLE DATA; Schema: public; Owner: Emrecan
 --
@@ -795,7 +924,7 @@ COPY public."Organizer" ("organizerId", username, password, email) FROM stdin;
 
 
 --
--- TOC entry 3769 (class 0 OID 16436)
+-- TOC entry 3779 (class 0 OID 16436)
 -- Dependencies: 218
 -- Data for Name: Participant; Type: TABLE DATA; Schema: public; Owner: Emrecan
 --
@@ -808,10 +937,10 @@ COPY public."Participant" ("participantId", username, password, email, "playerId
 23	abdlkrmbardakci	$2b$10$Ggjo2eARKvr4lukaQHONSeWI7PiCFnnqU422zUj9sEsyN2BqWMh4C	abdulkerim.bardakci@flos.com	28	\N
 24	abdullahavci	$2b$10$irIUPT95qRy7uTYBBwDBkuVINho38KsDP54tML56kRamRdUDwDtw.	abdullah.avci@flos.com	29	\N
 25	abdullahdurak	$2b$10$il9UfmITjcrG77ciefrGaOrflICH876fA2WrPiFYH/FHySrJgWHxG	abdullah.durak@flos.com	30	\N
-26	abdllhsahindere	$2b$10$ZqldCukR2e5IvV53SwUZtOuiHRIrks0/iX5sINGsA257WgNk.5GSG	abdullah.sahindere@flos.com	31	\N
+65	alidasdemir	$2b$10$snNlNzuFzQCqyIREFfMQuu/D/iUUq6PvzGAbAVHELylDJ0k1rx8Zm	ali.eren.dasdemir@flos.com	70	28
 27	abdullahyigitler	$2b$10$FEJKSER2YJgSrF3Ck4IIgOPERdI8MuWA5pyiVUDUswz00mD7gZQDS	abdullah.yigitler@flos.com	32	\N
 28	abdulsameddamlu	$2b$10$jv6nkaVxrTjjZlwksl5Kru3g1bd39BoKFVgl3m3wDEfXj8ddjeftG	abdulsamed.damlu@flos.com	33	\N
-29	abdurrahimdursun	$2b$10$B9vNcSiibRehkrVHR4X3TupbtCEgfH6vxm6/CUzzaTc9W/eXnznIi	abdurrahim.dursun@flos.com	34	\N
+46	ahmetilhanozek	$2b$10$4aq/MMKIw7L6jB7xqkM.iuPTEOj/IjQLu10ZBhq7zXVKk5UmfSWie	ahmet.ilhan.ozek@flos.com	51	61
 30	abdurrahmancanli	$2b$10$BPF3CnArnzWvYrxvIrvhH.a.pTZa8VN.izPFI7PxCcAy7L1xBKmqe	abdurrahman.canli@flos.com	35	\N
 31	abdussmdkarnucu	$2b$10$vzYHEuD0AVb8iGIFX.rububJBUdaNSTMQqZjulypSaQ7utw9cwB5q	abdussamed.karnucu@flos.com	36	\N
 32	ademagaoglu	$2b$10$Vzq2jj7SdTwgiYCnBI666.rO7MP7ojR7yzqcD6OYEPAZs2tdckbdG	adem.agaoglu@flos.com	37	\N
@@ -819,10 +948,10 @@ COPY public."Participant" ("participantId", username, password, email, "playerId
 11	veyselsaydam	$2b$10$q7FKzQzdO5dX/KjImiFkFeTQHF4IMk3XlBlZeKW/8Frqv9DNItdBm	veysel.saydam@flos.com	\N	\N
 12	ilhanparlak	$2b$10$xwbyml6NOZy.s5vI9ejn7.YKLoSiBxQzzYKG7mMHs.6/ea6i0o2R6	ilhan.parlak@flos.com	16	\N
 13	seyhmusaksu	$2b$10$4hXP/NYDJ2ccsbwPnPoJ/Oqe2r4JLe/4cKwF940dLpaLRHGmJpoay	seyhmus.aksu@flos.com	17	\N
-14	umitaydin	$2b$10$2recAZSt4edWxiu8HBDSP.vTJhdqHnfKDiy48WMkDJlHmeRcH8uPe	umit.aydin@flos.com	19	\N
+47	ahmetkarademir	$2b$10$.NWEW0.eGm1pgZS27oPoEuVnPdU6AdPGtM1IqIesAL418evdk1iBG	ahmet.karademir@flos.com	52	65
 15	abdlzdemircan	$2b$10$pR19F2iN2/sBRqyzF0CLBeM98HIBlVdW1.XakBdIlcd77N86EA1Eq	a.demircan@flos.com	20	\N
 16	cebrailakbulut	$2b$10$gJoGKh7UbkyqjX3/5P5gmeA0Ze17xmk/LoiDg3.AUMFO3GTaie04m	a.cebrail.akbulut@flos.com	21	\N
-17	abdulkadirdemir	$2b$10$dcB/UEXgqGN.rQ7fHqr9U.umRQSLTzd6ICsCFAlLGbkfXkiIpbyxu	abdulkadir.demir@flos.com	22	\N
+29	abdurrahimdursun	$2b$10$B9vNcSiibRehkrVHR4X3TupbtCEgfH6vxm6/CUzzaTc9W/eXnznIi	abdurrahim.dursun@flos.com	34	55
 18	abdulkadirkayali	$2b$10$kk2DsJXPPLXU58UxGPqexOKVkaaMqLofvI7FaBEhzbKjxqCTCr6MG	abdulkadir.kayali@flos.com	23	\N
 33	adembuyuk	$2b$10$P4a03J5C65vPuWhOSJwy3.Vjzejy.rChWJpWyzqg1AdgStRm0DMuS	adem.buyuk@flos.com	38	\N
 34	ademdogan	$2b$10$eEEg9whp.c9tXwvOn053huoPYYytrkE63cx1dUp.W8qJeaNuzMG5G	adem.dogan@flos.com	39	\N
@@ -837,8 +966,7 @@ COPY public."Participant" ("participantId", username, password, email, "playerId
 43	ahmetdemirli	$2b$10$HD6Anh6iHCrnNW.BngKEv.dUVHqkGsB4DcyUyWpZZO38Qet5qYEz.	ahmet.demirli@flos.com	48	\N
 44	ahmetgulay	$2b$10$M9F8USt7Jgs6Knl9Cg3p/eW9N7P/8vPOgOdtt1ZdnksPYfxAy3GPq	ahmet.gulay@flos.com	49	\N
 45	ahmetgurleyen	$2b$10$AhqQmRnkE9JObdg6MoRaX.LVZTZ1SFarOT3JbKMXAV9qIqJTsWX22	ahmet.gurleyen@flos.com	50	\N
-46	ahmetilhanozek	$2b$10$4aq/MMKIw7L6jB7xqkM.iuPTEOj/IjQLu10ZBhq7zXVKk5UmfSWie	ahmet.ilhan.ozek@flos.com	51	\N
-47	ahmetkarademir	$2b$10$.NWEW0.eGm1pgZS27oPoEuVnPdU6AdPGtM1IqIesAL418evdk1iBG	ahmet.karademir@flos.com	52	\N
+14	umitaydin	$2b$10$2recAZSt4edWxiu8HBDSP.vTJhdqHnfKDiy48WMkDJlHmeRcH8uPe	umit.aydin@flos.com	19	62
 48	ahmetkartal	$2b$10$zv7zrLs41XNtC6scCrKYtOo9FyXT38ZWdvrdhZ3crgba8VJq4OS5O	ahmet.kartal@flos.com	53	\N
 49	ahmetkivanc	$2b$10$ZG6ZKz0.L1w7Vrq33QBdmu4SRVREUh18q6ZFZJxLQQMICZbFsjAru	ahmet.kivanc@flos.com	54	\N
 50	ahmetoguz	$2b$10$foAdbWpAPin5Xinkpi/uWO4DE7mkvL2YchPnc1O1xyy7BocbEHbUW	ahmet.oguz@flos.com	55	\N
@@ -854,17 +982,18 @@ COPY public."Participant" ("participantId", username, password, email, "playerId
 60	aliates	$2b$10$5CDUmucjxbH.lyL7UFhVo.70EI.rfordAxkqePmzoKJ34VXNBH.CC	ali.ates@flos.com	65	\N
 61	alibilgin	$2b$10$8jdVgijv8LQKDLE1j2MwTOl/j5ZsbCtLQyYSIYjmViXtO09ThNkHW	ali.bilgin@flos.com	66	\N
 62	alicamdali	$2b$10$cnufrYkUE1q24r3Wyg5pCu0tgsP/7ZnRpDx2VlUoGgjnA.gNDIZgy	ali.camdali@flos.com	67	\N
-63	alidemirel	$2b$10$eLXK/WkDIe16SPj5hN4kjuSUKlJVPqHgWWjsxhzoJFzOYqaFFovmy	ali.demirel@flos.com	68	\N
+17	abdulkadirdemir	$2b$10$dcB/UEXgqGN.rQ7fHqr9U.umRQSLTzd6ICsCFAlLGbkfXkiIpbyxu	abdulkadir.demir@flos.com	22	51
 64	alidere	$2b$10$ru4fL6CVZQZpyHUo3vdI3ujrQ.jhk0dW4kaTW3qBp4PXDjjVt/XDO	ali.dere@flos.com	69	\N
-65	alidasdemir	$2b$10$snNlNzuFzQCqyIREFfMQuu/D/iUUq6PvzGAbAVHELylDJ0k1rx8Zm	ali.eren.dasdemir@flos.com	70	\N
+63	alidemirel	$2b$10$eLXK/WkDIe16SPj5hN4kjuSUKlJVPqHgWWjsxhzoJFzOYqaFFovmy	ali.demirel@flos.com	68	49
+26	abdllhsahindere	$2b$10$ZqldCukR2e5IvV53SwUZtOuiHRIrks0/iX5sINGsA257WgNk.5GSG	abdullah.sahindere@flos.com	31	17
 66	aliiyican	$2b$10$mQblg9cj1oR7K.Htj7fV/O.wp1ss/gqt/vly2bt9a5LNCgWttthvy	ali.eren.iyican@flos.com	71	\N
 67	alierenkaradag	$2b$10$TnbSClWGhmPXdV2ewwK8nu.pFerpl95aK9pZdEb7dAWlG4w0orDG2	ali.eren.karadag@flos.com	72	\N
 68	alierenyalcin	$2b$10$S0FXYW5IRXLrIiXGiTu8vuFxmfWISy511ZNRgSS64pMEfvUnr1/fi	ali.eren.yalcin@flos.com	73	\N
 69	aligocmen	$2b$10$5UJ.MLTW0Lk/82xr2Bq6ne4ply7Rh5QLwBbHR7YjIOsDICfuE3OXG	ali.gocmen@flos.com	74	\N
-70	alikaanguneren	$2b$10$TZ2H9MLCk4lJW13fPKSAwe3hrhHIg7WcS8ekZh0WmzdZOGaFsMFsa	ali.kaan.guneren@flos.com	75	\N
+106	batuhanyayikci	$2b$10$QkGxu3mx7.gujG0l1xiQD.Cscr9C.O.Esqpsr40IM67wBv4xSbIuq	batuhan.yayikci@flos.com	111	31
 71	alikarakaya	$2b$10$nW5r/DDd9cGoUsXuaCPYqu.wmGEOb3/WaVvtfplQyZNOQP8dzis0O	ali.karakaya@flos.com	76	\N
 72	alisahinyilmaz	$2b$10$P.BIsKjWt4RHY0.p6FyoS.UdecQ0fbawt1b7acY1yVw93xoMMdi1O	ali.sahin.yilmaz@flos.com	77	\N
-73	alisasalvural	$2b$10$FCpc/2l0WSuIVu6VJ56k0e2iE8.yGVA.uoqP2ZaOPNP0JRZyaFTRi	ali.sasal.vural@flos.com	78	\N
+81	alihankubalas	$2b$10$C4bW8tyzIKEQmLgE6b8Xy.CjQpAZh1CCmn4BNeF.usKG05ggVJr3a	alihan.kubalas@flos.com	86	53
 74	aliturapbulbul	$2b$10$CB4i/hS.TeSOBiD0AhYrMOiWlheEdUSTqbWHz8fjAKFOGV0bsnCiS	ali.turap.bulbul@flos.com	79	\N
 75	aliulusoy	$2b$10$pMhFXaOZ5vJdSIuRmyaIjuhIlqX4YgpscpxOoIA32ChVNZptegsC6	ali.ulusoy@flos.com	80	\N
 76	aliyasar	$2b$10$BLmTbjCu0Kyc8TBw9dadvuyD8UWx.Cbpx//YxqJEcsD3/gOlYDw9i	ali.yasar@flos.com	81	\N
@@ -872,7 +1001,6 @@ COPY public."Participant" ("participantId", username, password, email, "playerId
 78	aliyesilyurt	$2b$10$FnQlgpPPQp5ByGDLfbfN.uJcDd5/ZB/rw816PV1q6xI6MdqhkRxBu	ali.yesilyurt@flos.com	83	\N
 79	alicanozfesli	$2b$10$6HMXYllnGA1e/MrM67iPb.CMDfJC/S.fzXA5yLY1Ch1A8UWcWnzqy	alican.ozfesli@flos.com	84	\N
 80	alihankalkan	$2b$10$jOrylKw10J/BCwyTqlCTgudmk9jy/qpwJX3yJCi6/hztdHIbc5BJy	alihan.kalkan@flos.com	85	\N
-81	alihankubalas	$2b$10$C4bW8tyzIKEQmLgE6b8Xy.CjQpAZh1CCmn4BNeF.usKG05ggVJr3a	alihan.kubalas@flos.com	86	\N
 82	almoskalafat	$2b$10$Zm0fwcGXa3Xa8CUd99jyi..xEEfg5wHy1y7d4UkWXG2YdhkOlgEy2	almos.kalafat@flos.com	87	\N
 83	alparda	$2b$10$1.RE7Jihvrm3tFBnlLQxu.nRtKRdDN.NI7LIXXVJKxCXsalspqgOm	alp.arda@flos.com	88	\N
 84	alparslanerdem	$2b$10$/QlcC/wHLwQwVB3F.Ex7dOgCHat.x8xDVQy4fIH9JqIMeHDpkbj8m	alparslan.erdem@flos.com	89	\N
@@ -884,7 +1012,7 @@ COPY public."Participant" ("participantId", username, password, email, "playerId
 90	alpertursun	$2b$10$Ysz7mB7AWIklPagVtzJD6Oy4NnQnhLlYHzErPW5y7CGHzAx3hiGJW	alper.tursun@flos.com	95	\N
 91	alperuludag	$2b$10$E7P1hSMPGVBL1Hitt.O/ZOfrvSslmHwjE/QHRXiieZMNlFsa3Zo92	alper.uludag@flos.com	96	\N
 92	alperaydin	$2b$10$18cfTwVpjRvmmEjSFZkfPObKn5Fllfyk9FlIgNFpgC04.hxmvS5sK	alper.aydin@flos.com	97	\N
-93	alperenbabacan	$2b$10$p18qCEIeWllm/2zpwLN2COyLrAv79LIM5VFPhwLnyw5MCCkrUo9xm	alperen.babacan@flos.com	98	\N
+121	cengizonder	$2b$10$MkuKUUH621hLWcl0vY/9ceiGuniTJEx/6oLp8EkLACFVlOt2pPmry	cengiz.under@flos.com	126	37
 94	alperenbektas	$2b$10$N.Xm5daSBd4Glwfz9wFNguRaMzOQoQLdDg3.Gb5Psv8t9ef2Wn7cO	alperen.bektas@flos.com	99	\N
 95	alperenkuyubasi	$2b$10$XvsCYYy1i7WTcD/bA8kw/OSIZpCqLLRFqTqmXkIksJR43mEvIPdkS	alperen.kuyubasi@flos.com	100	\N
 96	alpereneskicirak	$2b$10$WosOAsiu7yKSWWqHpQP4yOZxzVBDwV.NhBg7I8iOWIAJyKIZ7y2c6	alperen.eskicirak@flos.com	101	\N
@@ -897,7 +1025,7 @@ COPY public."Participant" ("participantId", username, password, email, "playerId
 103	bartugelmas	$2b$10$UJTwq5hC6WLYvAXxLz.IduK/JdDIxSqhmaWBaq43Pl6T6XrV3yERW	bartug.elmas@flos.com	108	\N
 104	batuhansen	$2b$10$C8Nt/Prl1my1Ai2VqONGSeSdf2Vov5jsUTnhjVX8fJQgrOtabvleu	batuhan.sen@flos.com	109	\N
 105	batuhanucan	$2b$10$f6w/iRb6lhUXIZaHQEK7EOh/l980ZqkosVuXvrDYNQmB7aCL5ke2W	batuhan.ucan@flos.com	110	\N
-106	batuhanyayikci	$2b$10$QkGxu3mx7.gujG0l1xiQD.Cscr9C.O.Esqpsr40IM67wBv4xSbIuq	batuhan.yayikci@flos.com	111	\N
+93	alperenbabacan	$2b$10$p18qCEIeWllm/2zpwLN2COyLrAv79LIM5VFPhwLnyw5MCCkrUo9xm	alperen.babacan@flos.com	98	34
 107	beratozdemir	$2b$10$5KRy4lKoC01ScMBRdag21euUCfXVt5ISRn6cP.ncq6QSuq6hCn.qe	berat.ozdemir@flos.com	112	\N
 108	berkankutlu	$2b$10$Ls0484uJkJfwr/gnpey/N.obUB/YL/HZT/gJ6ZjG/u8EtBque3pEq	berkan.kutlu@flos.com	113	\N
 109	bertugyildirim	$2b$10$5V9ZybcGuF3lZCtu9RPXYOPpaoFeRLYTxuaH0XHUEaPLG6xTncY2K	bertug.yildirim@flos.com	114	\N
@@ -907,13 +1035,14 @@ COPY public."Participant" ("participantId", username, password, email, "playerId
 113	caglarsoyuncu	$2b$10$k.u8yB42/lNxV2QApTgFGeaLKo2qW8R.y4Mq3ehk8OltsaArI8gla	caglar.soyuncu@flos.com	118	\N
 114	cagriguney	$2b$10$Z30FD1lw/wtcBN1BOnWWKuNkq8c5QC4Qow3Lm4lDKfojcWQaJ4BqS	cagri.guney@flos.com	119	\N
 115	ckurukapip	$2b$10$sarRuThQN.cidomXyiSqq.4PaCYkwOG/EuUkBlZhMkgD2Y1WkGb9a	cagatay.kurukalip@flos.com	120	\N
-116	canceylan	$2b$10$kzgwiLb3hqbakcM9CZWDneBCy5kuytUyUfTPxmYb998ciXJDBKCBi	can.ceylan@flos.com	121	\N
+73	alisasalvural	$2b$10$FCpc/2l0WSuIVu6VJ56k0e2iE8.yGVA.uoqP2ZaOPNP0JRZyaFTRi	ali.sasal.vural@flos.com	78	48
 117	canerbag	$2b$10$PQPPqsXish9478O76bNYA.of.EZY/4maIuariN5UDLg5uLTJwdMaG	caner.bag@flos.com	122	\N
 118	canererkin	$2b$10$yVXzLGdNeAnsoz5fFMK3S.HnbzOIDPBfP8fG5PI0M3nr49VJueYCe	caner.erkin@flos.com	123	\N
 119	canerosmanpasa	$2b$10$OHJqFUz2UpQFGveOGK/ND.HlRqFGuFRkYgFVUrzS2sdEe2fAq1dEi	caner.osmanpasa@flos.com	124	\N
-120	cemkablan	$2b$10$V5/J/1p5qg2hKjdClRrC9Oxe1VNj.rBggmfyb6UQTpM7H7b/bYMD2	cem.kablan@flos.com	125	\N
-121	cengizonder	$2b$10$MkuKUUH621hLWcl0vY/9ceiGuniTJEx/6oLp8EkLACFVlOt2pPmry	cengiz.under@flos.com	126	\N
+70	alikaanguneren	$2b$10$TZ2H9MLCk4lJW13fPKSAwe3hrhHIg7WcS8ekZh0WmzdZOGaFsMFsa	ali.kaan.guneren@flos.com	75	26
+116	canceylan	$2b$10$kzgwiLb3hqbakcM9CZWDneBCy5kuytUyUfTPxmYb998ciXJDBKCBi	can.ceylan@flos.com	121	39
 122	cenkalkilic	$2b$10$krQkmcWzGvRFk5Ozj9NGtuBLxnBMVe1ZGP8/lPP8OY2xRIyiK3RHu	cenk.alkilic@flos.com	127	\N
+120	cemkablan	$2b$10$V5/J/1p5qg2hKjdClRrC9Oxe1VNj.rBggmfyb6UQTpM7H7b/bYMD2	cem.kablan@flos.com	125	24
 123	cenkgonen	$2b$10$bJTSigUK407UfhCw9wrqTO2GuAaHQjKbnrk4wCbz5CZasZcu8UzIC	cenk.gonen@flos.com	128	\N
 124	cenkozkacar	$2b$10$pYakVu8I1HodTbXJYW5e8uwBBY4VNAPyQFHWPFBtjb3SmIpcGHwRK	cenk.ozkacar@flos.com	129	\N
 125	cenksahin	$2b$10$SkhByDvYoZOiJ07HQBJXCu5oTsp7u.BM3pPC7CwewNziJcHaMPYEe	cenk.sahin@flos.com	130	\N
@@ -921,21 +1050,20 @@ COPY public."Participant" ("participantId", username, password, email, "playerId
 127	cenktosun	$2b$10$Udz1vYGCmOvldxr9/Q7UxO11gdN/q.yVQS7LWJ2j5hxDLYpz0NFcC	cenk.tosun@flos.com	132	\N
 128	ceremdincer	$2b$10$3463XfrnRcGDS2Tv2wEHjOwk0sCdjOHIoIvEXy/VPGNplTpanlNpO	cerem.dincer@flos.com	133	\N
 129	cevatcanekinci	$2b$10$bnIPKg3gSqqZWnsNH1at5.1fLrGqFVhK2anmuaMSmrfLgEMbUBRcm	cevatcan.ekinci@flos.com	134	\N
-130	ceyhungulselam	$2b$10$I2ZbvgcQlNg6aajyWRI.u.PUk.bzEwuiXcHeG.334TLeXmuFsd8Gi	ceyhun.gulselam@flos.com	135	\N
-131	cihankaraman	$2b$10$O/tHwCHD8ruB4H2lsdZvtOewEBzYsnrg4mtj8hGuQZNe8/D2lR1GC	cihan.karaman@flos.com	136	\N
+180	erdidikmen	$2b$10$ciNOenlu6XqAkV9bL/Ic5OhoKZg7EFgvZsoOe.NjJnMJn61H47bJO	erdi.dikmen@flos.com	184	52
+137	denizhummet	$2b$10$IXaqTIi6vfuijMkdJ6PfnOLnTtJLF1jY69IsGh.u8G4GJty8ze9La	deniz.hummet@flos.com	142	43
 132	cihantopaloglu	$2b$10$fVGjs4mQDx7nJmuFppLdZunUXdZenXhBL65JUiSkR2coURRtdJpAi	cihan.topaloglu@flos.com	137	\N
 133	cihartarhan	$2b$10$cVKRZ7uxvO/v4Ya/uUwPTejSWKYExH2W4.kgJgjN6lGzQ4YJvmvKi	cihar.tarhan@flos.com	138	\N
 134	colinkazim	$2b$10$CMvIbNjdRHni1tvAnOmwzO3HmUiKkq5yQYRASDVPO6kkpo1kM71Zy	colin.kazim@flos.com	139	\N
 135	demirtiknaz	$2b$10$ubTFZTsW7hor7HiimdYZUu/0.7RalOjZ0ILSg2OmKncxm9uKYBK3q	demir.ege.tiknaz@flos.com	140	\N
 136	denizdogan	$2b$10$UpH6Z1L5sf/.KNX.n3uWRO4UCTzyfjbEuI2nFvVuvp2Be8yyw5VsG	deniz.dogan@flos.com	141	\N
-137	denizhummet	$2b$10$IXaqTIi6vfuijMkdJ6PfnOLnTtJLF1jY69IsGh.u8G4GJty8ze9La	deniz.hummet@flos.com	142	\N
+171	emremor	$2b$10$BLRUjTQRv3S1q7k8J.vRveOJpYU8xF6gWGU0P.F4HtsOd0yo89KF.	emre.mor@flos.com	175	54
 138	denizkadah	$2b$10$13O17YFx8dg2BMp.H9o6EOZRisS0IdId/u3Y3yyldPVR.VoTWfn6m	deniz.kadah@flos.com	143	\N
 139	denizturuc	$2b$10$j9rHGnj871E4wVlB5GOjOu5yg0OBx9PQsONvukrDAoQnwnWXyM2dW	deniz.turuc@flos.com	144	\N
 140	denizvural	$2b$10$BWecFpu42cyadKqqWn1BMuwBeBOtaY28f9cCSgQlcrr6KL6m.8rLy	deniz.vural@flos.com	145	\N
 142	dilaverguclu	$2b$10$Wdy/ThioNgXh1KOZIizEk.nQbOIK1nB9PDqL371lpbkW54r7cXVG2	dilaver.guclu@flos.com	146	\N
 143	doganalemdar	$2b$10$jWkOyZ8sscwpthjE8u0u8Orb5Dzs4H1ZHy7ktK2Ne6/bl2l9YlbEa	dogan.alemdar@flos.com	147	\N
-144	dogancandavas	$2b$10$9pZXcWNGBiFq4VhTT5W47.uRPZigMetkk9HjeV9WLJ0mWDN/8of9a	dogan.can.davas@flos.com	148	\N
-145	doganayaygun	$2b$10$XnOlZXK/RmJwrun4TPjC7.ASDLGCUkDYwnYjti1BaumDg/zXa7Y0O	doganay.aygun@flos.com	149	\N
+169	emrecolak	$2b$10$UNX1uBGoeFRHrug2Ws3fmOg.QGMq0luQfEyDHpSsZEGPWu6klM9i.	emre.colak@flos.com	173	25
 146	dogucanhaspolat	$2b$10$SgtZuLoo7/qen4GyP6vIT.sdXM7ZT8hKiBTQ5vPFwZyrhONnwZvmG	dogucan.haspolat@flos.com	150	\N
 147	dogukannelik	$2b$10$KpAwSPXS64r7133ErvOY7uPzbu0QYPUY2sRy4hcMUBSD8JNV4F5U2	dogukan.nelik@flos.com	151	\N
 148	dogukanockan	$2b$10$1RJo9XfJvvBsbssP8rjqKOznnyJn./pHVaUt3/y2ZEVUmctBgG2Ga	dogukan.ozkan@flos.com	152	\N
@@ -949,8 +1077,7 @@ COPY public."Participant" ("participantId", username, password, email, "playerId
 156	egehangok	$2b$10$xJ0F/DxgFtTzSVD/xUmIBuJaBXcjnJHtMP41VHMDyZ8djKWCVn1Xq	egehan.gok@flos.com	160	\N
 157	egemenkorkmaz	$2b$10$Xnc1c5q4g0V7zEUvfG0hS.l5T7L3djU6TxxJY4dslx7CXV98brgja	egemen.korkmaz@flos.com	161	\N
 158	ekremkilicarslan	$2b$10$B1kBI2Oe.In.FEq5BHHn/OQ0OGOtbIT2GKJvtH0ZlojGjXN9j4H9W	ekrem.kilicarslan@flos.com	162	\N
-164	emirhancakir	$2b$10$RabpaV0hkdOijfWHzYxWJ.j9lpruPcoNdaEzhZZv.3SMKOwTkovrK	emirhan.cakir@flos.com	168	\N
-159	embiyayyildiz	$2b$10$y9NV/cV60j7QMCDCHvAIxenHPhxLdJIGjC0eF8GlchqSDzmJa8Z0i	embiya.ayyildiz@flos.com	163	\N
+179	erdalkilicaslan	$2b$10$pI4rMUkJG4I4ogNZeZ/3U.YF6txJbLQJgHVyTEUL6iuDkxSbzU0ny	erdal.kilicaslan@flos.com	183	33
 160	eminbayram	$2b$10$1G87BYlLvA0OlWQM.oG.h.ripsTB9VCkFVKdz.7QlonCaXKZD9fyG	emin.bayram@flos.com	164	\N
 161	emirgultekin	$2b$10$SwnQHLRVBps2heROHlf0ruYR3aEi4z9OWPTmIqo91vIFDf7g0RmgO	emir.gultekin@flos.com	165	\N
 162	emircanaltintas	$2b$10$8H4vS9yoRD9uMxUMHeK37uzrAikG6ic.tPkXln9EyFzBK5FoEqM1C	emircan.altintas@flos.com	166	\N
@@ -959,9 +1086,9 @@ COPY public."Participant" ("participantId", username, password, email, "playerId
 166	emirhanilkhan	$2b$10$dpL4CTHgLxsTSkiQTcEro.bjrZnr6qKfCXKxeWrjF5rpCK9l5SssO	emirhan.ilkhan@flos.com	170	\N
 167	emirhantopcu	$2b$10$cYF8CZgNcIyRdP2cE482HOgKp8.z9oFpSrHrL03KRLGJt3ak08xeO	emirhan.topcu@flos.com	171	\N
 168	emreakbaba	$2b$10$cGvGd5tmzlvOxOqN.w7yJ.7kfi3SufdwkCcSKvpX3G3pvE6KKIbhq	emre.akbaba@flos.com	172	\N
-169	emrecolak	$2b$10$UNX1uBGoeFRHrug2Ws3fmOg.QGMq0luQfEyDHpSsZEGPWu6klM9i.	emre.colak@flos.com	173	\N
+164	emirhancakir	$2b$10$RabpaV0hkdOijfWHzYxWJ.j9lpruPcoNdaEzhZZv.3SMKOwTkovrK	emirhan.cakir@flos.com	168	30
 170	emrekilinc	$2b$10$IITCArAYLQ41muDNNyNvz.jUG/dhOcVbkSl7C3nKEUMF7DY5IIoV6	emre.kilinc@flos.com	174	\N
-171	emremor	$2b$10$BLRUjTQRv3S1q7k8J.vRveOJpYU8xF6gWGU0P.F4HtsOd0yo89KF.	emre.mor@flos.com	175	\N
+144	dogancandavas	$2b$10$9pZXcWNGBiFq4VhTT5W47.uRPZigMetkk9HjeV9WLJ0mWDN/8of9a	dogan.can.davas@flos.com	148	57
 172	emretasdemir	$2b$10$nhYNG.Mc2XIu4QFD4Gwax.b1yj3aK6DRninBaHxD/SxcJtJpfKNpC	emre.tasdemir@flos.com	176	\N
 173	emrecanuzunhan	$2b$10$jmWo4lw6M4wKsVnhFUB7k.UQMuY8Ajso8t.iKDCwEVyBWbS1Lp9FS	emrecan.uzunhan@flos.com	177	\N
 174	enderaygoren	$2b$10$mJiUH9dTSkyAUnR46d2QquCaW7NNayrLrU82wzblHnE5q57oXVCmy	ender.aygoren@flos.com	178	\N
@@ -969,8 +1096,9 @@ COPY public."Participant" ("participantId", username, password, email, "playerId
 176	eraybirnican	$2b$10$.eFE.fFtZVzFEEjZZQVwC.O2v8yKRvxV94UHPWV/wsce8qTqtxXRu	eray.birnican@flos.com	180	\N
 177	enisdestan	$2b$10$7cs2wp.D8HrXpxL02DkVW.knqdrs/CalfB6YBhFRHhWDzNObBSexS	enis.destan@flos.com	181	\N
 178	ercekardesler	$2b$10$3cV7nA4nQwDICoFOdG5NX.aJswkaxHLdN7dTm4kWgKwmXpi8HFx3e	erce.kardesler@flos.com	182	\N
-179	erdalkilicaslan	$2b$10$pI4rMUkJG4I4ogNZeZ/3U.YF6txJbLQJgHVyTEUL6iuDkxSbzU0ny	erdal.kilicaslan@flos.com	183	\N
-180	erdidikmen	$2b$10$ciNOenlu6XqAkV9bL/Ic5OhoKZg7EFgvZsoOe.NjJnMJn61H47bJO	erdi.dikmen@flos.com	184	\N
+131	cihankaraman	$2b$10$O/tHwCHD8ruB4H2lsdZvtOewEBzYsnrg4mtj8hGuQZNe8/D2lR1GC	cihan.karaman@flos.com	136	35
+159	embiyayyildiz	$2b$10$y9NV/cV60j7QMCDCHvAIxenHPhxLdJIGjC0eF8GlchqSDzmJa8Z0i	embiya.ayyildiz@flos.com	163	19
+145	doganayaygun	$2b$10$XnOlZXK/RmJwrun4TPjC7.ASDLGCUkDYwnYjti1BaumDg/zXa7Y0O	doganay.aygun@flos.com	149	20
 181	erenalbayrak	$2b$10$BoEFXGXAiAdVV4/fCFumBOWOyPeU1dCi7E2hiofj.WQ/YWiANsneu	eren.albayrak@flos.com	185	\N
 182	erenbilen	$2b$10$hX0OnDBf96zJhnRhcUt3dOjR1oewU8mfhGzSTU1CjBUjhyiDn5rma	eren.bilen@flos.com	186	\N
 183	erenelmali	$2b$10$uXYPn5bd0aFnjqL3HwL0hOdkZ1dfFlynW8vjOVlnOQvtChSKtDn/C	eren.elmali@flos.com	187	\N
@@ -983,38 +1111,36 @@ COPY public."Participant" ("participantId", username, password, email, "playerId
 189	ersindestanoglu	$2b$10$qX3vKVSShLyNPFrhHHDnz.u9mofLedG1lUWEbppMpBCdgNMwrAXvq	ersin.destanoglu@flos.com	193	\N
 190	ertacozbir	$2b$10$cd/mQCb6YFDytGHPRjfhxeHdcVwJ.Uxx4s7CwX/yxzAgTsGb86QjC	ertac.ozbir@flos.com	194	\N
 191	ertenersu	$2b$10$rN0P7RkMZelrulI/3uUtxeNJ6P9xOpayyDIsTY922t6ZpiCpBeWZW	ertan.ersu@flos.com	195	\N
-192	ertugrulersoy	$2b$10$0HFldBIzyQ8/LgsPFyZNRuflDn1MktQSxuwAxIXBIQ3FKStBM1Xt6	ertugrul.ersoy@flos.com	196	\N
 193	fatihaksoy	$2b$10$3Z6mFBagJpII9MC.A0EHBeAv0OkK2OQKinNXuf2BeNcAWl4Q1K6AW	fatih.aksoy@flos.com	197	\N
 194	fatihsanliturk	$2b$10$BkkFiG2pBRyISPGd1JmcR.XYiRV71cYWY/V00Q2GOCUB29kZ6R2m6	fatih.sanliturk@flos.com	198	\N
 195	fatihyilmaz	$2b$10$Mhli./FiApVabt6Xn3r.GO5jm/MuOtuM3RRb/O0Qp.578rHUIWbJO	fatih.yilmaz@flos.com	199	\N
 196	ferhatyazgan	$2b$10$/Jnz.slJBaxzWHgS.GdVp.Omq97OffDj8m4UMTlcjqoWqhqyDSV0O	ferhat.yazgan@flos.com	200	\N
-197	furkanakyuz	$2b$10$zYBQGpMjdQeF3.Y2iD7Kd.N6Oj6pcE8Na91GNFHEubGZgjgKdLGMu	furkan.akyuz@flos.com	201	\N
+202	gokhanakkan	$2b$10$VzCa6vTGgJkW1nTR7zfVSuWtDjEIFdG1GODGPFYxj99EhXEs6mai6	gokhan.akkan@flos.com	206	23
 198	furkanbayir	$2b$10$nWITEgUpQNffCd7EJkjf7uyzDc6yn2gEEHNs/f3UoeNyxYCL4Ao4S	furkan.bayir@flos.com	202	\N
 199	furkanbeklevic	$2b$10$SwnwA4EW9CzsqAU8brFv2ev6xzOH.CYjj9GQ7ak3n1iLGOq6xY.wW	furkan.beklevic@flos.com	203	\N
 200	furkansoyalp	$2b$10$DqJP///fs1EgNULyMtcs9.AEvyTJQbUHc7dsaHo0stqHRuNPhMLiK	furkan.soyalp@flos.com	204	\N
 201	gkdnzbayraktar	$2b$10$AFjQsa3GjXRdcSqwXQ9QSu.WsIoM6Is6OAoPWDqp6n.WmY8.jrrgm	gokdeniz.bayraktar@flos.com	205	\N
-202	gokhanakkan	$2b$10$VzCa6vTGgJkW1nTR7zfVSuWtDjEIFdG1GODGPFYxj99EhXEs6mai6	gokhan.akkan@flos.com	206	\N
+224	ibrahimyilmaz	$2b$10$JX70AvXe/G9ccc9WXKZzjeGfIJacg8piOeZNawx7T/eddSjblwRB2	ibrahim.yilmaz@flos.com	228	41
 203	gokhanaslan	$2b$10$NvbkJu/Wx5NNf9FBUizYmOmy.9iyq1VouNqLwLMXGbdao11OOHLC6	gokhan.aslan@flos.com	207	\N
 204	gokhangonul	$2b$10$mG/ofaUGNNWLsoJ.dFgepOGmVPxXHY6.XnzrUhDt1QjaiEVsBrYiW	gokhan.gonul@flos.com	208	\N
 205	gokhankaradeniz	$2b$10$P4rcbgrmIvrwrZspfWgRaeSS3HIwZqjJOKKdSvBX4r.VSyAeLppkS	gokhan.karadeniz@flos.com	209	\N
 206	goktangurpuz	$2b$10$6pCPbNkTo3p2w2D8hNpGMOeNmz5BwtMsYpBNsYcngNpnsnss04dO2	goktan.gurpuz@flos.com	210	\N
-207	gunayguvenc	$2b$10$5AbaoX5mAwdlNr2p9i6CKOB7XY8mDd9WwLbhGjgSc7v3/OMa6Z40K	gunay.guvenc@flos.com	211	\N
+192	ertugrulersoy	$2b$10$0HFldBIzyQ8/LgsPFyZNRuflDn1MktQSxuwAxIXBIQ3FKStBM1Xt6	ertugrul.ersoy@flos.com	196	64
 209	gurkanbaskan	$2b$10$ITFIoRU1VSFKDT9koOdVGOFXHPFCy.p7VgzlCueNwWY6X9vMNtjDO	gurkan.baskan@flos.com	213	\N
 210	guvenyalcin	$2b$10$K9snyBesiUwxCyxiCfWTruykogXkCyfdtKA/86EUbsrpayREuq.kO	guven.yalcin@flos.com	214	\N
 211	hakanarslan	$2b$10$Qph5JLrsqHtvQvHSn3GAwOoWcRkIssbF8GkFtoYP8eAHwBePiAfAu	hakan.arslan@flos.com	215	\N
 212	hakanaydin	$2b$10$PGeacQppGRT3ErtamFIY6.nlXgLcreCxCXsDZROLopxY9d9nU2HQ.	hakan.aydin@flos.com	216	\N
-213	hakancalhanoglu	$2b$10$7TpN0kNvXhW21pOJX4AAy.IHhrfWJsr3BVoQ9KRKriX.M.aAkGGey	hakan.calhanoglu@flos.com	217	\N
+207	gunayguvenc	$2b$10$5AbaoX5mAwdlNr2p9i6CKOB7XY8mDd9WwLbhGjgSc7v3/OMa6Z40K	gunay.guvenc@flos.com	211	60
 214	halilakbunar	$2b$10$TpmBlsVbUNR8DX/7CdxAxeNxMBMN6zDbplP8jCSZbHuHRPfoC59SW	halil.akbunar@flos.com	218	\N
 215	halildervisoglu	$2b$10$1GOwh7dE24FZ1X/fxCbsfep464aHNGn4jibqOQHURrn3IC06MOlPO	halil.dervisoglu@flos.com	219	\N
 216	hasankaldirim	$2b$10$Q32xd3AUNc3gLpPybR7ydOSItYJJwJ4bistpTKvGjMq693AvZhhOa	hasan.ali.kaldirim@flos.com	220	\N
 217	hasanacar	$2b$10$xyXoRKUq1jeqE7koM3Xqm.JbAseapLGplF2nmHl5RL84wkmIxeSgu	hasan.acar@flos.com	221	\N
-218	hasanozkan	$2b$10$GUewNNqj06UYVxqFV..dmu2m4MhPIybBeflgfnxUz24dX7e6Qnohy	hasan.ozkan@flos.com	222	\N
 219	hasanyurtseven	$2b$10$VXepVJuS9nG6Np1b.Xr.1u0jywwoI6X6tmVPJq/w.td3h.J14aLIW	hasan.yurtseven@flos.com	223	\N
 220	hayrullahbilazer	$2b$10$TwR7hVdmbFIogXvWLvnOquEYl0yoiPwVjMVqVNclGf.tpjDi8DhlS	hayrullah.bilazer@flos.com	224	\N
 221	huseyinturkmen	$2b$10$KQGLJ7Q..4ciZOvy1DUUYu9r2vvznf59d3Imhch2BoO0jFSy7Regy	huseyin.turkmen@flos.com	225	\N
 222	ibrahimakdag	$2b$10$k29ZvEd1Nk1SkWxCEbaR8eqCKNfALWlgRFg0EP60uq3YlBkMJB2Eq	ibrahim.akdag@flos.com	226	\N
 223	ibrahimpehlivan	$2b$10$bqVvtRHkk3PsRD.9qHVRWeLL39AamcqktImKmjuCOmz47WDO9jrha	ibrahim.pehlivan@flos.com	227	\N
-224	ibrahimyilmaz	$2b$10$JX70AvXe/G9ccc9WXKZzjeGfIJacg8piOeZNawx7T/eddSjblwRB2	ibrahim.yilmaz@flos.com	228	\N
+218	hasanozkan	$2b$10$GUewNNqj06UYVxqFV..dmu2m4MhPIybBeflgfnxUz24dX7e6Qnohy	hasan.ozkan@flos.com	222	45
 225	ilkaydurmus	$2b$10$B2xkJoPL1t.WkoLIX3TmbOgEcZIZyNxzuUe93BrQzyEKq9pTFi0hO	ilkay.durmus@flos.com	229	\N
 226	irfanbasaran	$2b$10$QMjtVBx6odomQ4zWtvYQmeVcBJlC4RYN4TEORxxFktuvphGWgtp9S	irfan.basaran@flos.com	230	\N
 227	ismailyuksek	$2b$10$Y69FOlvIVhZglG0Fjgxe4uT8mAStmyuqBp/FueQyBPrGlvraM279G	ismail.yuksek@flos.com	231	\N
@@ -1028,7 +1154,7 @@ COPY public."Participant" ("participantId", username, password, email, "playerId
 235	kadirseven	$2b$10$GD4DGs4EaHkPjAPg4o2R0.FOT5sMv04kmbgajZNfvuv.Vyf0q1S8e	kadir.seven@flos.com	239	\N
 236	kaganmoradoglu	$2b$10$sO2G0zZG5x79I9qdaOjJeOTVz4he/6dwnqF1zfLCx4W5Lo8lTwEAC	kagan.moradoglu@flos.com	240	\N
 237	kahramandemirtas	$2b$10$XchGdLqhFGA0FARH1yTC3uvR5Fs7njZ9t33O0F2dpG2V6CTOwjNdy	kahraman.demirtas@flos.com	241	\N
-238	kamilcorekci	$2b$10$6asxVvj7lm4jszEylQ5hee6l5qlGoCLqaz3adefuZ43FcItwOk9ju	kamil.ahmet.corekci@flos.com	242	\N
+197	furkanakyuz	$2b$10$zYBQGpMjdQeF3.Y2iD7Kd.N6Oj6pcE8Na91GNFHEubGZgjgKdLGMu	furkan.akyuz@flos.com	201	16
 239	kazimcankaratas	$2b$10$vpDwYlehUf6BjR3kAzUK6OOeBHyjCFkjkRkI3qmL5RdouoGVR8ZQG	kazimcan.karatas@flos.com	243	\N
 240	kemalaslan	$2b$10$pMDfM0gfg8Nvj0YiyGi4MeCcgKguuJYTB9Djh/h9VDT5DQ7lUSBSS	kemal.aslan@flos.com	244	\N
 241	kenankaraman	$2b$10$3mI..2TS/7JNbL3XFpa5/eS8xkmwpZNjZu4zxaTfNA1hOsagBDE.W	kenak.karaman@flos.com	245	\N
@@ -1038,24 +1164,23 @@ COPY public."Participant" ("participantId", username, password, email, "playerId
 245	kerembaykus	$2b$10$XEMhBlG1EGxy4hdJwfU2YOiZYskIYPtxYB9AWsDCe/wnoX/TeftWK	kerem.baykus@flos.com	249	\N
 246	keremkalafat	$2b$10$3Uo00G3GEPTnGZTBbp6QsOoTgPFlj6/OOHfkN2rXqfemxckH8/9Dy	kerem.kalafat@flos.com	250	\N
 265	ogulcanulgun	$2b$10$fvCtECAfuV1.IPiFl9bCn.fyuZQAMk.5b30Wb7qixHl09Ucm.fmYm	ogulcan.ulgun@flos.com	269	\N
-248	kerimfrei	$2b$10$dUAd05nVhEJu/ihwFJsaQuRiaU/DWwBfZoWP9FzLvGpiIsBnfiekK	kerim.frei@flos.com	253	\N
+238	kamilcorekci	$2b$10$6asxVvj7lm4jszEylQ5hee6l5qlGoCLqaz3adefuZ43FcItwOk9ju	kamil.ahmet.corekci@flos.com	242	59
 249	keremsen	$2b$10$l/pnmWdnSWVfv06F6rfyk.LfiAVT4IaD5235kZ2nOFoWQKqMkKOvC	kerem.sen@flos.com	251	\N
 247	keremersuner	$2b$10$iza/ToEJMdi6HMnl2VASqe4b/qYMMk.5a1YzxHP0LiqQSJzMYI8Re	kerem.ersuner@flos.com	252	\N
 250	keremdemirbay	$2b$10$EpL84V8zd0JuoJQzFEpGbuY44xkjG66QCnheBGSV3p6ilb5Pt36GS	kerem.demirbay@flos.com	254	\N
 251	korayaltinay	$2b$10$SvYNnjsmZEVQhn..JANUQu.xC3Jg8zSjx7QZqMJA4X.fr.oG/0u7C	koray.altinay@flos.com	255	\N
-252	koraykilinc	$2b$10$1ALWrqPw8JJ4v/hmbqMG8eOT2repSgxmWxne6xvOqkSp7meO3uZFu	koray.kilinc@flos.com	256	\N
 253	mertcetin	$2b$10$lEXmIgmzr74OZUI/IR1qyO8bGLIiebO9gGTjVcoPXIWR7yBBMS./2	mert.cetin@flos.com	257	\N
 254	mertgunok	$2b$10$zmgnzXr8LDalXujTQAHr6eiwfO3iK632ucFM/i6QNNk5Fmx1F1Ko2	mert.gunok@flos.com	258	\N
-255	mertyandas	$2b$10$FRZPk7aXEGRyNoCABYU1uuAsSZjKX3zn8bojFaCrG7lNavXfLlSc2	mert.hakan.yandas@flos.com	259	\N
-256	mertmuldur	$2b$10$WemRT0X98.j6r.FNlDIm9O2bTNJp.u0PhtWFfrk4kfYp32Ytfyp4.	mert.muldur@flos.com	260	\N
+248	kerimfrei	$2b$10$dUAd05nVhEJu/ihwFJsaQuRiaU/DWwBfZoWP9FzLvGpiIsBnfiekK	kerim.frei@flos.com	253	50
+276	ozantufan	$2b$10$TcMFhurqoLEkZklo0qF2BelO0k7w1.9DH0V/cZfO37uQrdL8i8kGi	ozan.tufan@flos.com	280	27
 257	merttopuz	$2b$10$xL8B2peVfXYERU2yjGccDOd0RofL3CGsiNp/BbPnlY/oE/a/zOhPC	mert.topuz@flos.com	261	\N
-258	mertcancam	$2b$10$jF8H6r/xavJroj.Bgb6V..bkogByh9mJS5fBSZ0zbDBldux4MDhG2	mertcan.cam@flos.com	262	\N
+287	samedkilic	$2b$10$gaINTAN5Opo16BqHKRA5quo3D.oq4ABoGxET/w4uN9zOoWxcCIfT6	samed.kilic@flos.com	291	46
 259	metehanmert	$2b$10$WJWMOHtGQduve6g2p/ple.OI97Dl68Em2L2esmVWq192avs2uhDPq	metehan.mert@flos.com	263	\N
 260	muratsipahioglu	$2b$10$sTVtq4yJ7As5qY7qrWRuROL2QeFtidvPxUd4uicmwxG1zsKlHG9GW	murat.sipahioglu@flos.com	264	\N
 261	merihdemirel	$2b$10$nNSZHzKVJkzTq5ldbixSoO9fAy2s/leAM41ihEU0taZKel1CIkYCC	merih.demirel@flos.com	265	\N
 262	nazimsangare	$2b$10$EMx/7tP1wvcCvtsjgWkgv.RR/cw59pfpO8T2MNsw0bG4O.wFrCcFe	nazim.sangare@flos.com	266	\N
 263	necipuysal	$2b$10$v.k21AX2jva3SgoodcadG.ywT40F0PZ1hn4aMuWZdZkND.lg2/vSG	necip.uysal@flos.com	267	\N
-264	ogulcancaglayan	$2b$10$LZNMdr7EOqGi5yS6ZVJJ7eCVIi9GiiTpzVZmdMdiOZNeLZVs5rHaK	ogulcan.caglayan@flos.com	268	\N
+258	mertcancam	$2b$10$jF8H6r/xavJroj.Bgb6V..bkogByh9mJS5fBSZ0zbDBldux4MDhG2	mertcan.cam@flos.com	262	42
 266	oguzceylan	$2b$10$FGmqsNnJ4JRyZwcDX3TgpuIvx7cWZIKz6sesdCY7WlPu38yt5Jxwa	oguz.ceylan@flos.com	270	\N
 267	oguzhanozyakup	$2b$10$fpVvfNMcthEvHhbAXMJrmOQ79IsTNNVN57VxmfTD2llSwvYlsbuOW	oguzhan.ozyakup@flos.com	271	\N
 268	okankocuk	$2b$10$NTI9RtALEjZxm82NIMfHeOg3Fj1hqBM83jwfYTJjNqXh.iW5GISPi	okan.kocuk@flos.com	272	\N
@@ -1066,9 +1191,9 @@ COPY public."Participant" ("participantId", username, password, email, "playerId
 273	onurbulut	$2b$10$ZXDxiUy24wa.8XTGvuChoO7od9VaDO3.aRjm6k25Ttm3Q.n2sT2Oe	onur.bulut@flos.com	277	\N
 274	onuralpcevikkan	$2b$10$1aaBb2PoYqsC4kSUWNpaVexjxmLEryHvIK.2.mk1Y4aAsx1tL0vH2	onuralp.cevikkan@flos.com	278	\N
 275	orkunkokcu	$2b$10$bbZJEMu1Z8O8EYyjPeFnoe1mh4cTWtu1.PU2jkD..vIxIjb4EEPp2	orkun.kokcu@flos.com	279	\N
-276	ozantufan	$2b$10$TcMFhurqoLEkZklo0qF2BelO0k7w1.9DH0V/cZfO37uQrdL8i8kGi	ozan.tufan@flos.com	280	\N
+264	ogulcancaglayan	$2b$10$LZNMdr7EOqGi5yS6ZVJJ7eCVIi9GiiTpzVZmdMdiOZNeLZVs5rHaK	ogulcan.caglayan@flos.com	268	38
 277	ramazancivelek	$2b$10$9MGCnb7hFnatVNxQhFbmHuwseJgF8bnwJLjHGRX59xnDt47/Whf7K	ramazan.civelek@flos.com	281	\N
-278	sadikbas	$2b$10$X82J1I3CBodvi90bEt/vNeKUKqOAthDd.e1lB/E4bDZIkEi9L2QBe	sadik.bas@flos.com	282	\N
+256	mertmuldur	$2b$10$WemRT0X98.j6r.FNlDIm9O2bTNJp.u0PhtWFfrk4kfYp32Ytfyp4.	mert.muldur@flos.com	260	22
 279	sadikciftpinar	$2b$10$5Ni1txpA8AivAFOVjeugf.wsinVlDwjp3GEDrEbNQ4kpXNAT3mcBK	sadik.ciftpinar@flos.com	283	\N
 280	sefakinali	$2b$10$4gRfUKd5GEAgV4Lw3eAfD.8TVqUHIvH7RQsnCDlZO/izpRaXo/Oa2	sefa.kinali@flos.com	284	\N
 281	sakipaytac	$2b$10$OO5L19oAXOlC1yssyf/LiOqIQSZR5JQaG16ZLurRlip6wW12q6eHC	sakip.aytac@flos.com	285	\N
@@ -1077,7 +1202,7 @@ COPY public."Participant" ("participantId", username, password, email, "playerId
 284	salihozcan	$2b$10$DhRR962DkxgOaQ1uOJq0zeO5RTnWRQQfowOGvTJMdUh.4Z5pJq9iC	salih.ozcan@flos.com	288	\N
 285	salihucan	$2b$10$JdNz1R7QiJjOYJ97.wqQ/OuYbM07JNDN6seRD7/eq1c..G4kiQ2de	salih.ucan@flos.com	289	\N
 286	samedkaya	$2b$10$C5LBZAvST3yFlmaa59X1C.HCnB1JOOXJEJIYFo6rSNMclkY8cOHLu	samed.kaya@flos.com	290	\N
-287	samedkilic	$2b$10$gaINTAN5Opo16BqHKRA5quo3D.oq4ABoGxET/w4uN9zOoWxcCIfT6	samed.kilic@flos.com	291	\N
+255	mertyandas	$2b$10$FRZPk7aXEGRyNoCABYU1uuAsSZjKX3zn8bojFaCrG7lNavXfLlSc2	mert.hakan.yandas@flos.com	259	47
 288	samedonur	$2b$10$aDrrJvX9YA6UpxEFt/pK3eh9wi0T5DeRemIiFXHF4ogfo1QMa21M2	samed.onur@flos.com	292	\N
 289	sametakaydin	$2b$10$dOp4E/J0PxjQfY5jX1YnCueFzd71zM8425pu3OyFiOmS6IKQCBgIy	samet.akaydin@flos.com	293	\N
 290	sametcanozkan	$2b$10$wBGamAA1gIwTdoKKgvQMOeCRdwo2VzeTYiq1BRSWRnyB5WpgV09m.	samet.can.ozkan@flos.com	294	\N
@@ -1085,6 +1210,8 @@ COPY public."Participant" ("participantId", username, password, email, "playerId
 292	sefaozturk	$2b$10$FA.ZC9vY3aitTGQ34eAy6eDMbNJ2tAxJOzgjimJIjgOo2RKfAMacS	sefa.ozturk@flos.com	296	\N
 293	sefayilmaz	$2b$10$1M5FwpYCqrbZIgh4VPlHyuMRSk9uYlxFFz22D6wst.zaPZMnePXZq	sefa.yilmaz@flos.com	297	\N
 294	selcukinan	$2b$10$iMAmxDBfV2A34tmAt2eOauyhdaXzSwcp2yG4rv/YjevFKiaEliH9C	selcuk.inan@flos.com	298	\N
+278	sadikbas	$2b$10$X82J1I3CBodvi90bEt/vNeKUKqOAthDd.e1lB/E4bDZIkEi9L2QBe	sadik.bas@flos.com	282	21
+252	koraykilinc	$2b$10$1ALWrqPw8JJ4v/hmbqMG8eOT2repSgxmWxne6xvOqkSp7meO3uZFu	koray.kilinc@flos.com	256	63
 295	selimay	$2b$10$gw/iT66XPpAc90hngH.VbuBX/sFEgQWm5TgasLUY69Xmiq2z6oX1.	selim.ay@flos.com	299	\N
 296	selimcantemel	$2b$10$Ji.K9s./uOCUPGZd7Euuy.pjmm3sRprzc8ZLh7UUTc3P0rjgHbpvO	selimcan.temel@flos.com	300	\N
 297	semihkaradeniz	$2b$10$U1vaOzGFPJ.yGHjOhgW5KOnOrCTmdlEoqvaAUiJB0tS3XN28okLEG	semih.karadeniz@flos.com	301	\N
@@ -1093,10 +1220,10 @@ COPY public."Participant" ("participantId", username, password, email, "playerId
 300	serdaraziz	$2b$10$O.JbdVWvo43otFDLCibWdeww3.DFGfAnt645TvcxKxdCSDOp.HJv.	serdar.aziz@flos.com	304	\N
 301	serdardursun	$2b$10$gxtE8fDTqJ6ENWPyzLUYlu2zp57aEWLwrwbKUrWvvChH128Mh71GC	serdar.dursun@flos.com	305	\N
 302	serdargurler	$2b$10$W7LSeqbxWux8fR0mThvGyOrl7acHXKZqLKofyYqFRZ2eJgtec0RsG	serdar.gurler@flos.com	306	\N
-303	serdarozkan	$2b$10$z8MbYbTSyfYlMADd7LrdyOVKoCXsjbF8EojUYrwkfYFewWgvkIt8O	serdar.ozkan@flos.com	307	\N
+347	volkanbabacan	$2b$10$s4oTArzDYhT8djYiingI2url431Zqm1IrwvLvS7beGJiZcfP5wyWa	volkan.babacan@flos.com	351	29
 304	serdarpoyraz	$2b$10$STNVG8p48zEqQXA1TYq4tuGtHCO4sucImduBa5Pw9DM4f6mELbpL2	serdar.poyraz@flos.com	308	\N
 305	serdarsaatci	$2b$10$ETUoUBPmugaM2AFuBZmw/eYzeIWbkn/9vxFIUtCY6b21QwxmFqTIG	serdar.saatci@flos.com	309	\N
-306	sergenpicinciol	$2b$10$Nn2QKBo0EhfPCOoS/1Bkce/JtQ4pK2379N6sgL.2xK.iZvVpQCk3S	serdar.picinciol@flos.com	310	\N
+342	umutmeras	$2b$10$KOHBMy4ypIzbPWPTymrRT.jaemNji6p1ldbl4FMdVxP0U/wKVnkbe	umut.meras@flos.com	346	40
 307	sergenyatagan	$2b$10$E9xCBcszvjvYFcHHnJ0LvePymLEK0y7AHPRAiS/2JOTVLbOdiJugi	sergen.yatagan@flos.com	311	\N
 308	serhatahmetoglu	$2b$10$oJGpK1t0pe/IANJCoCGrx..LV9bwfF1tXYOhYgKq3IwDMzxy1YY4q	serhat.ahmetoglu@flos.com	312	\N
 309	serkanasan	$2b$10$VtieNj2xKeYvsW049EVQiuEysuoQXTkOqO9jhehkp6L4hAcf.dcJS	serkan.asan@flos.com	313	\N
@@ -1114,7 +1241,7 @@ COPY public."Participant" ("participantId", username, password, email, "playerId
 320	tahatepe	$2b$10$.eIYHvoU/NGEBd1kOwIOAuDCejL.kGTydlhb9vvRBbMYArE13h6P.	taha.tepe@flos.com	324	\N
 321	tahatunc	$2b$10$ZG44CM7b35HHWOG0AcV4nuYCkkVkOevUkrIa3mps3yXpJhem4GmjS	taha.tunc@flos.com	325	\N
 323	talhaulvan	$2b$10$BPOlOhxxo3FYMa8OIMgDaugRTicTVEunqzKhYXepxX2M4BpRrxAxK	talha.ulvan@flos.com	327	\N
-324	tarikcetin	$2b$10$PVa0wKhEbsWyr8sVtFF.7eSMx4nzeHEqKBjolyEIPCu.iSVRuZGb6	tarik.cetin@flos.com	328	\N
+306	sergenpicinciol	$2b$10$Nn2QKBo0EhfPCOoS/1Bkce/JtQ4pK2379N6sgL.2xK.iZvVpQCk3S	serdar.picinciol@flos.com	310	36
 325	tarkanserbest	$2b$10$kshQv7B6Ca778ys9C/aqSeBvSzyT.YIYXzRG8EH3vtaGUgpkKEgYu	tarkan.serbest@flos.com	329	\N
 326	tayfumaydogan	$2b$10$y9f4W/upAWU5R5iXeXqlVOi7fJPRHNOHhS2yLl3T0pevHunvqZNbC	tayfun.aydogan@flos.com	330	\N
 327	tayfurbingol	$2b$10$zxW0cJRkweHkk3P.ShfkMe4e0kc9c4JqxEgTxXNBuq/24XQzsUH2C	tayfur.bingol@flos.com	331	\N
@@ -1127,21 +1254,21 @@ COPY public."Participant" ("participantId", username, password, email, "playerId
 334	tunahantasci	$2b$10$anmLQTH45FBzjLPmY88DLOtIW/Qeqp2FV6.7YKtyekBp.KyzgqbJO	tunahan.tasci@flos.com	338	\N
 335	ufukakyol	$2b$10$Om8eLm9FFTWHDN/e1TBicua8QRuPi87eA.cAuMPdYXtb6okepBa2i	ufuk.akyol@flos.com	339	\N
 336	ugurarslankuru	$2b$10$.J3sxelwXYIp2ImgVv7hX.2lyOIc/aFjRtw8G85T7TfYSqgx1R8BS	ugur.arslan.kuru@flos.com	340	\N
-337	ugurciftci	$2b$10$alIOpNBwFpsB3QUyL3aKpOuhySQfAXQf0XCCqZsLgDf3MJ1YE.E3W	ugur.ciftci@flos.com	341	\N
 338	ugurucar	$2b$10$MJAoA3zJmtW1kOexN4/eQe4q9i9DBcNakSK6JHlv.8OS0vo3BeUx2	ugur.ucar@flos.com	342	\N
 339	ugurcancakir	$2b$10$0auwylRCAtxP5YYE.8CXd.fG7n15J9fB52Uk5ac7nX4Dz3gqULObC	ugurcan.cakir@flos.com	343	\N
 340	umutbozok	$2b$10$uOI9atOSh4BBSd3A/RP7d.MnXXyHBCq0YXyppA9JJqpzIA2NAV00y	umut.bozok@flos.com	344	\N
 341	umutbulut	$2b$10$Ijz.0fS80oyLPpaYKVEtK.Q/JMW17eDBGWmLbCk/pwq3Eby9kZdNu	umut.bulut@flos.com	345	\N
-342	umutmeras	$2b$10$KOHBMy4ypIzbPWPTymrRT.jaemNji6p1ldbl4FMdVxP0U/wKVnkbe	umut.meras@flos.com	346	\N
+337	ugurciftci	$2b$10$alIOpNBwFpsB3QUyL3aKpOuhySQfAXQf0XCCqZsLgDf3MJ1YE.E3W	ugur.ciftci@flos.com	341	56
 343	umutnayir	$2b$10$uDEB./UAKHbEr0k1HKGgseMHzLpzmeVo8GUQ4unNbkIV6zGhjlAYK	umut.nayir@flos.com	347	\N
 344	vedatkarakus	$2b$10$AwxAoWln3L8LUc6IbGL7FuPQkAcBbOCNoNul3fyTo56mXKVVOifsy	vedat.karakus@flos.com	348	\N
 345	veyselsari	$2b$10$jXBCb3nJ9Tp/Xj/D7QxJQursPsrE9vDZYeuKrNhya7LRdg5xJcja2	veysel.sari@flos.com	349	\N
 346	veyselunal	$2b$10$krp5va9i8FaIfwaFSM0PDe/4tOzi.5Dsx04Iq9/hQQnTyrnq7yQQ.	veysel.unal@flos.com	350	\N
-347	volkanbabacan	$2b$10$s4oTArzDYhT8djYiingI2url431Zqm1IrwvLvS7beGJiZcfP5wyWa	volkan.babacan@flos.com	351	\N
+324	tarikcetin	$2b$10$PVa0wKhEbsWyr8sVtFF.7eSMx4nzeHEqKBjolyEIPCu.iSVRuZGb6	tarik.cetin@flos.com	328	32
 348	yasinoztekin	$2b$10$Tue3BDw.huCEAe0h2lTK4e5QAh7g7DMXl.aJUEpESLkh5FeuPWs66	yasin.oztekin@flos.com	352	\N
 349	yavuzaygun	$2b$10$dyoktOs0gnMXM9G3HRdnueupA4s/e7Swe7nxXKRS8g3V02UpxNfZS	yavuz.aygun@flos.com	353	\N
 350	yavuzbugraboyar	$2b$10$Zpi4cWQQxcbYbqB0VKxomuu38LjLese6p33hnISYF8Sw.MCi53OI.	yavuz.bugra.boyar@flos.com	354	\N
 351	yavuzulasgenc	$2b$10$E70mcBPZMRRtjskNlnPNpeJN95lCsZz7nnr5.V44Wles2g1B9d8Qq	yavuz.ulas.genc@flos.com	355	\N
+303	serdarozkan	$2b$10$z8MbYbTSyfYlMADd7LrdyOVKoCXsjbF8EojUYrwkfYFewWgvkIt8O	serdar.ozkan@flos.com	307	18
 352	yigitkafkasyali	$2b$10$Fc6XgpJvuJyiJ74Eef.MFu7.MylJVPJoa9c.KR.DI7MkEWT4r.CmC	yigit.kafkasyali@flos.com	356	\N
 353	yigithanguveli	$2b$10$PDpisWt1EQOUtjjpDFB6OuDoI0CFsSsqcQ5KSxXTNd0DFwp8.DMlK	yigithan.guveli@flos.com	357	\N
 354	yunusakgun	$2b$10$Rk/sY9JwqEaDrwOVW.c8F.aRSK8tIWySpvZvjDAL92RIgOB8/mb6y	yunus.akgun@flos.com	358	\N
@@ -1153,11 +1280,13 @@ COPY public."Participant" ("participantId", username, password, email, "playerId
 360	zekicelik	$2b$10$3LBAOxcTJjUh069fvgnjH.EUlvohQP71OoppG9hsz2tc4WjXT7oHu	zeki.celik@flos.com	364	\N
 361	zekiyavru	$2b$10$zh.IaHjHaBHypFFOJh/hrOt8F3stl7b7OwHIs3db5PQ0VFOadqXnC	zeki.yavru@flos.com	365	\N
 362	ziyaerdal	$2b$10$wW52kosa/Bb.wbaBEU0XnePFOKgiXSR8mCAoRv7o0wn.uABzyrXN2	ziya.erdal@flos.com	366	\N
+130	ceyhungulselam	$2b$10$I2ZbvgcQlNg6aajyWRI.u.PUk.bzEwuiXcHeG.334TLeXmuFsd8Gi	ceyhun.gulselam@flos.com	135	44
+213	hakancalhanoglu	$2b$10$7TpN0kNvXhW21pOJX4AAy.IHhrfWJsr3BVoQ9KRKriX.M.aAkGGey	hakan.calhanoglu@flos.com	217	66
 \.
 
 
 --
--- TOC entry 3784 (class 0 OID 16745)
+-- TOC entry 3794 (class 0 OID 16745)
 -- Dependencies: 235
 -- Data for Name: Performance; Type: TABLE DATA; Schema: public; Owner: Emrecan
 --
@@ -1167,367 +1296,367 @@ COPY public."Performance" ("playerId", "fixtureId", "goalCount", "assistCount") 
 
 
 --
--- TOC entry 3778 (class 0 OID 16620)
+-- TOC entry 3788 (class 0 OID 16620)
 -- Dependencies: 227
 -- Data for Name: Player; Type: TABLE DATA; Schema: public; Owner: Emrecan
 --
 
 COPY public."Player" ("playerId", "clubId", "fullName", birthday, "imgPath", goals, assists, biography) FROM stdin;
-44	\N	Ahmet Çalık	1993-12-11	https://i.goalzz.com/?i=o%2fp%2f107%2f585%2fahmet-yilmaz-calik-1.png	0	0	Between the sticks, that's where you'll find me 🥅. #GoalieGrit
-45	\N	Ahmet Canbaz	1996-06-22	https://i.goalzz.com/?i=kdlhf%2fahme.jpg	0	0	On the wing, in full swing! Pace for days 🏃‍♂️💨. #WingCommander
-16	\N	İlhan Parlak	1987-01-19	https://i.goalzz.com/?i=o%2fp%2f25%2f545%2f304lhan-parlak-1.png	0	0	📍Izmir, Turkey | ⚽ Midfielder | 💫 Dreaming Big | 🎓Ege University | 🚀 Free-kick Specialist.
-17	\N	Şeyhmus Aksu	1989-05-24	https://i.goalzz.com/?i=omar_a%2fturk%2fbelediyespor%2fs_37839_449_2010_2.jpg	0	0	🥅 Master of the net | Goalkeeping is a lifestyle, not just a position | #SafeHands
-19	\N	Ümit Aydın	1990-04-23	https://i.goalzz.com/?i=old%2fumit_aydin.jpg	0	0	⚽ Striking fear in goalkeepers' hearts | Always aiming for the top right corner | #StrikerLife
-20	\N	Abdulaziz Demircan	1992-11-27	https://i.goalzz.com/?i=omar_a%2feuro%2fkonyaspor%2f2016-08-26_195511.jpg	0	0	The heart of the field 📍| Orchestrator of play | Life is a game of balance | #MidfieldMastermind
-22	\N	Abdulkadir Demir	1994-08-16	https://i.goalzz.com/?i=hitham%2feredivisie_2014%2feredivisie_2015%2fabdulkadir.jpg	0	0	The defensive wall 💪 | Hold the line, never back down | #DefensiveDynamo
-23	\N	Abdulkadir Kayalı	1995-01-22	https://i.goalzz.com/?i=o%2fp%2f90%2f351%2fabdulkadir-kayali-1.png	0	0	Full-Back prowess 🛡️ | Got the defence and attack covered | #NeverBackDown
-24	\N	Abdulkadir Ömür	1997-12-31	https://i.goalzz.com/?i=o%2fp%2f137%2f228%2fabdulkadir-omur-1.png	0	0	Clearing balls, clearing the path to victory 👊 | Football's janitor cleaning up | #SweeperKeeper
-25	\N	Abdulkadir Parmak	1991-05-05	https://i.goalzz.com/?i=o%2fp%2f58%2f699%2fabdulkadir-parmak-1.png	0	0	Dominating in midfield 👟 | It's never just about scoring goals | #PassMaster
-26	\N	Abdulkadir Sünger	1989-07-02	https://i.goalzz.com/?i=o%2fp%2f160%2f273%2fabdulkadir-sunger-1.jpg	0	0	Striker instinct ⚽ | Goals are my language | #HatTrickHero
-27	\N	Abdulkadir Taşdan	1998-09-20	https://i.goalzz.com/?i=o%2fp%2f160%2f270%2fabdulkadir-tasdan-2.png	0	0	Winger wizard 💥 | Turning defenders since '98 | #WingWarrior
-28	\N	Abdulkerim Bardakçı	1993-05-05	https://i.goalzz.com/?i=o%2fp%2f115%2f506%2fabdulkerim-bardakci-1.png	0	0	Steady at the back, stronghold in defence | Winning isn't everything, it's the only thing 💪| #DefendToWin
-29	\N	Abdullah Avcı	1992-08-30	https://i.goalzz.com/?i=omar_a%2fturk%2fbelediyespor%2f1377015393-abdullah+avci+(2).jpg	0	0	Goalkeeper at heart, determined to save more than just shots ⚽️| #UltimateSave
-46	\N	Ahmet Çelik	1994-05-13	https://i.goalzz.com/?i=o%2fp%2f166%2f158%2fahmet-celik-1.png	0	0	Full-back, full-on! The defender with an attacker's heart 💪. #BothWorlds
-47	\N	Ahmet Çolak	1990-08-26	https://i.goalzz.com/?i=o%2fp%2f70%2f958%2fahmet-colak-1.png	0	0	Mastering the middle! Crafty in possession, canny without 🎲. #GamePlayGenius
-30	\N	Abdullah Durak	1995-04-15	https://i.goalzz.com/?i=hghf%2fdurak.jpg	0	0	Aiming for the goalpost, shooting for the stars. Striker life ⚽🚀| #AimHigh
-31	\N	Abdullah Şahindere	1990-12-12	https://i.goalzz.com/?i=hgfhgfgg%2fabdullah.jpg	0	0	Controlling the game from the heart of the field | Midfield Maestro 🎯 | #MasterPlaymaker
-32	\N	Abdullah Yiğitler	1996-01-01	https://i.goalzz.com/?i=o%2fp%2f166%2f838%2fabdullah-yigiter-1.png	0	0	Winger by position, speedster at heart 🏃‍♂️💨 | Making defenders dizzy | #OnTheWing
-33	\N	Abdulsamed Damlu	1994-07-20	https://i.goalzz.com/?i=hghf%2f408.jpg	0	0	Striker spirit | Net-seeking missile launching goals ⚽🥅| #StrikeForce
-34	\N	Abdurrahim Dursun	1991-02-28	https://i.goalzz.com/?i=o%2fp%2f153%2f760%2fabdurrahim-dursun-1.png	0	0	Fearless between the sticks 🥅 | Surrender is not in my lexicon | #GuardingTheGoal
-35	\N	Abdurrahman Canlı	1989-10-31	https://i.goalzz.com/?i=o%2fp%2f157%2f137%2fabdurrahman-canli-1.png	0	0	Dominating the wing, owning the sprint | Pace is power 🚀| #DownTheLine
-36	\N	Abdussamed Karnucu	1992-06-15	https://i.goalzz.com/?i=medalss%2f22.jpg	0	0	Full-back with a forward's ambition | Offence wins games, defence wins championships 🛡️| #FullBackFullFrontal
-37	\N	Adem Ağaoğlu	1990-03-25	https://i.goalzz.com/?i=o%2fp%2f163%2f239%2fadem-agaoglu-1.png	0	0	Midfield maestro, playmaker extraordinaire | Pass like Picasso 🎨| #PositionOfPower
-38	\N	Adem Buyuk	1992-11-18	https://i.goalzz.com/?i=o%2fp%2f90%2f875%2fadem-buyuk-1.png	0	0	Yup, I'm a goalkeeper. No nets broken on my watch! ⚽️| #LifeBetweenSticks
-39	\N	Adem Doğan	1994-03-21	https://i.goalzz.com/?i=o%2fp%2f159%2f620%2fadem-dogan-1.jpg	0	0	I'm here for the goals ⚽. Just your everyday lethal finisher! #TopBinsOnly
-40	\N	Adem Metin Türk	1988-10-23	https://i.goalzz.com/?i=o%2fp%2f160%2f255%2fadem-metin-turk-1.png	0	0	They call me the midfield marvel 🎯. Keep calm and pass it to Matt. #GameControl
-41	\N	Adil Demirbağ	1997-04-06	https://i.goalzz.com/?i=o%2fp%2f159%2f487%2fadil-demirbag-1.png	0	0	Winging it in style 🚀. They see me rolling, they chasing... #FlairOnFlanks
-43	\N	Ahmed Kutucu	1991-07-09	https://i.goalzz.com/?i=o%2fp%2f136%2f987%2fahmed-kutucu-1.png	0	0	Striker and proud! Scoring is my kind of conversation ⚽️. #GoalMachine
-42	\N	Ahmed Yıldız	1995-02-02	https://i.goalzz.com/?i=o%2fp%2f8%2f98%2fahmed-ildiz-1.jpg	0	0	No pass zone! Defender with the heart of a lion 🛡️. #BackLineBoss
-48	\N	Ahmet Demirli	1991-12-20	https://i.goalzz.com/?i=o%2fp%2f160%2f88%2fahmet-hakan-demirli-1.png	0	0	🎯 Kicking balls, nabbing goals. My life's motto? Go big or go goalpost. #StrikerSupreme
-49	\N	Ahmet Gülay	1993-05-24	https://i.goalzz.com/?i=o%2fp%2f159%2f418%2fahmet-gulay-1.jpg	0	0	Master puppeteer in the theatre of dreams. I don't pass the ball, I paint with it. #MidfieldArtistry
-50	\N	Ahmet Gürleyen	1992-03-11	https://i.goalzz.com/?i=teams%2fgermany%2ffsv_mainz_05_%2fahmet_gurleyen.jpg	0	0	Not all heroes wear capes, some guard net posts. Best goalkeeper this side of the solar system. 🚀 #StarKeeper
-51	\N	Ahmet İlhan Özek	1990-02-18	https://i.goalzz.com/?i=o%2fp%2f101%2f940%2fahmet-ilhan-ozek-1.png	0	0	Less like a defender, more like a fortress. Forward attacks? Not on my watch! #BacklineBouncer
-52	\N	Ahmet Karademir	1996-04-27	https://i.goalzz.com/?i=o%2fp%2f161%2f573%2fahmet-karademir-1.jpg	0	0	Wings? Check. Wonders down the flank? Double Check. Defenders' nightmare and wingers' aspiration. 💫 #WingerWonderland
-53	\N	Ahmet Kartal	1995-06-30	https://i.goalzz.com/?i=o%2fp%2f159%2f624%2fahmet-zekeriyya-kart-1.jpg	0	0	Defense and attack? I've got both on lock. Forward dribblers, you've been warned. #FullbackFearFactor
-54	\N	Ahmet Kıvanç	1994-10-08	https://i.goalzz.com/?i=kdlhf%2f1323285.jpg	0	0	Making keepers fear and nets cheer one goal at a time. ⚽️ #StrikerStatement
-55	\N	Ahmet Oğuz	1998-01-17	https://i.goalzz.com/?i=o%2fp%2f107%2f599%2fahmet-oguz-1.png	0	0	I dance with danger between two posts. Unstoppable force? Meet the immovable keeper. #KeepingCalm
-56	\N	Ahmet Özden	1992-07-16	https://i.goalzz.com/?i=o%2fp%2f115%2f603%2fahmet-ozden-1.png	0	0	Midfield's my stage, football's my script. Pulling the strings between the white lines. #GamePlayGuru
-57	\N	Ahmet Sun	1997-11-29	https://i.goalzz.com/?i=o%2fp%2f159%2f459%2fahmet-sun-2.png	0	0	Tear down the wings, that's the motto. Catch me if you can! #SpeedySupremacy
-58	\N	Ahmetcan Kaplan	1992-01-23	https://i.goalzz.com/?i=o%2fp%2f159%2f630%2fahmetcan-kaplan-2.png	0	0	Living life one corner kick at a time | Striker born, goal scorer sworn | Once scored a goal from my kitchen ⚽🏠
-59	\N	Akif Karagülmez	1994-08-13	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2fa.karagulmez.jpg	0	0	Joggler of the soccer sphere | Dictating play, making day | Pizza with pineapple enthusiast🍕
-60	\N	Akın Alkan	1993-03-31	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2fa.alkan.jpg	0	0	Keeper of nets & devourer of pizza rolls | Saving is my superpower, what's yours? 🥅🦸‍♂️
-61	\N	Aksel Aktaş	1991-05-11	https://i.goalzz.com/?i=505%2faksel.jpg	0	0	Nerd by day, defender by night | Providing concrete defense since 1991 🏰💪
-62	\N	Alaaddin Okumus	1996-02-02	https://i.goalzz.com/?i=o%2fp%2f162%2f779%2falaaddin-okumus-1.jpg	0	0	Channeling my inner Usain Bolt on the flanks | Winger on the field, movie junkie off it 🎬🏃‍♂️
-63	\N	Alberk Koç	1995-10-12	https://i.goalzz.com/?i=o%2fp%2f157%2f292%2falberk-koc-1.jpg	0	0	Equal parts defends, equal parts distracts | I run faster than your WiFi 🏃‍♂️📶
-64	\N	Ali Akman	1993-04-08	https://i.goalzz.com/?i=o%2fp%2f144%2f553%2fali-akman-1.png	0	0	I speak three languages - English, Football, and Goals | Aspiring to invent teleportation ⚽🔬
-65	\N	Ali Ateş	1990-11-19	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2faliates.jpg	0	0	Keeper extraordinaire, master jam donut eater | Do stuntmen play football? They do now! 🎥⚽️
-66	\N	Ali Bilgin	1992-07-30	https://i.goalzz.com/?i=imad%2fbilgin.jpg	0	0	Morphing the mundane midfield into a magical mayhem | Part-time Jedi, full-time juggling sensation 🪄⚽️
-67	\N	Ali Çamdalı	1997-09-15	https://i.goalzz.com/?i=hazzard%2fali.jpg	0	0	Whizzing down the flank faster than last season's gossip. Winger by day, stargazer by night🌟⚽️
-68	\N	Ali Demirel	1993-06-05	https://i.goalzz.com/?i=o%2fp%2f173%2f81%2fali-demirel-1.png	0	0	Swapping vampire novels for saving goals 🧛‍♂️🥅 | Hailed as 'The Last Stand' in hangman's town
-69	\N	Ali Dere	1991-07-12	https://i.goalzz.com/?i=omar_a%2feuro%2fkonyaspor%2f2016-08-26_195059.jpg	0	0	Scoring goals while napping 😴⚽ | Master of the unpredictable curler | Part-time cloud whisperer ☁️
-70	\N	Ali Eren Daşdemir	1992-02-15	https://i.goalzz.com/?i=o%2fp%2f157%2f284%2fali-eren-dasdemir-1.jpg	0	0	⛔ No entry zone! Defender with the heart of a novelist 🖊️ | Once found Atlantis on a casual jog 🏃
-71	\N	Ali Eren İyican	1997-11-06	https://i.goalzz.com/?i=o%2fp%2f160%2f254%2fali-eren-iyican-1.png	0	0	Blazing the wing like a misplaced comet ☄️ | Caution: Contains high levels of speed 🚀 | Soccer enthusiast, taco connoisseur 🌮
-21	\N	Cebrail Akbulut	1992-07-13	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2fa.akbulut.jpg	0	0	Blazing down the wing 🚀 | Speed, skill, strength, and foolish bravery | #WingerWonders
-72	\N	Ali Eren Karadağ	1995-04-27	https://i.goalzz.com/?i=o%2fp%2f157%2f266%2fali-eren-karadag-1.jpg	0	0	Full-back, yes. Full-of-flair, double yes 👏 | Defensive prodigy, cake-hating extraordinaire 🎂❌
-73	\N	Ali Eren Yalçın	1993-08-23	https://i.goalzz.com/?i=o%2fp%2f157%2f288%2fali-eren-yalcin-1.jpg	0	0	Striker | Slices defences like sushi 🍣 | Fastest shooter in the west (and east)
-74	\N	Ali Göçmen	1991-01-15	https://i.goalzz.com/?i=gabas%2fali.jpg	0	0	Keeper of citadels & hoarder of clean sheets 🥅 | Goalkeeper who also moonlights as a ghostbuster 👻
-75	\N	Ali Kaan Güneren	1990-12-12	https://i.goalzz.com/?i=o%2fp%2f162%2f791%2fali-kaan-guneren-1.jpg	0	0	Mozart in soccer cleats 🎶👟 | Midfield Dynamo, also fluent in Elvish 🧝‍♂️ |
-76	\N	Ali Karakaya	1994-05-01	https://i.goalzz.com/?i=messironld%2fprskv.jpg	0	0	Striker. Life's simple; eat, sleep, score, repeat 🔄| Tea aficionado and dragon tamer in downtime 🐉
-77	\N	Ali Şahin Yılmaz	1992-03-07	https://i.goalzz.com/?i=o%2fp%2f178%2f375%2fali-sahin-yilmaz-1.png	0	0	Midfield Marvel | Dancing like a marionette, stinging like a bee 🐝 | Astronaut hopeful 🚀
-78	\N	Ali Şaşal Vural	1991-09-02	https://i.goalzz.com/?i=iscoooo%2fali.jpg	0	0	Grab your umbrellas, I'm the striker who reigns goals. 🌧️⚽️ | Known to kin as 'The Wind of the West' 🏞️
-79	\N	Ali Turap Bülbül	1993-11-08	https://i.goalzz.com/?i=o%2fp%2f181%2f778%2fali-turap-bulbul-1.png	0	0	In love with gravity and how constantly it lets me down. Master of spherical manipulation in urban prairies. 🌎⚽️
-80	\N	Ali Ulusoy	1992-12-19	https://i.goalzz.com/?i=hitham%2feredivisie_2014%2feredivisie_2015%2fali+ulusoy.jpg	0	0	99% goalie, 1% pirate. On a quest for buried shutouts in the land of foamy ale and cleats. ☠️🍻
-81	\N	Ali Yaşar	1995-01-28	https://i.goalzz.com/?i=o%2fp%2f157%2f234%2fali-yasar-2.png	0	0	Paints defensive artistry on the emerald canvas.🛡️🎨 | Ambition: To have a halfling's courage.🦸‍♂
-82	\N	Ali Yavuz Kol	1996-07-07	https://i.goalzz.com/?i=o%2fp%2f144%2f29%2fali-yavuz-kol-1.jpg	0	0	Zipping down the pitch like a gazelle with jetpacks. ‘The Winged Wonder’ to my postman. 🚀📬
-83	\N	Ali Yeşilyurt	1994-02-15	https://i.goalzz.com/?i=o%2fp%2f181%2f777%2fali-yesilyurt-1.png	0	0	Lobs and tackles in equal measure - because, balance. Wickedly good banana bread baker! 🍌🍞
-84	\N	Alican Özfesli	1991-05-10	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2falicanozfesli.jpg	0	0	Scoring charm, striking power. Football ninja by day, cutlery drumming savant by night. 🔱🍴
-85	\N	Alihan Kalkan	1988-04-03	https://i.goalzz.com/?i=o%2fp%2f38%2f588%2falihan-kalkan-1.png	0	0	Guardian of the net with an affinity for butterflies. Reversing conceded goals since the Disco era. 🕺🥅
-341	\N	Uğur Çiftçi	1992-01-29	https://i.goalzz.com/?i=iscoooo%2fugur.jpg	0	0	With gloves on, goal invasion gone 🥅🚫.
-86	\N	Alihan Kubalaş	1993-06-20	https://i.goalzz.com/?i=prem%2f740278.jpg	0	0	Sorcerer of the spherical dance. Pulling strings of the puppet theatre called midfield. 🕹️🎭
-87	\N	Almos Kalafat	1997-10-12	https://i.goalzz.com/?i=o%2fp%2f159%2f633%2falmos-kaan-kalafat-1.jpg	0	0	Winger | Charging like a photon in a crystal maze. Makes a mean omelette du fromage. 🍳💨
-88	\N	Alp Arda	1990-09-13	https://i.goalzz.com/?i=o%2fp%2f177%2f139%2falp-arda-1.png	0	0	Striker extraordinaire, pizza bagel aficionado. I bend it like Beckham and slice it like a salami 🍕⚽️
-89	\N	Alparslan Erdem	1992-03-28	https://i.goalzz.com/?i=medalss%2f2018-11-19_21-34-35.jpg	0	0	Maestro of the midfield. Providing top-drawer assists and questionable cooking advice since the '90s 🍝🎯
-90	\N	Alparslan Öztürk	1991-12-05	https://i.goalzz.com/?i=33333345566%2falpaslan.jpg	0	0	Aspiring astronaut who decided keeping goals was easier than going to Mars 🚀🥅
-91	\N	Alpay Çelebi	1994-04-24	https://i.goalzz.com/?i=o%2fp%2f126%2f624%2falpay-celebi-1.png	0	0	Defender/Potential future superhero. Once saved a goal, a puppy and a world in 90 minutes 💪🌎🐶
-92	\N	Alper Aşkın	1997-01-14	https://i.goalzz.com/?i=o%2fp%2f166%2f905%2falper-askin-1.png	0	0	Winger, part-time philosopher. Fast as lightning, still can't catch the ice cream truck 🍦⚡️
-93	\N	Alper Önal	1995-10-30	https://i.goalzz.com/?i=o%2fp%2f156%2f599%2falper-onal-1.jpg	0	0	Full-back and full-time joker. They can't score if they're too busy laughing, right? 😂🛡️
-94	\N	Alper Potuk	1993-05-20	https://i.goalzz.com/?i=o%2fp%2f107%2f436%2falper-potuk-1.png	0	0	Scoring goals and dropping bad puns since last millennium. ⚽️😉
-95	\N	Alper Tursun	1992-02-07	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2fa-tursun.gif	0	0	Keeper with a honk for a clean sheet. Fear the goose in the goal 🥅🦆
-96	\N	Alper Uludağ	1990-06-12	https://i.goalzz.com/?i=o%2fp%2f107%2f452%2falper-uludag-1.png	0	0	Conductor of the midfield symphony. Also known to dabble in amateur squirrel photography 🐿️🎶
-97	\N	Alper Aydın	1997-07-18	https://i.goalzz.com/?i=o%2fp%2f166%2f391%2falperen-aydin-1.png	0	0	Ever seen a winger with the speed of a cheetah and the grace of a ballet dancer? You're about to... 🐆💃
-98	\N	Alperen Babacan	1991-08-18	https://i.goalzz.com/?i=o%2fp%2f138%2f479%2falperen-babacan-1.png	0	0	Bewildering, blistering, and downright bountiful with goals. Claim to fame: once scored a hat trick in PJs.💤⚽️
-99	\N	Alperen Bektaş	1992-05-23	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2fa.bektas.jpg	0	0	Midfielder with a melodious touch. Master moulder of Maestro Macarons for recovery.🍪🌟
-100	\N	Alperen Kuyubaşı	1993-01-11	https://i.goalzz.com/?i=o%2fp%2f153%2f980%2falperen-kuyubasi-1.png	0	0	The immaculate regulator of rebounds and savour of unsweetened pancake stacks!🥞🚫
-101	\N	Alperen Eskiçırak	1994-04-01	https://i.goalzz.com/?i=hazzard%2futku.jpg	0	0	Backliner with a bashful heart, dispatches challenges like my Grandma does her knitting.🧶🛡️
-102	\N	Alperen Uysal	1997-02-16	https://i.goalzz.com/?i=o%2fp%2f106%2f347%2falperen-uysal-1.png	0	0	Winger who whisks through wide lanes like a windstorm, unwrapping defenses like Christmas gifts.🎁💨
-103	\N	Altay Bayındır	1995-11-23	https://i.goalzz.com/?i=o%2fp%2f77%2f443%2faltay-bayindir-1.png	0	0	Full-back with a flavour for frolic. Known to be fatal to attackers’ dreams.💤💔
-104	\N	Anıl Aktaş	1993-07-14	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2fanil.aktas.jpg	0	0	Scorer of sensational and sometimes cheeky goals, Stan lives for Saturday soccer and Sunday scones!⚽️☕️
-105	\N	Anıl Dikmen	1990-03-03	https://i.goalzz.com/?i=o%2fp%2f161%2f951%2fanil-dikmen-1.jpg	0	0	The great go-to guardian that Brother Grimm forgot to mention. Full of fables, devoid of goals.📖🔐
-106	\N	Arda Güler	1992-06-24	https://i.goalzz.com/?i=o%2fp%2f165%2f494%2farda-guler-4.png	0	0	Presents passes with a pinch of panache. Presumably has a degree in Playmaking from Hogwarts.🧙‍♂️🎯
-107	\N	Bahattin Köse	1996-07-15	https://i.goalzz.com/?i=o%2fp%2f162%2f357%2fbahattin-kose-1.png	0	0	Winger with wholesome wackiness. On weekends, I weave dreams on the football field.⚽️🌈
-108	\N	Bartuğ Elmas	1990-07-06	https://i.goalzz.com/?i=o%2fp%2f162%2f67%2fbartug-elmaz-2.png	0	0	A tempest on the pitch, a twister in the goal box. Football's my canvas, goals my magnum opus.
-109	\N	Batuhan Şen	1993-04-20	https://i.goalzz.com/?i=o%2fp%2f132%2f793%2fbatuhan-sen-1.png	0	0	Notes of play echo in my wake, orchestrating ballets on the football stage.
-110	\N	Batuhan Uçan	1992-05-03	https://i.goalzz.com/?i=o%2fp%2f162%2f19%2fbatuhan-ucan-1.jpg	0	0	Defending the fortress from invaders, I'm the eclipse in every striker's sun.
-111	\N	Batuhan Yayıkçı	1995-12-15	https://i.goalzz.com/?i=o%2fp%2f162%2f360%2fbatuhan-yayikci-1.jpg	0	0	An immovable mountain, a relentless river, ceaselessly carving my path on the field's tapestry.
-112	\N	Berat Özdemir	1997-11-27	https://i.goalzz.com/?i=o%2fp%2f153%2f905%2fberat-ozdemir-1.png	0	0	A darting shadow on the sidelines, stitching fantasy with reality with every dribble.
-113	\N	Berkan Kutlu	1994-01-24	https://i.goalzz.com/?i=o%2fp%2f157%2f82%2fberkan-kutlu-1.png	0	0	Ebb and flow personified, simultaneously the lighthouse beacon and the storm's fury.
-114	\N	Bertuğ Yıldırım	1991-10-08	https://i.goalzz.com/?i=o%2fp%2f166%2f844%2fbertug-yildirim-1.png	0	0	Poetry in motion, brandishing stealth in cleats, I paint dreams one goal at a time.
-115	\N	Burak Uca	1992-02-17	https://i.goalzz.com/?i=o%2fp%2f101%2f671%2fburak-uca-1.jpg	0	0	The watcher, predicting storms in the calm, a lighthouse in the fog of the offensive onslaught.
-116	\N	Burak Yılmaz	1994-07-06	https://i.goalzz.com/?i=o%2fp%2f173%2f326%2fburak-yilmaz-1.png	0	0	Strings of the game in my hands, conjuring symphonies from the silent chaos.
-117	\N	Çağlar Akbaba	1997-08-15	https://i.goalzz.com/?i=o%2fp%2f157%2f101%2fcaglar-akbaba-1.png	0	0	Fleeting as a comet, striking as a thunderbolt – I'm a storyteller where the ball is my quill.
-118	\N	Çağlar Söyüncü	1996-03-30	https://i.goalzz.com/?i=o%2fp%2f125%2f579%2fcaglar-soyuncu-1.png	0	0	No princes or princesses here. Just me... a defender breathing fire on the field! 🐉🔥
-119	\N	Çağrı Güney	1992-06-15	https://i.goalzz.com/?i=o%2fp%2f159%2f416%2fahmet-cagri-guney-1.png	0	0	Striker by day, wind chaser by night. My goals are known to cause gusts of excitement! 🌪️⚽️
-120	\N	Çağatay Kurukalıp	1994-01-25	https://i.goalzz.com/?i=prem%2f103415.jpg	0	0	Mysterious midfielder. They say my footwork is as elusive as Bigfoot himself... 🐾💨
-121	\N	Can Ceylan	1991-12-05	https://i.goalzz.com/?i=o%2fp%2f164%2f367%2fcan-ceylan-2.png	0	0	Not all fairy tales have happy endings—especially for opposing strikers. Keeper of the Iron Fortress🏰🥅
-122	\N	Caner Bag	1993-10-02	https://i.goalzz.com/?i=o%2fp%2f166%2f400%2fcaner-huseyin-bag-1.png	0	0	Winger | I'm like a bumper car. Keep pushing me, and I'll just swerve around you!🚗💨
-123	\N	Caner Erkin	1997-05-15	https://i.goalzz.com/?i=o%2fp%2f18%2f669%2fcaner-erkin-1.jpg	0	0	The braveheart of the backline. Once outran a cheetah... it was chasing me.🐆💨
-124	\N	Caner Osmanpaşa	1995-07-22	https://i.goalzz.com/?i=o%2fp%2f101%2f994%2fcaner-osmanpasa-1.png	0	0	The elusive goal-smashing legend. I thrash nets like a rockstar does a guitar!🎸⚽️
-125	\N	Cem Kablan	1992-02-02	https://i.goalzz.com/?i=o%2fp%2f157%2f188%2fcem-kablan-1.png	0	0	An immovable object between the posts. I've got this whole beastly defense thing down. 👹🥅
-126	\N	Cengiz Ünder	1997-05-19	https://i.goalzz.com/?i=o%2fp%2f18%2f678%2fcengiz-under-1.png	0	0	Spreading magic across the pitch. My passes are catalysts to victory potions!💫✨
-127	\N	Cenk Alkılıç	1991-11-29	https://i.goalzz.com/?i=buff%2fcenk-ahmet-alkilic.jpg	0	0	Wingman, but also a renowned spellcaster. Sweeps past you like a broom-speed chase!🧹💥
-128	\N	Cenk Gönen	1991-05-15	https://i.goalzz.com/?i=o%2fp%2f70%2f760%2fcenk-gonen-1.png	0	0	Born in the realm of a striker's fantasy, wielding thunderbolts in my cleats. Predictably unpredictable.
-129	\N	Cenk Özkaçar	1994-10-02	https://i.goalzz.com/?i=o%2fp%2f168%2f123%2fcenk-ozkacar-1.png	0	0	Conjuring football spells in the midfield. I see fields of green and lines of destiny intertwined.
-130	\N	Cenk Şahin	1992-02-20	https://i.goalzz.com/?i=o%2fp%2f107%2f617%2fcenk-sahin-1.png	0	0	Guardian of the posts, I ward off advances daring to invade my spectral sanctuary. The ghost in your goal dreams.
-131	\N	Cenk Şen	1995-12-01	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2fc.sen.jpg	0	0	Tall tales unravel wherever I tread. My determined defiance is the bridge between conquest and catastrophe.
-132	\N	Cenk Tosun	1991-04-28	https://i.goalzz.com/?i=o%2fp%2f73%2f0%2fcenk-tosun-1.png	0	0	Infusing speed and spellwork on the pitch. A blur to the untrained eye, a storm for the unready.
-133	\N	Cerem Dinçer	1996-07-10	https://i.goalzz.com/?i=o%2fp%2f162%2f359%2fcerem-talha-dincer-1.jpg	0	0	Steady as the north star, fierce as a dragon's breath, I am the stalwart shield in a maelstrom.
-134	\N	Cevatcan Ekinci	1993-09-24	https://i.goalzz.com/?i=o%2fp%2f166%2f397%2fcevatcan-ekinci-1.jpg	0	0	Striker emerging from the shadows, my presence is felt before it's seen, echoing in the twine of nets.
-135	\N	Ceyhun Gülselam	1990-03-03	https://i.goalzz.com/?i=jmal%2fceyhun.jpg	0	0	A behemoth between the sticks, I am the anvil upon which opposition dreams are shattered.
-136	\N	Cihan Karaman	1992-06-16	https://i.goalzz.com/?i=teams%2fgermany%2ffc_union-berlin%2fcihan-kahraman.jpg	0	0	Whisperer to the spherical muse, my dance on the field orchestrates tales of triumphant toil.
-137	\N	Cihan Topaloğlu	1997-08-05	https://i.goalzz.com/?i=o%2fp%2f144%2f671%2fcihan-topaloglu-1.png	0	0	Winger in celestial flight, I dash across the green theatre sewing dreams and eluding doubts.
-138	\N	Cihar Tarhan	1991-06-15	https://i.goalzz.com/?i=o%2fp%2f144%2f673%2fcinar-tarhan-1.png	0	0	Dependable striker known for his clinical finishing and relentless work ethic.
-139	\N	Colin Kazım	1994-04-12	https://i.goalzz.com/?i=o%2fp%2f27%2f482%2fcolin-kazimrichards-1.png	0	0	Midfield maestro, lauded for pinpoint passing accuracy and strategic field vision.
-140	\N	Demir Ege Tıknaz	1988-02-23	https://i.goalzz.com/?i=o%2fp%2f167%2f840%2fdemir-ege-tiknaz-1.jpg	0	0	Skilled goalkeeper with reflexes like a cat and a knack for saving penalty kicks.
-141	\N	Deniz Doğan	1995-10-01	https://i.goalzz.com/?i=2014im%2fdogan.jpg	0	0	Towering central defender, remarkable for hard tackling and strong aerial game.
-142	\N	Deniz Hümmet	1992-12-03	https://i.goalzz.com/?i=o%2fp%2f107%2f558%2fdeniz-hummet-1.png	0	0	Speedy winger who’s equally adept at crossing and cutting inside to shoot.
-143	\N	Deniz Kadah	1996-07-15	https://i.goalzz.com/?i=o%2fp%2f92%2f605%2fdeniz-kadah-1.png	0	0	No-nonsense fullback, shines in overlapping runs, and estimated to have lungs of steel.
-144	\N	Deniz Türüç	1993-05-02	https://i.goalzz.com/?i=o%2fp%2f4%2f523%2fdeniz-turuc-2.png	0	0	Intelligent striker lauded for his quick feet, creativity, and consistent goal record.
-145	\N	Deniz Vural	1989-03-09	https://i.goalzz.com/?i=o%2fp%2f107%2f482%2fdeniz-vural-1.png	0	0	Calm and composed goalkeeper, his distribution starts attacks as effectively as it stops them.
-146	\N	Dilaver Güçlü	1995-07-14	https://i.goalzz.com/?i=vfl_bochum_%2f25.jpg	0	0	Playmaker with a knack for unlocking defenses with his vision and skillful passing.
-147	\N	Doğan Alemdar	1997-09-12	https://i.goalzz.com/?i=505%2fdogan.jpg	0	0	Tireless winger known for his robust style, precise delivery, and unparalleled work rate.
-148	\N	Doğan Can Davas	1991-06-15	https://i.goalzz.com/?i=o%2fp%2f107%2f565%2fdogan-can-davas-1.png	0	0	Striker 🔴⚽. A master of finding net, keeps the scoring tally ticking like a seasoned pro.
-149	\N	Doğanay Aygün	1994-04-12	https://i.goalzz.com/?i=o%2fp%2f166%2f395%2fdoganay-aygun-1.png	0	0	Midfield general 🔵⚽. His control and vision on the pitch is like a seasoned sailor commanding the high seas.
-150	\N	Doğucan Haspolat	1988-02-23	https://i.goalzz.com/?i=o%2fp%2f125%2f983%2fdogucan-haspolat-1.png	0	0	Goalkeeper 👐. Known for his cat-like agility, lives for the thrill of an incoming penalty ⚽.
-151	\N	Doğukan Nelik	1995-10-01	https://i.goalzz.com/?i=o%2fp%2f166%2f903%2fdogukan-nelik-1.png	0	0	Central Defender ⚫⚽. An absolute defensive rock, handling aerial duels like a knight in a joust.
-152	\N	Doğukan Özkan	1993-10-02	https://i.goalzz.com/?i=o%2fp%2f160%2f253%2fdogukan-ozkan-1.png	0	0	Winger ⚪⚽. As fleet of foot as Hermes, he dances down the flanks with an artist's flair.
-153	\N	Doğukan Sinik	1996-07-15	https://i.goalzz.com/?i=o%2fp%2f141%2f203%2fdogukan-sinik-1.png	0	0	Fullback ⚫⚽. With runs as deep as a poet's verses, he's the unsung hero who anchors the defense and bolsters the attack.
-154	\N	Doğukan Toköz	1993-05-02	https://i.goalzz.com/?i=o%2fp%2f143%2f110%2fdorukhan-tokoz-1.png	0	0	Striking sensation 🔴⚽. His fancy footwork and sharpshooter aim are the stuff of legends.
-155	\N	Duhan Aksu	1989-03-09	https://i.goalzz.com/?i=o%2fp%2f163%2f54%2fduhan-aksu-1.png	0	0	Goalkeeper 🔵⚽. His keen eye and quick reflexes form the bulwark between opponents and goals.
-156	\N	Efe Koyuncu	2005-04-12	https://i.goalzz.com/?i=o%2fp%2f173%2f511%2fefe-arda-koyuncu-2.png	0	0	Winger ⚪⚽. With his relentless energy, he’s a workhorse that gallops down the wing like Pegasus.
-157	\N	Efecan Karaca	1995-07-14	https://i.goalzz.com/?i=o%2fp%2f57%2f464%2fefecan-karaca-1.png	0	0	Playmaker 🔵⚽. He weaves threads of gameplay effortlessly, like a maestro conducting a grand symphony.
-158	\N	Efkan Bekiroğlu	2003-01-14	https://i.goalzz.com/?i=o%2fp%2f157%2f78%2fefkan-bekiroglu-1.png	0	0	Goalkeeper 🔵⚽. His agility and reflexes defy his age, keeping nets safe like an experienced guardian.
-159	\N	Ege Bilsel	2002-05-12	https://i.goalzz.com/?i=o%2fp%2f178%2f377%2fege-bilsel-1.png	0	0	Central Defender ⚫⚽. Young but stands tall, shielding backline like a seasoned warrior.
-160	\N	Egehan Gök	2005-04-20	https://i.goalzz.com/?i=gabas%2fegehan.jpg	0	0	Midfielder ⚪⚽. A prodigy in making, his vision and control orchestrates game like a seasoned maestro.
-161	\N	Egemen Korkmaz	1982-02-04	https://i.goalzz.com/?i=buff%2fegemen.jpg	0	0	Striker 🔴⚽. His awe-inspiring finishing skills are rewriting the rookie playbook one goal at a time.
-162	\N	Ekrem Kılıçarslan	2004-01-25	https://i.goalzz.com/?i=o%2fp%2f162%2f808%2fekrem-kilicarslan-1.png	0	0	Winger 🔵⚽. His blistering pace and trickery make him the nightmare in any defender's sleep.
-163	\N	Emibya Ayyıldız	2003-10-13	https://i.goalzz.com/?i=o%2fp%2f162%2f792%2fembiya-ayyildiz-1.png	0	0	Fullback ⚫⚽. His tactical maturity supports the defence and triggers the attack, all in a day's work.
-164	\N	Emin Bayram	2002-03-06	https://i.goalzz.com/?i=o%2fp%2f152%2f531%2femin-bayram-1.png	0	0	Midfielder ⚪⚽. Logan's game reading and passing prowess could easily rival players twice his age.
-165	\N	Emir Gültekin	2004-08-25	https://i.goalzz.com/?i=o%2fp%2f176%2f813%2femir-gultekin-1.png	0	0	Striker 🔴⚽. His raw talent and clinical finishes paint a promising picture of a future superstar.
-166	\N	Emirecan Altıntaş	2001-11-04	https://i.goalzz.com/?i=jmal%2femircan.jpg	0	0	Goalkeeper 🔵⚽. His unwavering focus and spectacular saves make him the last line of defence any    team would be proud of.
-167	\N	Emirhan Aydoğan	2005-06-17	https://i.goalzz.com/?i=o%2fp%2f163%2f58%2femirhan-aydogan-1.png	0	0	Winger ⚫⚽. Known for his dazzling runs and precise crossing, his footprints are already echoing in the pitch.
-168	\N	Emirhan Çakır	2002-12-17	https://i.goalzz.com/?i=o%2fp%2f160%2f843%2femirhan-cakir-1.png	0	0	Love stopping goal parties. Age doesn't defy technique. Your up-and-coming wall, Goalkeeper 🧤 #RisingStar ⚽🌟
-169	\N	Emirhan Delibaş	2003-07-26	https://i.goalzz.com/?i=o%2fp%2f167%2f720%2femirhan-delibas-1.png	0	0	Young gun 🔥! Defending like a boss, standing tall in the middle. ⚽ + 🏢 = Me! Central Defender.
-170	\N	Emirhan İlkhan	2005-05-30	https://i.goalzz.com/?i=o%2fp%2f167%2f491%2femirhan-ilkhan-1.png	0	0	Sculpting the game from the heart of the field. Only 18, but I've got the midfield on my strings. 🎩⚽️ #MagicianInTheMaking
-171	\N	Emirhan Topçu	2004-01-13	https://i.goalzz.com/?i=o%2fp%2f144%2f672%2femirhan-topcu-1.png	0	0	Chasing dreams one goal at a time. A teen with a taste for the net. ⚡🎯 #NextGenStriker
-172	\N	Emre Akbaba	1992-02-12	https://i.goalzz.com/?i=o%2fp%2f115%2f607%2femre-akbaba-1.png	0	0	19, painting wings with my boots, running down the flanks. 💨The future's on the wing! ⚽🤙
-173	\N	Emre Çolak	2003-11-09	https://i.goalzz.com/?i=haf%2femre.jpg	0	0	Rising fullback. Got the left flank under my swagger. Young blood with an old school charm. 🏴‍☠️🔝
-174	\N	Emre Kılınç	2003-04-21	https://i.goalzz.com/?i=o%2fp%2f141%2f751%2femre-kilinc-1.png	0	0	20, Conjuring goals outta nowhere, they call me the Midfield Maestro. 🕹️⚽️ #WatchThisSpace
-175	\N	Emre Mor	2005-02-02	https://i.goalzz.com/?i=teams%2fgermany%2fdortmund%2femre_mor.jpg	0	0	They say age is just a number, I say goals are too. Young gun upfront. 💥 
-176	\N	Emre Taşdemir	2006-12-05	https://i.goalzz.com/?i=o%2fp%2f107%2f521%2femre-tasdemir-1.png	0	0	Believer, Achiever, Goalkeeper. Just 17 but already keeping sheets clean. ⛔🥅 #CleanSheetsClub
-177	\N	Emrecan Uzunhan	2005-08-17	https://i.goalzz.com/?i=o%2fp%2f172%2f881%2femrecan-uzunhan-1.png	0	0	Young, speedy and ready to fly down the wings! Just 18 but turning heads already. ⚽️🔥 #FutureWinger
-178	\N	Ender Aygören	2005-02-19	https://i.goalzz.com/?i=prem%2f57699.jpg	0	0	"Dreaming big and making every sprint count 🏃‍♂️ 18-year-old, Future star winger 🔵⚽️. Stand back and watch this space!" 🚀
-179	\N	Enes Ünal	2006-12-05	https://i.goalzz.com/?i=jawharanet%2fspain2015%2funai.jpg	0	0	"Age is no barrier when you're this fierce. I guard the posts⛔ and keep the ball out 🧤⚽️. Clocked in at 17 years and counting!"
-180	\N	Eray Birnican	2004-04-13	https://i.goalzz.com/?i=o%2fp%2f18%2f681%2feray-birnican-1.png	0	0	"Upping the MBP-Midfield Banter Play 😎🎩. Bringing my A-game at just 19 ⚽️. Let's drive the game together!" 🚗
-181	\N	Enis Destan	2004-06-22	https://i.goalzz.com/?i=o%2fp%2f129%2f845%2fenis-destan-3.png	0	0	"Knocking the opponents out one tackle at a time 💪🏻. Rock-solid at 19 🏰⚽. The future's in the defense!"
-182	\N	Erce Kardeşler	2005-03-05	https://i.goalzz.com/?i=o%2fp%2f153%2f758%2ferce-kardesler-1.png	0	0	"Finding nets at 18 ⚽️💥, I'm not your average striker! Get ready for goals, world. See you on the pitch!" ⚡️
-183	\N	Erdal Kılıçaslan	2003-09-07	https://i.goalzz.com/?i=omar_a%2feuro%2fosmanlispor_%2f2016-08-26_225714.jpg	0	0	"They call me the Wing Commander 👨‍✈️ Driven, dedicated, and a touch speedy at 20. Strap in, it's gonna be a wild ride! 🔵⚽."
-184	\N	Erdi Dikmen	2004-11-18	https://i.goalzz.com/?i=o%2fp%2f159%2f458%2ferdi-dikmen-2.png	0	0	"Live, love, defend. Your next-gen fullback reporting for duty at 19 🚀. Stay tuned - the game is on!" 🖤⚽
-185	\N	Eren Albayrak	2005-05-06	https://i.goalzz.com/?i=messironld%2feren1.jpg	0	0	"Alright, world! Ready to dive, save and conquer at 18. Your aspiring goal-stopper is here 🧤💥"
-186	\N	Eren Bilen	2003-01-13	https://i.goalzz.com/?i=o%2fp%2f136%2f983%2feren-bilen-1.png	0	0	"Kicking the ball around ⚽ is my thing! Strikin' 'em hot and fresh only at 20 🔥. The goal posts won't know what hit 'em!"
-187	\N	Eren Elmalı	2004-02-20	https://i.goalzz.com/?i=o%2fp%2f159%2f628%2feren-elmali-1.png	0	0	"19 and sweeping the field left and right. Daring by day, playmaking by night 🎩💃. Onwards and upwards!" ⛰️⚽
-188	\N	Eren Erdoğan	2005-03-06	https://i.goalzz.com/?i=o%2fp%2f166%2f426%2feren-erdogan-2.png	0	0	"Scoring is my forte, the pitch is my playground ⚽️💥. Future of forward play."
-189	\N	Eren Karaağaç	2003-06-01	https://i.goalzz.com/?i=o%2fp%2f172%2f714%2feren-karaagac-1.png	0	0	"At the helm of the midfield, weaving wonders 🕹️⚽. Master of the pitch in the making."
-190	\N	Eren Karadağ	2002-09-12	https://i.goalzz.com/?i=hghf%2feren.jpg	0	0	Dancing down the flanks 🩰. Quick feet, quicker thinking. Winging it like a pro!
-191	\N	Erencan Yardımcı	2004-12-15	https://i.goalzz.com/?i=o%2fp%2f170%2f739%2ferencan-yardimci-1.png	0	0	Between the sticks is where the magic happens 🧤🛑. Keeper of clean sheets.
-192	\N	Erhun Öztümer	2006-01-20	https://i.goalzz.com/?i=fdhggg%2foztumer.jpg	0	0	Solid as a rock in defense. No bypassing under my watch 🚫⛔. The fortress of future football!
-193	\N	Ersin Destanoğlu	2005-02-08	https://i.goalzz.com/?i=pochettino%2fersin.jpg	0	0	"Running games from the middle of the pitch. The midfield maestro in action💡⚽."
-194	\N	Ertaç Ozbir	2003-07-19	https://i.goalzz.com/?i=o%2fp%2f90%2f864%2fertac-ozbir-1.png	0	0	Instinctive in the 18-yard box, scoring goals left, right and center. The striker's code in the making.
-195	\N	Erten Ersu	2002-11-21	https://i.goalzz.com/?i=o%2fp%2f90%2f808%2ferten-ersu-1.png	0	0	Defending the colors, anchored in the heart of defense ⛓️⚽. Be warned, forwards!
-196	\N	Ertuğrul Ersoy	2003-05-23	https://i.goalzz.com/?i=o%2fp%2f107%2f523%2fertugrul-ersoy-1.png	0	0	Channeling the love for the game down the flanks. On the way to ultimate wing wizardry 🕊️⚽.
-197	\N	Fatih Aksoy	2004-04-14	https://i.goalzz.com/?i=o%2fp%2f134%2f754%2ffatih-aksoy-1.png	0	0	Unyielding between the posts, defying and defending. Recording clean sheets, one game at a time.
-198	\N	Fatih Şanlıtürk	2001-10-04	https://i.goalzz.com/?i=o%2fp%2f161%2f733%2fyigit-sanliturk-1.png	0	0	A guardian between the sticks 🧤⚽, with the reflexes of a panther and nerves of steel.
-199	\N	Fatih Yılmaz	1999-04-01	https://i.goalzz.com/?i=o%2fp%2f166%2f355%2ffatih-yilmaz-1.jpg	0	0	Running games from the midfield, connecting dots and forging attacks. A true wizard of the pitch 🕹️⚽!
-200	\N	Ferhat Yazgan	2000-05-17	https://i.goalzz.com/?i=o%2fp%2f110%2f845%2fferhat-yazgan-1.png	0	0	The defensive anchor of the backline, defying attackers and standing tall under pressure. A fortress on the pitch 🚫⛔.
-201	\N	Furkan Akyüz	2002-02-26	https://i.goalzz.com/?i=o%2fp%2f179%2f851%2ffurkan-akyuz-1.png	0	0	Born to strike ⚽💥! Calls the 18-yard box home and has a knack for finding the net.
-202	\N	Furkan Bayır	1998-11-30	https://i.goalzz.com/?i=o%2fp%2f166%2f895%2ffurkan-bayir-1.png	0	0	Running down the flanks 💨. Creating chances, one sharp cross at a time. Winging it is more than just a phrase!
-203	\N	Furkan Beklevic	2001-01-03	https://i.goalzz.com/?i=o%2fp%2f159%2f457%2ffurkan-beklevic-2.png	0	0	Midfield Dynamo! The heartbeat of the field, orchestrating play with finesse and vision.
-204	\N	Furkan Soyalp	2000-03-14	https://i.goalzz.com/?i=o%2fp%2f107%2f520%2ffurkan-soyalp-1.png	0	0	An imposing figure in goal, a custodian who says NO to every intrusive attempt 🧤⚽!
-205	\N	Gökdeniz Bayraktar	2002-07-19	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2fg.bayrakdar.jpg	0	0	Quickly-decisive, always incisive. Striking fear into the heart of opposition defenders.
-206	\N	Gökhan Akkan	2001-08-22	https://i.goalzz.com/?i=o%2fp%2f65%2f195%2fgokhan-akkan-1.png	0	0	A rock in the defense, with towering headers and timed tackles. Building walls on the pitch! ⚫⚽
-207	\N	Gökhan Aslan	1999-09-06	https://i.goalzz.com/?i=hitham%2feredivisie_2014%2feredivisie_2015%2fgokhan+alsan.jpg	0	0	A true maestro in midfield. Dictating the tempo of the game, playing the orchestra of passes ⚽🎩.
-208	\N	Gökhan Gönül	1995-11-28	https://i.goalzz.com/?i=o%2fp%2f38%2f269%2fgokhan-gonul-1.jpg	0	0	Midfield maestro, orchestrating symphonies with touches and passes 🎵⚽.
-209	\N	Gökhan Karadeniz	1993-02-14	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2fg.karadeniz.jpg	0	0	Between the sticks, bolstering the defense 🧤⛔. Making nets safer, one save at a time.
-210	\N	Göktan Gurpuz	1990-06-15	https://i.goalzz.com/?i=o%2fp%2f173%2f305%2fgoktan-gurpuz-2.png	0	0	Controls the game from the backline, playing defensive notes that echo resilience and tenacity 💪⚽.
-211	\N	Günay Güvenç	1988-08-21	https://i.goalzz.com/?i=o%2fp%2f106%2f470%2fgunay-guvenc-1.png	0	0	Speed is my language, flanks my turf ⚡💨. Serving crosses, causing chaos.
-212	\N	Güray Vural	1990-07-13	https://i.goalzz.com/?i=o%2fp%2f107%2f486%2fguray-vural-1.png	0	0	Striking is an art, and the 18-yard box is my canvas 🎨⚽. Goal? That's my signature.
-213	\N	Gürkan Başkan	1992-12-30	https://i.goalzz.com/?i=o%2fp%2f161%2f377%2fgurkan-baskan-1.jpg	0	0	The midfield dynamo, threading passes like pearls on a string 💫⚽.
-214	\N	Güven Yalçın	1988-01-19	https://i.goalzz.com/?i=o%2fp%2f141%2f212%2fguven-yalcin-1.png	0	0	The goalpost is my citadel, keeping, defending, denying each intrusive attempt ⚔️⚽
-215	\N	Hakan Arslan	1986-03-07	https://i.goalzz.com/?i=o%2fp%2f102%2f77%2fhakan-arslan-1.jpg	0	0	18-yard box predator, finding net with instinctive precision ⚽🎯.
-216	\N	Hakan Aydın	1989-05-16	https://i.goalzz.com/?i=o%2fp%2f163%2f241%2fhakan-aydin-1.png	0	0	The defensive stalwart, a fortress shielding attacks, standing tall in defiance 🤲⚽.
-217	\N	Hakan Çalhanoğlu	1991-04-21	https://i.goalzz.com/?i=o%2fp%2f93%2f973%2fhakan-calhanoglu-1.png	0	0	Wing wizard, serving assists, weaving magic from the flanks 🌪️⚽.
-218	\N	Halil Akbunar	1986-09-14	https://i.goalzz.com/?i=o%2fp%2f144%2f520%2fhalil-akbunar-1.png	0	0	Dashin' down the wing, crossin' like a king 👑⚽#Winger
-219	\N	Halil Dervişoğlu	1989-05-21	https://i.goalzz.com/?i=o%2fp%2f141%2f209%2fhalil-dervisoglu-1.png	0	0	Part poet, part quarterback; playmaker supreme 🎩⚽ #MidfieldMaestro
-220	\N	Hasan Ali Kaldırım	1987-01-18	https://i.goalzz.com/?i=o%2fp%2f90%2f809%2fhasan-ali-kaldirim-1.png	0	0	Quick on my feet, quicker on the retreat. Your friendly neighbourhood full-back ⚔️⚽
-221	\N	Hasan Hüseyin Acar	1991-11-30	https://i.goalzz.com/?i=o%2fp%2f107%2f547%2fhasan-huseyin-acar-1.png	0	0	Plugging holes and building molehills into mountains at the back — your #DefensiveDynamo
-222	\N	Hasan Özkan	1990-03-08	https://i.goalzz.com/?i=esouza%2f275615.jpg	0	0	Channeling inner Banks and Buffon, your fearless shot-stopper 🧤⚽ #KeepingItClean
-223	\N	Hasan Yurtseven	1985-07-23	https://i.goalzz.com/?i=hghf%2fhasan.jpg	0	0	Netting them like a seasoned fisherman 🎣⚽#Predator
-224	\N	Hayrullah Bilazer	1992-04-28	https://i.goalzz.com/?i=o%2fp%2f159%2f450%2fhayrullah-bilazer-2.png	0	0	Wing is the word, speed is the game. On the highway to hall of fame. #WingMaster
-225	\N	Hüseyin Türkmen	1987-08-09	https://i.goalzz.com/?i=o%2fp%2f116%2f147%2fhuseyin-turkmen-1.png	0	0	In the heart of the battle, anchoring and sailing. #MidfieldGeneral
-226	\N	İbrahim Akdağ	1986-12-15	https://i.goalzz.com/?i=o%2fp%2f134%2f282%2fibrahim-akdag-1.png	0	0	In the trenches, fighting the good fight - your central defense specialist 🛡️⚽
-227	\N	İbrahim Pehlivan	1988-10-13	https://i.goalzz.com/?i=o%2fp%2f115%2f540%2fibrahim-pehlivan-1.png	0	0	On the lines, breaking the chains. Born to stop the shots. #DecisiveDefender
-228	\N	İbrahim Yılmaz	1987-06-21	https://i.goalzz.com/?i=o%2fp%2f163%2f64%2fibrahim-yilmaz-1.png	0	0	Saving nets, breaking sweats. The posts are my domain 🆘⚽️ #GoalieLife
-229	\N	İlkay Durmuş	1985-01-09	https://i.goalzz.com/?i=madridderb%2filkay.jpg	0	0	Striding through midfield, a nimble navigator of the pitch 🏆⚽️ #GrassGeographer
-230	\N	İrfan Başaran	1985-09-12	https://i.goalzz.com/?i=o%2fp%2f162%2f358%2firfan-basaran-1.jpg	0	0	Lighting up the field from the flanks, catching the wind under my wings 💨⚽️ #WingWanderer
-231	\N	İsmail Yüksek	1989-02-18	https://i.goalzz.com/?i=o%2fp%2f157%2f99%2fismail-yuksek-1.png	0	0	Shielding and fielding at the heart of defence. Breakthrough? Not on my watch 👊⚽️ #WallWhisperer
-232	\N	İsmail Zehir	1986-07-30	https://i.goalzz.com/?i=o%2fp%2f171%2f139%2fismail-zehir-1.png	0	0	Split-second decisions, goal-bound precision. Finding net's my mission 🎯⚽ #BornStriker
-233	\N	İrfan Can Eğribayat	1988-03-24	https://i.goalzz.com/?i=o%2fp%2f88%2f429%2firfan-can-egribayat-1.png	0	0	Poetry in motion, at the heart of the action. Creating rhythms in the midfield 🕺⚽️ #FlowFinder
-234	\N	İrfan Can Kahveci	1987-11-15	https://i.goalzz.com/?i=o%2fp%2f107%2f588%2firfan-can-kahveci-1.png	0	0	Denying shots, defying odds. Keeper of the keeper's code 🥅🕶️ #NetProtector
-235	\N	İzzet Çelik	1990-08-03	https://i.goalzz.com/?i=o%2fp%2f166%2f172%2fizzet-celik-1.png	0	0	Twisting, turning, looping, learning. Life's more fun on the wings 🌀⚽️ #FlankFunk
-236	\N	İzzet Karaboğa	1986-05-20	https://i.goalzz.com/?i=o%2fp%2f160%2f995%2fizzet-karaboga-1.png	0	0	Crafting defence like an artisan, brick by brick. The fortress stands tall ⚔️⚽️ #DefenceDoyen
-237	\N	Kaan Ayhan	1984-10-23	https://i.goalzz.com/?i=o%2fp%2f75%2f856%2fkaan-ayhan-1.png	0	0	Tracing arcs and sparking cheers. Midfield maestro is here 🌟⚽️ #MidfieldMaverick
-238	\N	Kaan Kanak	1983-12-09	https://i.goalzz.com/?i=o%2fp%2f107%2f540%2fkaan-kanak-1.png	0	0	Waving magic in the midfield, game-changer and the field's heartbeat 💓⚽ #MidfieldMagician
-239	\N	Kadir Seven	1984-07-15	https://i.goalzz.com/?i=o%2fp%2f173%2f112%2fkadir-seven-1.png	0	0	Hits the net like a thunderbolt, striker par excellence ⚡⚽️ #ThunderStriker
-240	\N	Kağan Moradoğlu	1987-08-03	https://i.goalzz.com/?i=o%2fp%2f163%2f238%2fkagan-moradaoglu-1.png	0	0	Outruns, outmaneuvers, simply outstanding on the wings 💨🌪️ #LightningWinger
-241	\N	Kahraman Demirtaş	1981-11-21	https://i.goalzz.com/?i=o%2fp%2f165%2f856%2fkahraman-demirtas-1.png	0	0	The unbreachable wall, the guardian of the backline 🧱⚫ #DefenseGuard
-242	\N	Kamil Ahmet Çörekçi	1985-09-30	https://i.goalzz.com/?i=kdlhf%2fkamil.jpg	0	0	Rules the roost between the posts, the custodian supreme 🥅🧤 #GuardianOfTheGoal
-243	\N	Kazımcan Karataş	1988-04-26	https://i.goalzz.com/?i=o%2fp%2f166%2f424%2fkazimcan-karatas-1.png	0	0	A maestro in cleats, turns games around in the midfield like clockwork 🎼⚽ #MidfieldMaestro
-244	\N	Kemal Aslan	1980-06-12	https://i.goalzz.com/?i=players%2fturkey%2faslan.jpg	0	0	Targets marked, shots charged. No respite for the nets ⚽️💥 #StrikerExtraordinaire
-245	\N	Kenan Karaman	1983-10-29	https://i.goalzz.com/?i=o%2fp%2f93%2f963%2fkenan-karaman-1.png	0	0	Flies through the flanks, eyes on the goal. Wing play reimagined 🚀⚽️ #WingWonder
-246	\N	Kenan Yıldız	1983-01-14	https://i.goalzz.com/?i=o%2fp%2f178%2f534%2fkenan-yildiz-1.png	0	0	At the heart of the defense, the pillar that doesn't waver 🗼⚽️ #UltimateUpholder
-247	\N	Kerem Aktürkoğlu	1984-05-19	https://i.goalzz.com/?i=o%2fp%2f159%2f392%2fmuhammed-kerem-aktur-1.png	0	0	Denying every inch of space, the goalkeeper who dares to defy 🚫⚽ #DenialDynamo
-248	\N	Kerem Kesgin	1992-03-08	https://i.goalzz.com/?i=gabas%2fkerem.jpg	0	0	Grit, grace, and goals galore, mastering the 18-yard lore 💫⚽.
-249	\N	Kerem Baykuş	1995-09-11	https://i.goalzz.com/?i=o%2fp%2f157%2f61%2fkerem-baykus-1.png	0	0	Midfield dynamo, on the pitch with a show. Commanding chaos, calm in control 😎⚽.
-250	\N	Kerem Kalafat	1993-07-21	https://i.goalzz.com/?i=o%2fp%2f157%2f66%2fkerem-kalafat-1.png	0	0	Fearless guard in front of the net, keeper of the clean sheets, savior of bets 🧤⚽.
-251	\N	Kerem Şen	1994-12-19	https://i.goalzz.com/?i=o%2fp%2f177%2f153%2fkerem-sen-1.png	0	0	Soldier of the flanks, quick as lighting, slippery as an eel 💨⚽.
-252	\N	Kerem Ersuner	1994-01-30	https://i.goalzz.com/?i=o%2fp%2f161%2f543%2fkerem-yusuf-ersunar-1.jpg	0	0	Brick wall of the defense, stopping goals and creating immense 🚫⚽.
-253	\N	Kerim Frei	1993-05-14	https://i.goalzz.com/?i=o%2fp%2f80%2f809%2fkerim-frei-1.png	0	0	Dictating the tempo, mastering the rhythm, the pitch's puppeteer 🎩⚽.
-254	\N	Kerem Demirbay	1995-11-23	https://i.goalzz.com/?i=o%2fp%2f93%2f974%2fkerem-demirbay-2.png	0	0	Toppling defenders, threading the needle, striking gold ⚽️💥.
-255	\N	Koray Altınay	1991-04-07	https://i.goalzz.com/?i=hazzard%2fkoray.jpg	0	0	Sprinting the grass, racing the wind, an artist with the ball at his feet ⚠️⚽.
-256	\N	Koray Kılınç	1992-09-25	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2fkoraykilinc.gif	0	0	Storming from the back, the iron pillar of defense, won't crack ⛔⚽.
-257	\N	Mert Çetin	1990-06-03	https://i.goalzz.com/?i=o%2fp%2f148%2f653%2fmert-cetin-1.png	0	0	The safe hands between the sticks, foe of strikers, friend of clean sheets 🥅⚽.
-258	\N	Mert Günok	1997-02-15	https://i.goalzz.com/?i=medalss%2f2018-11-19_12-51-44.jpg	0	0	Dancing with the ball at my feet, creating wizardry, a spectacle hard to beat 😎⚽.
-259	\N	Mert Hakan Yandaş	1995-07-27	https://i.goalzz.com/?i=o%2fp%2f128%2f429%2fmert-hakan-yandas-1.png	0	0	Fearless in the penalty box, making nets shiver and hearts rock 💥⚽.
-260	\N	Mert Müldür	1996-10-21	https://i.goalzz.com/?i=o%2fp%2f142%2f853%2fmert-muldur-1.png	0	0	Zeroing in from the wings, dashing, dancing, lived for the beautiful flings 💫⚽.
-261	\N	Mert Topuz	1997-09-14	https://i.goalzz.com/?i=o%2fp%2f160%2f282%2fmert-topuz-1.png	0	0	Striking fear in the heart of the net, an executor who never forgets 🎯⚽.
-262	\N	Mertcan Cam	1996-05-08	https://i.goalzz.com/?i=o%2fp%2f162%2f351%2fmertcan-cam-1.png	0	0	Turning the wheel in the middle, a spectacle of skills so subtle 🕹️⚽.
-263	\N	Metehan Mert	1995-11-20	https://i.goalzz.com/?i=o%2fp%2f157%2f265%2fmetehan-mert-3.png	0	0	Resolute as a rock at the back, for strikers nightmare to hack 🛡️⚽.
-264	\N	Murat Sipahioğu	1998-04-30	https://i.goalzz.com/?i=o%2fp%2f159%2f629%2fmurat-sipahioglu-1.jpg	0	0	Lightning speed, razor sharp cross, your favorite wing boss 💨⚽.
-265	\N	Merih Demiral	1997-08-16	https://i.goalzz.com/?i=o%2fp%2f144%2f589%2fmerih-demiral-1.png	0	0	Between posts, a titan unmoved. For strikers, a riddle unsolved 🧤⚽.
-266	\N	Nazım Sangare	1996-06-27	https://i.goalzz.com/?i=o%2fp%2f144%2f478%2fnazim-sangare-1.png	0	0	Classic midfield maestro, pulling strings, creating the perfect show 🎩⚽.
-267	\N	Necip Uysal	1998-02-05	https://i.goalzz.com/?i=o%2fp%2f70%2f769%2fnecip-uysal-1.png	0	0	A fortress in the defense, breaking the dreams of offensive intents ⚔️⚽.
-268	\N	Oğulcan Çağlayan	1997-03-12	https://i.goalzz.com/?i=omar_a%2fturk%2fgaziantepspor%2f1375881709-ogulcan-caglayan1.jpg	0	0	Crafting goals with precision, striker with a mission ⚽️💥
-269	\N	Oğulcan Ulgun	1996-11-26	https://i.goalzz.com/?i=o%2fp%2f153%2f873%2fogulcan-ulgun-1.png	0	0	Executing silken skills on the flanks, your favorite wing commander in action 🕊️⚽️
-270	\N	Oğuz Ceylan	1997-07-19	https://i.goalzz.com/?i=o%2fp%2f153%2f861%2foguz-ceylan-1.png	0	0	Manoeuvering the midfield magic, setting the game's rhythm, and never static 🛠️⚽️
-271	\N	Oğuzhan Özyakup	1995-01-15	https://i.goalzz.com/?i=o%2fp%2f55%2f517%2foguzhan-ozyakup-1.png	0	0	Intrepid guardian of the goal, saying 'No Entry' to every roll 🧤⛔️
-272	\N	Okan Koçuk	1993-07-26	https://i.goalzz.com/?i=o%2fp%2f107%2f524%2fokan-kocuk-1.png	0	0	Engines roaring on the flanks, leaving defenders to walk the plank 🔥⚽️
-273	\N	Okay Yokuşlu	1996-02-21	https://i.goalzz.com/?i=ashrafzamrani%2fokay+yokuslu.gif	0	0	Setting up play and dictating the day, midfield maestro in the fray 👑⚽️
-274	\N	Ömer Bayram	1997-10-09	https://i.goalzz.com/?i=medalss%2f11.jpg	0	0	Leading the offensive line, a predator in the 18-yard shrine 🏹⚽️
-275	\N	Ömer Beyaz	1995-08-03	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2fo.beyaz.jpg	0	0	Speed governing the flanks, magic unfolds when the wingman cranks ⚡⚽️
-276	\N	Ömer Toprak	1997-04-17	https://i.goalzz.com/?i=o%2fp%2f42%2f588%2fomer-toprak-1.png	0	0	Unyielding pillar in defense, turning every attack into suspense 🛡️⚽️
-277	\N	Onur Bulut	1995-09-25	https://i.goalzz.com/?i=o%2fp%2f125%2f581%2fonur-bulut-1.png	0	0	Agile hands, firm stance, guardianship of the goal at a glance 🚫⚽️
-278	\N	Onuralp Çevikkan	1999-01-25	https://i.goalzz.com/?i=o%2fp%2f178%2f397%2fonuralp-cevikkan-1.png	0	0	Striker Supreme. Each goal, a dream standing tall in the green 🥅⚽.
-279	\N	Orkun Kökçü	1998-02-17	https://i.goalzz.com/?i=o%2fp%2f137%2f406%2forkun-kokcu-1.png	0	0	Flanks are my stage, outpacing rage. Each cross, a well-scripted page 📖⚽.
-280	\N	Ozan Tufan	1996-04-19	https://i.goalzz.com/?i=guardiolaaaaa%2fozan.jpg	0	0	Midfield mastermind. Pulling strings, bending things. Orchestrating wins 🏆⚽.
-281	\N	Ramazan Civelek	1998-07-23	https://i.goalzz.com/?i=o%2fp%2f31%2f731%2framazan-civelek-1.png	0	0	Gaoler of the goal. Shots sizzled, attempts fizzled 🧤⚽.
-282	\N	Sadık Baş	1997-08-28	https://i.goalzz.com/?i=o%2fp%2f166%2f842%2fsadik-bas-1.png	0	0	Serpentine agility on the flanks. Speed and precision, enemies outranked 💨⚽.
-283	\N	Sadık Çiftpınar	1996-05-12	https://i.goalzz.com/?i=guardiolaaaaa%2fsadikdetay.jpg	0	0	Ground commander. Regal, stand taller. Midfield enchanter 🎭⚽.
-284	\N	Sefa Kınalı	1998-09-15	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2fsafakinali.gif	0	0	Pointman perfection. Cracking defenses, cultured in precision ⚔️⚽.
-285	\N	Sakıp Aytaç	1999-03-31	https://i.goalzz.com/?i=o%2fp%2f115%2f602%2fsakib-aytac-1.png	0	0	Wind Whisperer. Whooshing down the wing, slicing the field like a king 👑⚽.
-286	\N	Salih Dursun	1995-11-06	https://i.goalzz.com/?i=o%2fp%2f102%2f12%2fsalih-dursun-1.png	0	0	Bulwark on the backline. Iron grit, no transgression shall permit 🛡️⚽.
-287	\N	Salih Kavrazlı	1997-12-22	https://i.goalzz.com/?i=kdlhf%2f21033.jpg	0	0	Guardian of the goal. Sharp eyes, swift dive, no hole 🕵️⚽.
-288	\N	Salih Özcan	1998-06-06	https://i.goalzz.com/?i=o%2fp%2f114%2f190%2fsalih-ozcan-2.png	0	0	One with the ball, striking goals, a game recall 🎯⚽.
-289	\N	Salih Uçan	2000-01-14	https://i.goalzz.com/?i=o%2fp%2f90%2f810%2fsalih-ucan-1.png	0	0	Deft on the flanks, carrying the team on swift tanks 🚀⚽.
-290	\N	Samed Kaya	1999-08-17	https://i.goalzz.com/?i=33333345566%2fsamed.jpg	0	0	Dictating from the center, paints the match's texture 🎨⚽.
-291	\N	Samed Kılıç	1997-10-03	https://i.goalzz.com/?i=c.chihab%2fkilic.jpg	0	0	Shot-stopper extraordinaire, supreme guardian of the goal's lair 🦸⚽.
-292	\N	Samed Onur	1999-04-23	https://i.goalzz.com/?i=o%2fp%2f166%2f813%2fsamed-onur-1.png	0	0	Speed, skill, surprise on the wings, a footballer who sings 🎵⚽.
-293	\N	Samet Akaydın	1994-07-04	https://i.goalzz.com/?i=o%2fp%2f163%2f62%2fsamet-akaydin-2.png	0	0	Midfield maestro, conducting the orchestra, game's curator 🪄⚽.
-294	\N	Samet Can Özkan	1998-11-09	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2fs.c.ozkan.jpg	0	0	A nightmare for keepers, within 18-yards, quite the fighter 🥊⚽.
-295	\N	Sedat Şahintürk	2000-05-18	https://i.goalzz.com/?i=anis%2f2017%2f08%2fsedat+sahinturk.jpg	0	0	Master of the wings, driving defense into the rings 🛹⚽.
-296	\N	Sefa Öztürk	1997-02-28	https://i.goalzz.com/?i=o%2fp%2f166%2f413%2fsefa-ozdemir-1.png	0	0	Unyielding at the back, for attackers, an constant wrack 🏰⚽.
-297	\N	Sefa Yılmaz	1990-09-22	https://i.goalzz.com/?i=o%2fp%2f101%2f949%2fsefa-yilmaz-1.png	0	0	Safe hands, swift feet, in the goal, firm seat 🧤⚽.
-298	\N	Selçuk İnan	1985-02-10	https://i.goalzz.com/?i=medalss%2f12.jpg	0	0	Battle-hardened goalie, not just part of the scenery, stand-up comedy for every penalty 🃏⚽.
-299	\N	Selim Ay	2002-11-10	https://i.goalzz.com/?i=33333345566%2fselim.jpg	0	0	Footwork slicker than a jazz quartet, stealing hearts as the net pirouette 💖⚽.
-300	\N	Selimcan Temel	2000-07-03	https://i.goalzz.com/?i=o%2fp%2f170%2f750%2fselimcan-temel-1.png	0	0	Roaring down the wing, zipping past everything. A side of sting, served with a swing 🚀⚽.
-301	\N	Semih Karadeniz	2001-01-25	https://i.goalzz.com/?i=33333345566%2fsemih.jpg	0	0	Calm in the chaos, guiding force of the team's cosmos. Our midfield maestro 🎹⚽.
-302	\N	Semih Kılıçsoy	2003-02-14	https://i.goalzz.com/?i=o%2fp%2f181%2f768%2fsemih-kilicsoy-1.png	0	0	The defense's ferocious boss, attackers left at a loss 🛡️⚽.
-303	\N	Şener Özbayraklı	2003-08-19	https://i.goalzz.com/?i=o%2fp%2f107%2f522%2fsener-ozbayrakli-1.png	0	0	Eye for goal. Cool under pressure. Your worst nightmare, goalie's oppressor ⚽️🎯.
-304	\N	Serdar Aziz	1990-10-23	https://i.goalzz.com/?i=o%2fp%2f70%2f984%2fserdar-aziz-1.png	0	0	Whipping up whirlwinds from the wing, leaving defenders in a fling 💫⚽.
-305	\N	Serdar Dursun	1991-10-19	https://i.goalzz.com/?i=o%2fp%2f155%2f891%2fserdar-dursun-1.png	0	0	Midfield's metronome. Control, distribute, repeat. Football's poem in repeat 📘⚽.
-306	\N	Serdar Gürler	1991-09-09	https://i.goalzz.com/?i=o%2fp%2f71%2f235%2fserdar-gurler-2.png	0	0	In the trenches, fighting the fight. Turn back, or endure the defender's might ⚔⚽.
-307	\N	Serdar Özkan	1987-01-01	https://i.goalzz.com/?i=buna%2f2018-11-21_18-50-38.jpg	0	0	Between the sticks, a force to reckon. On my watch, the goal's a no-fly beacon 🎯⚽.
-308	\N	Serdar Poyraz	2002-06-14	https://i.goalzz.com/?i=o%2fp%2f161%2f411%2fserdar-poyraz-1.png	0	0	Precision with every shot, strikers' role is what I've got 🌠⚽.
-309	\N	Serdar Saatçi	2003-09-27	https://i.goalzz.com/?i=o%2fp%2f161%2f583%2fserdar-saatci-2.png	0	0	Battles on the flanks, tearing up the tanks 🚀⚽.
-311	\N	Sergen Yatağan	2004-02-20	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2fs.yatagan.jpg	0	0	Steady at the rear, putting attackers' dreams to sear 🔥⚽.
-312	\N	Serhat Ahmetoğlu	2003-07-31	https://i.goalzz.com/?i=o%2fp%2f162%2f93%2fserhat-ahmetoglu-1.png	0	0	Unleashes venom with every strike, keepers' fright in the night 🦂⚽.
-313	\N	Serkan Asan	2002-05-24	https://i.goalzz.com/?i=kdlhf%2fserkan.jpg	0	0	Commands the wing area, a sight scarier for the defenders 🕊️⚽.
-314	\N	Serkan Göksu	1993-08-16	https://i.goalzz.com/?i=o%2fp%2f173%2f223%2fserkan-goksu-1.png	0	0	Midfield maestro with the ball, opponents are at my beck and call 🎩⚽.
-315	\N	Serkan Kırıntılı	2001-12-30	https://i.goalzz.com/?i=33333345566%2fprsnda.jpg	0	0	Tower of strength at the back, attackers' attacks are out of whack 🗼⚽.
-316	\N	Serkan Özbalta	1979-02-05	https://i.goalzz.com/?i=o%2fp%2f170%2f832%2fserkan-ozbalta-1.png	0	0	A sorcerer with the ball at foot, through the net, every shot I put ⚡⚽.
-317	\N	Servet Çetin	1981-10-04	https://i.goalzz.com/?i=players%2fturkey%2fserv.jpg	0	0	On the flanks with the ball, makes my opponents' jaws fall 😱⚽.
-318	\N	Sıddık Çelik	2004-12-28	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2fs.celik.jpg	0	0	Redefining the striker's tale, when I hit, it never fails ⚽️💥.
-319	\N	Sinan Bolat	1988-09-03	https://i.goalzz.com/?i=o%2fp%2f59%2f538%2fsinan-bolat-1.png	0	0	Soaring down the wings, a nightmare in defenders' dreams 🦅⚽.
-320	\N	Sinan Kurt	1995-03-02	https://i.goalzz.com/?i=o%2fp%2f166%2f171%2fsinan-kurt-1.png	0	0	An artist in midfield, dance of dominance mildly veiled 🎼⚽.
-321	\N	Sinan Osmanoğlu	1990-06-30	https://i.goalzz.com/?i=o%2fp%2f173%2f311%2fsinan-osmanoglu-1.png	0	0	Goalkeeper in command, breach my defense if you can 🥅⛔.
-322	\N	Soner Aydoğdu	1991-01-05	https://i.goalzz.com/?i=o%2fp%2f90%2f818%2fsoner-aydogdu-1.png	0	0	Master of the wings, knows all the beautiful things 🏞️⚽.
-323	\N	Süleyman Cebeci	2005-04-25	https://i.goalzz.com/?i=o%2fp%2f163%2f240%2fsuleyman-cebeci-1.png	0	0	In the midfield, rules bend, creates the tempo, sets the trend ⏳⚽.
-324	\N	Taha Tepe	2006-10-09	https://i.goalzz.com/?i=o%2fp%2f157%2f57%2ftaha-tepe-1.png	0	0	Cracks the net, striking right, spotlights on my goal flight 🚀⚽.
-325	\N	Taha Tunç	2004-07-18	https://i.goalzz.com/?i=o%2fp%2f157%2f62%2ftaha-tunc-1.png	0	0	Rapid flanks, fierce tanks, expectations outranks 💨⚽.
-326	\N	Taha Yalçıner	2005-02-28	https://i.goalzz.com/?i=buff%2ftaha-yalciner.jpg	0	0	efensive wall, standing tall, deters all 🛡️⚽.
-327	\N	Talha Ülvan	2004-11-04	https://i.goalzz.com/?i=o%2fp%2f175%2f341%2ftalha-ulvan-1.png	0	0	Shot-stopper, game topper, attackers' draughts prosper 🥅✨.
-310	\N	Sergen Picinciol	1997-04-29	https://i.goalzz.com/?i=o%2fp%2f166%2f353%2fsergen-picinciol-1.png	0	0	Master of the pitch's pace, midfield is my space 🌌⚽.
-328	\N	Tarık Çetin	1997-10-14	https://i.goalzz.com/?i=hghf%2ftarik.jpg	0	0	Goals are my language, the pitch is my stage ⚽️🎭.
-329	\N	Tarkan Serbest	1994-02-08	https://i.goalzz.com/?i=o%2fp%2f134%2f915%2ftarkan-serbest-1.png	0	0	Wings are my domain, pace is my game 🚀⚽.
-330	\N	Tayfun Aydoğan	2006-03-13	https://i.goalzz.com/?i=o%2fp%2f166%2f401%2ftayfun-aydogan-1.png	0	0	Midfield magician, orchestrating the game with precision 🎩⚽.
-331	\N	Tayfur Bingol	1993-04-19	https://i.goalzz.com/?i=o%2fp%2f90%2f829%2ftayfur-bingol-1.png	0	0	Goalkeeper supreme, the dream of every team 🧤⚽.
-332	\N	Taylan Antalyalı	1995-05-23	https://i.goalzz.com/?i=o%2fp%2f107%2f597%2ftaylan-antalyali-1.png	0	0	Attacking the flanks, breaking ranks, gets the thanks 👊⚽.
-333	\N	Tayyip Sanuc	2006-12-08	https://i.goalzz.com/?i=o%2fp%2f166%2f155%2ftayyip-sanuc-1.png	0	0	The heart of the midfield, a shield and a sword 🛡️⚔️⚽.
-334	\N	Tiago Çukur	2002-04-01	https://i.goalzz.com/?i=o%2fp%2f172%2f486%2ftiago-cukur-1.png	0	0	Striking goals with might, shining bright in the spotlight 💡⚽.
-335	\N	Tolga Ciğerci	1992-03-23	https://i.goalzz.com/?i=o%2fp%2f72%2f684%2ftolga-cigerci-1.png	0	0	Running down the wings, a song the crowd sings 🎵⚽.
-336	\N	Tolga Kalendar	2007-02-03	https://i.goalzz.com/?i=o%2fp%2f166%2f156%2ftolga-kalender-1.png	0	0	A fortress in the defense, breaking down opponent's offense 🏰⚽.
-337	\N	Tolgay Arslan	1990-08-16	https://i.goalzz.com/?i=o%2fp%2f84%2f587%2ftolgay-arslan-1.png	0	0	Between the posts, a bulwark, deterrence spoke 🚧⚽.
-338	\N	Tunahan Taşçı	2001-09-04	https://i.goalzz.com/?i=o%2fp%2f173%2f435%2ftunahan-tasci-1.png	0	0	Taming the ball, curating goal galleries for all ⚽️🎨.
-339	\N	Ufuk Akyol	1997-08-27	https://i.goalzz.com/?i=o%2fp%2f153%2f957%2fufuk-akyol-1.png	0	0	Wing warrior, football's charmer ☄⚽.
-340	\N	Uğur Arslan Kuru	1989-02-16	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2fugur-kuru.jpg	0	0	Midfield maestro, engine never slow 🎶⚽.
-342	\N	Uğur Uçar	1987-04-05	https://i.goalzz.com/?i=medalss%2f2018-11-19_21-32-29.jpg	0	0	Flitting on the flanks, skills deserving thanks 🦋⚽.
-343	\N	Uğurcan Çakır	1996-04-05	https://i.goalzz.com/?i=o%2fp%2f101%2f992%2fugurcan-cakir-1.png	0	0	Dictating the game, making fame in the midfield lane 🚦⚽.
-344	\N	Umut Bozok	1996-09-10	https://i.goalzz.com/?i=o%2fp%2f131%2f845%2fumut-bozok-1.png	0	0	Scoring spree, unlocking defenses key 🔑⚽.
-345	\N	Umut Bulut	1983-03-15	https://i.goalzz.com/?i=hated%2fumut.jpg	0	0	Power on the flanks, pushing up the ranks 🔌⚽.
-346	\N	Umut Meraş	1995-12-20	https://i.goalzz.com/?i=ggdytw%2fv_685.jpg	0	0	Stern at the back, from attackers nothing to lack 💪⚽.
-347	\N	Umut Nayir	1993-06-28	https://i.goalzz.com/?i=o%2fp%2f101%2f962%2fumut-nayir-2.png	0	0	Saving shots, guarding slots, connecting the dots 🧮⚽.
-348	\N	Vedat Karakuş	1975-04-18	https://i.goalzz.com/?i=o%2fp%2f144%2f653%2fvedat-karakus-1.png	0	0	Proven prowess in goal-scoring, a living legend in the making ⚽️🔥.
-349	\N	Veysel Sarı	1988-04-12	https://i.goalzz.com/?i=o%2fp%2f110%2f504%2fveysel-sari-1.png	0	0	Dictating the wing's tempo, a legacy hard to let go 🕊️⚽.
-350	\N	Veysel Ünal	2001-07-03	https://i.goalzz.com/?i=o%2fp%2f157%2f84%2fveysel-unal-1.png	0	0	Midfield's emperor, games were his concert, the pitch was his parlor 👑⚽.
-351	\N	Volkan Babacan	1988-08-11	https://i.goalzz.com/?i=o%2fp%2f45%2f536%2fvolkan-babacan-1.png	0	0	Unwavering guardian of the goal, his saves made us whole 🧤⚽.
-352	\N	Yasin Öztekin	1987-07-14	https://i.goalzz.com/?i=per%2fyasisn.jpg	0	0	Master of the flank, with skills worth every franc ⚡⚽.
-353	\N	Yavuz Aygün	1996-06-27	https://i.goalzz.com/?i=o%2fp%2f162%2f859%2fyavuz-aygun-1.png	0	0	Quarterback of the pitch, passes stitched, matches bewitched 📖⚽.
-354	\N	Yavuz Buğra Boyar	1998-08-10	https://i.goalzz.com/?i=o%2fp%2f160%2f234%2fyavuz-bugra-boyar-1.png	0	0	Striker's tale, where words fail, goals prevail 🎯⚽.
-355	\N	Yavuz Ulaş Genç	2001-03-10	https://i.goalzz.com/?i=o%2fp%2f160%2f968%2fyavuz-ulas-genc-1.jpg	0	0	Dashes on the flanks, filling in the ranks, fans give thanks 💨⚽.
-356	\N	Yiğit Kafkasyalı	1998-06-13	https://i.goalzz.com/?i=o%2fp%2f153%2f976%2fyigit-kafkasyali-2.png	0	0	Fortress in defense, repelling every offense 🏰⚽.
-357	\N	Yiğithan Güveli	1998-05-16	https://i.goalzz.com/?i=o%2fp%2f31%2f877%2fyigithan-guveli-1.png	0	0	Gloved gladiator, defensive vindicator, strikers' eliminator 🥅👊.
-358	\N	Yunus Akgün	2000-07-07	https://i.goalzz.com/?i=o%2fp%2f130%2f553%2fyunus-akgun-1.png	0	0	Clinical striker, goal provider, joy rider ⛹️⚽.
-359	\N	Yunus Mallı	1992-04-17	https://i.goalzz.com/?i=o%2fp%2f61%2f837%2fyunus-malli-1.png	0	0	Fierce flank, skill tank, opposition sank ⚡⚽.
-360	\N	Yusuf Erdoğan	1994-12-12	https://i.goalzz.com/?i=o%2fp%2f102%2f1%2fyusuf-erdogan-1.png	0	0	Tempo setter, game better, midfield letter 🖋️⚽.
-361	\N	Yusuf Sarı	1998-04-21	https://i.goalzz.com/?i=o%2fp%2f145%2f66%2fyusuf-sari-1.png	0	0	Goal gatekeeper, attackers' experience reaper 🧤⚽.
-362	\N	Yusuf Yazıcı	1997-01-29	https://i.goalzz.com/?i=o%2fp%2f105%2f631%2fyusuf-yazici-1.png	0	0	Flank specialist, skill economist, precision optimist 🎯⚽.
-363	\N	Zafer Görgen	2000-06-21	https://i.goalzz.com/?i=hghf%2fresim.jpg	0	0	Midfield orchestrator, opposition's dictator 🎼⚽.
-364	\N	Zeki Çelik	1997-02-17	https://i.goalzz.com/?i=o%2fp%2f129%2f803%2fzeki-celik-1.png	0	0	Goal assailant, precision consultant, game resultant ⚽️💡.
-365	\N	Zeki Yavru	1991-09-05	https://i.goalzz.com/?i=o%2fp%2f90%2f819%2fzeki-yavru-1.png	0	0	Wing conqueror, skill glosser, game enhancer 🦅⚽.
-366	\N	Ziya Erdal	1988-01-05	https://i.goalzz.com/?i=iscoooo%2fziyad.jpg	0	0	Defense fortress, attack stress, clean success 🛡️⚽.
+38	33	Adem Buyuk	1992-11-18	https://i.goalzz.com/?i=o%2fp%2f90%2f875%2fadem-buyuk-1.png	0	0	Yup, I'm a goalkeeper. No nets broken on my watch! ⚽️| #LifeBetweenSticks
+47	47	Ahmet Çolak	1990-08-26	https://i.goalzz.com/?i=o%2fp%2f70%2f958%2fahmet-colak-1.png	0	0	Mastering the middle! Crafty in possession, canny without 🎲. #GamePlayGenius
+23	40	Abdulkadir Kayalı	1995-01-22	https://i.goalzz.com/?i=o%2fp%2f90%2f351%2fabdulkadir-kayali-1.png	0	0	Full-Back prowess 🛡️ | Got the defence and attack covered | #NeverBackDown
+41	16	Adil Demirbağ	1997-04-06	https://i.goalzz.com/?i=o%2fp%2f159%2f487%2fadil-demirbag-1.png	0	0	Winging it in style 🚀. They see me rolling, they chasing... #FlairOnFlanks
+31	17	Abdullah Şahindere	1990-12-12	https://i.goalzz.com/?i=hgfhgfgg%2fabdullah.jpg	0	0	Controlling the game from the heart of the field | Midfield Maestro 🎯 | #MasterPlaymaker
+36	22	Abdussamed Karnucu	1992-06-15	https://i.goalzz.com/?i=medalss%2f22.jpg	0	0	Full-back with a forward's ambition | Offence wins games, defence wins championships 🛡️| #FullBackFullFrontal
+37	22	Adem Ağaoğlu	1990-03-25	https://i.goalzz.com/?i=o%2fp%2f163%2f239%2fadem-agaoglu-1.png	0	0	Midfield maestro, playmaker extraordinaire | Pass like Picasso 🎨| #PositionOfPower
+44	26	Ahmet Çalık	1993-12-11	https://i.goalzz.com/?i=o%2fp%2f107%2f585%2fahmet-yilmaz-calik-1.png	0	0	Between the sticks, that's where you'll find me 🥅. #GoalieGrit
+27	28	Abdulkadir Taşdan	1998-09-20	https://i.goalzz.com/?i=o%2fp%2f160%2f270%2fabdulkadir-tasdan-2.png	0	0	Winger wizard 💥 | Turning defenders since '98 | #WingWarrior
+26	28	Abdulkadir Sünger	1989-07-02	https://i.goalzz.com/?i=o%2fp%2f160%2f273%2fabdulkadir-sunger-1.jpg	0	0	Striker instinct ⚽ | Goals are my language | #HatTrickHero
+43	29	Ahmed Kutucu	1991-07-09	https://i.goalzz.com/?i=o%2fp%2f136%2f987%2fahmed-kutucu-1.png	0	0	Striker and proud! Scoring is my kind of conversation ⚽️. #GoalMachine
+46	31	Ahmet Çelik	1994-05-13	https://i.goalzz.com/?i=o%2fp%2f166%2f158%2fahmet-celik-1.png	0	0	Full-back, full-on! The defender with an attacker's heart 💪. #BothWorlds
+20	32	Abdulaziz Demircan	1992-11-27	https://i.goalzz.com/?i=omar_a%2feuro%2fkonyaspor%2f2016-08-26_195511.jpg	0	0	The heart of the field 📍| Orchestrator of play | Life is a game of balance | #MidfieldMastermind
+24	32	Abdulkadir Ömür	1997-12-31	https://i.goalzz.com/?i=o%2fp%2f137%2f228%2fabdulkadir-omur-1.png	0	0	Clearing balls, clearing the path to victory 👊 | Football's janitor cleaning up | #SweeperKeeper
+49	37	Ahmet Gülay	1993-05-24	https://i.goalzz.com/?i=o%2fp%2f159%2f418%2fahmet-gulay-1.jpg	0	0	Master puppeteer in the theatre of dreams. I don't pass the ball, I paint with it. #MidfieldArtistry
+33	41	Abdulsamed Damlu	1994-07-20	https://i.goalzz.com/?i=hghf%2f408.jpg	0	0	Striker spirit | Net-seeking missile launching goals ⚽🥅| #StrikeForce
+45	41	Ahmet Canbaz	1996-06-22	https://i.goalzz.com/?i=kdlhf%2fahme.jpg	0	0	On the wing, in full swing! Pace for days 🏃‍♂️💨. #WingCommander
+29	43	Abdullah Avcı	1992-08-30	https://i.goalzz.com/?i=omar_a%2fturk%2fbelediyespor%2f1377015393-abdullah+avci+(2).jpg	0	0	Goalkeeper at heart, determined to save more than just shots ⚽️| #UltimateSave
+30	43	Abdullah Durak	1995-04-15	https://i.goalzz.com/?i=hghf%2fdurak.jpg	0	0	Aiming for the goalpost, shooting for the stars. Striker life ⚽🚀| #AimHigh
+48	44	Ahmet Demirli	1991-12-20	https://i.goalzz.com/?i=o%2fp%2f160%2f88%2fahmet-hakan-demirli-1.png	0	0	🎯 Kicking balls, nabbing goals. My life's motto? Go big or go goalpost. #StrikerSupreme
+25	45	Abdulkadir Parmak	1991-05-05	https://i.goalzz.com/?i=o%2fp%2f58%2f699%2fabdulkadir-parmak-1.png	0	0	Dominating in midfield 👟 | It's never just about scoring goals | #PassMaster
+28	45	Abdulkerim Bardakçı	1993-05-05	https://i.goalzz.com/?i=o%2fp%2f115%2f506%2fabdulkerim-bardakci-1.png	0	0	Steady at the back, stronghold in defence | Winning isn't everything, it's the only thing 💪| #DefendToWin
+42	46	Ahmed Yıldız	1995-02-02	https://i.goalzz.com/?i=o%2fp%2f8%2f98%2fahmed-ildiz-1.jpg	0	0	No pass zone! Defender with the heart of a lion 🛡️. #BackLineBoss
+32	47	Abdullah Yiğitler	1996-01-01	https://i.goalzz.com/?i=o%2fp%2f166%2f838%2fabdullah-yigiter-1.png	0	0	Winger by position, speedster at heart 🏃‍♂️💨 | Making defenders dizzy | #OnTheWing
+39	49	Adem Doğan	1994-03-21	https://i.goalzz.com/?i=o%2fp%2f159%2f620%2fadem-dogan-1.jpg	0	0	I'm here for the goals ⚽. Just your everyday lethal finisher! #TopBinsOnly
+22	51	Abdulkadir Demir	1994-08-16	https://i.goalzz.com/?i=hitham%2feredivisie_2014%2feredivisie_2015%2fabdulkadir.jpg	0	0	The defensive wall 💪 | Hold the line, never back down | #DefensiveDynamo
+35	53	Abdurrahman Canlı	1989-10-31	https://i.goalzz.com/?i=o%2fp%2f157%2f137%2fabdurrahman-canli-1.png	0	0	Dominating the wing, owning the sprint | Pace is power 🚀| #DownTheLine
+34	55	Abdurrahim Dursun	1991-02-28	https://i.goalzz.com/?i=o%2fp%2f153%2f760%2fabdurrahim-dursun-1.png	0	0	Fearless between the sticks 🥅 | Surrender is not in my lexicon | #GuardingTheGoal
+17	60	Şeyhmus Aksu	1989-05-24	https://i.goalzz.com/?i=omar_a%2fturk%2fbelediyespor%2fs_37839_449_2010_2.jpg	0	0	🥅 Master of the net | Goalkeeping is a lifestyle, not just a position | #SafeHands
+40	57	Adem Metin Türk	1988-10-23	https://i.goalzz.com/?i=o%2fp%2f160%2f255%2fadem-metin-turk-1.png	0	0	They call me the midfield marvel 🎯. Keep calm and pass it to Matt. #GameControl
+51	61	Ahmet İlhan Özek	1990-02-18	https://i.goalzz.com/?i=o%2fp%2f101%2f940%2fahmet-ilhan-ozek-1.png	0	0	Less like a defender, more like a fortress. Forward attacks? Not on my watch! #BacklineBouncer
+19	62	Ümit Aydın	1990-04-23	https://i.goalzz.com/?i=old%2fumit_aydin.jpg	0	0	⚽ Striking fear in goalkeepers' hearts | Always aiming for the top right corner | #StrikerLife
+52	65	Ahmet Karademir	1996-04-27	https://i.goalzz.com/?i=o%2fp%2f161%2f573%2fahmet-karademir-1.jpg	0	0	Wings? Check. Wonders down the flank? Double Check. Defenders' nightmare and wingers' aspiration. 💫 #WingerWonderland
+70	28	Ali Eren Daşdemir	1992-02-15	https://i.goalzz.com/?i=o%2fp%2f157%2f284%2fali-eren-dasdemir-1.jpg	0	0	⛔ No entry zone! Defender with the heart of a novelist 🖊️ | Once found Atlantis on a casual jog 🏃
+54	17	Ahmet Kıvanç	1994-10-08	https://i.goalzz.com/?i=kdlhf%2f1323285.jpg	0	0	Making keepers fear and nets cheer one goal at a time. ⚽️ #StrikerStatement
+64	20	Ali Akman	1993-04-08	https://i.goalzz.com/?i=o%2fp%2f144%2f553%2fali-akman-1.png	0	0	I speak three languages - English, Football, and Goals | Aspiring to invent teleportation ⚽🔬
+57	22	Ahmet Sun	1997-11-29	https://i.goalzz.com/?i=o%2fp%2f159%2f459%2fahmet-sun-2.png	0	0	Tear down the wings, that's the motto. Catch me if you can! #SpeedySupremacy
+60	23	Akın Alkan	1993-03-31	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2fa.alkan.jpg	0	0	Keeper of nets & devourer of pizza rolls | Saving is my superpower, what's yours? 🥅🦸‍♂️
+59	23	Akif Karagülmez	1994-08-13	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2fa.karagulmez.jpg	0	0	Joggler of the soccer sphere | Dictating play, making day | Pizza with pineapple enthusiast🍕
+75	26	Ali Kaan Güneren	1990-12-12	https://i.goalzz.com/?i=o%2fp%2f162%2f791%2fali-kaan-guneren-1.jpg	0	0	Mozart in soccer cleats 🎶👟 | Midfield Dynamo, also fluent in Elvish 🧝‍♂️ |
+72	26	Ali Eren Karadağ	1995-04-27	https://i.goalzz.com/?i=o%2fp%2f157%2f266%2fali-eren-karadag-1.jpg	0	0	Full-back, yes. Full-of-flair, double yes 👏 | Defensive prodigy, cake-hating extraordinaire 🎂❌
+73	29	Ali Eren Yalçın	1993-08-23	https://i.goalzz.com/?i=o%2fp%2f157%2f288%2fali-eren-yalcin-1.jpg	0	0	Striker | Slices defences like sushi 🍣 | Fastest shooter in the west (and east)
+69	29	Ali Dere	1991-07-12	https://i.goalzz.com/?i=omar_a%2feuro%2fkonyaspor%2f2016-08-26_195059.jpg	0	0	Scoring goals while napping 😴⚽ | Master of the unpredictable curler | Part-time cloud whisperer ☁️
+80	32	Ali Ulusoy	1992-12-19	https://i.goalzz.com/?i=hitham%2feredivisie_2014%2feredivisie_2015%2fali+ulusoy.jpg	0	0	99% goalie, 1% pirate. On a quest for buried shutouts in the land of foamy ale and cleats. ☠️🍻
+77	34	Ali Şahin Yılmaz	1992-03-07	https://i.goalzz.com/?i=o%2fp%2f178%2f375%2fali-sahin-yilmaz-1.png	0	0	Midfield Marvel | Dancing like a marionette, stinging like a bee 🐝 | Astronaut hopeful 🚀
+76	35	Ali Karakaya	1994-05-01	https://i.goalzz.com/?i=messironld%2fprskv.jpg	0	0	Striker. Life's simple; eat, sleep, score, repeat 🔄| Tea aficionado and dragon tamer in downtime 🐉
+58	36	Ahmetcan Kaplan	1992-01-23	https://i.goalzz.com/?i=o%2fp%2f159%2f630%2fahmetcan-kaplan-2.png	0	0	Living life one corner kick at a time | Striker born, goal scorer sworn | Once scored a goal from my kitchen ⚽🏠
+71	36	Ali Eren İyican	1997-11-06	https://i.goalzz.com/?i=o%2fp%2f160%2f254%2fali-eren-iyican-1.png	0	0	Blazing the wing like a misplaced comet ☄️ | Caution: Contains high levels of speed 🚀 | Soccer enthusiast, taco connoisseur 🌮
+62	38	Alaaddin Okumus	1996-02-02	https://i.goalzz.com/?i=o%2fp%2f162%2f779%2falaaddin-okumus-1.jpg	0	0	Channeling my inner Usain Bolt on the flanks | Winger on the field, movie junkie off it 🎬🏃‍♂️
+85	41	Alihan Kalkan	1988-04-03	https://i.goalzz.com/?i=o%2fp%2f38%2f588%2falihan-kalkan-1.png	0	0	Guardian of the net with an affinity for butterflies. Reversing conceded goals since the Disco era. 🕺🥅
+21	45	Cebrail Akbulut	1992-07-13	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2fa.akbulut.jpg	0	0	Blazing down the wing 🚀 | Speed, skill, strength, and foolish bravery | #WingerWonders
+55	47	Ahmet Oğuz	1998-01-17	https://i.goalzz.com/?i=o%2fp%2f107%2f599%2fahmet-oguz-1.png	0	0	I dance with danger between two posts. Unstoppable force? Meet the immovable keeper. #KeepingCalm
+83	47	Ali Yeşilyurt	1994-02-15	https://i.goalzz.com/?i=o%2fp%2f181%2f777%2fali-yesilyurt-1.png	0	0	Lobs and tackles in equal measure - because, balance. Wickedly good banana bread baker! 🍌🍞
+68	49	Ali Demirel	1993-06-05	https://i.goalzz.com/?i=o%2fp%2f173%2f81%2fali-demirel-1.png	0	0	Swapping vampire novels for saving goals 🧛‍♂️🥅 | Hailed as 'The Last Stand' in hangman's town
+67	51	Ali Çamdalı	1997-09-15	https://i.goalzz.com/?i=hazzard%2fali.jpg	0	0	Whizzing down the flank faster than last season's gossip. Winger by day, stargazer by night🌟⚽️
+79	52	Ali Turap Bülbül	1993-11-08	https://i.goalzz.com/?i=o%2fp%2f181%2f778%2fali-turap-bulbul-1.png	0	0	In love with gravity and how constantly it lets me down. Master of spherical manipulation in urban prairies. 🌎⚽️
+81	54	Ali Yaşar	1995-01-28	https://i.goalzz.com/?i=o%2fp%2f157%2f234%2fali-yasar-2.png	0	0	Paints defensive artistry on the emerald canvas.🛡️🎨 | Ambition: To have a halfling's courage.🦸‍♂
+341	56	Uğur Çiftçi	1992-01-29	https://i.goalzz.com/?i=iscoooo%2fugur.jpg	0	0	With gloves on, goal invasion gone 🥅🚫.
+66	57	Ali Bilgin	1992-07-30	https://i.goalzz.com/?i=imad%2fbilgin.jpg	0	0	Morphing the mundane midfield into a magical mayhem | Part-time Jedi, full-time juggling sensation 🪄⚽️
+61	57	Aksel Aktaş	1991-05-11	https://i.goalzz.com/?i=505%2faksel.jpg	0	0	Nerd by day, defender by night | Providing concrete defense since 1991 🏰💪
+63	57	Alberk Koç	1995-10-12	https://i.goalzz.com/?i=o%2fp%2f157%2f292%2falberk-koc-1.jpg	0	0	Equal parts defends, equal parts distracts | I run faster than your WiFi 🏃‍♂️📶
+84	66	Alican Özfesli	1991-05-10	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2falicanozfesli.jpg	0	0	Scoring charm, striking power. Football ninja by day, cutlery drumming savant by night. 🔱🍴
+74	59	Ali Göçmen	1991-01-15	https://i.goalzz.com/?i=gabas%2fali.jpg	0	0	Keeper of citadels & hoarder of clean sheets 🥅 | Goalkeeper who also moonlights as a ghostbuster 👻
+65	59	Ali Ateş	1990-11-19	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2faliates.jpg	0	0	Keeper extraordinaire, master jam donut eater | Do stuntmen play football? They do now! 🎥⚽️
+78	48	Ali Şaşal Vural	1991-09-02	https://i.goalzz.com/?i=iscoooo%2fali.jpg	0	0	Grab your umbrellas, I'm the striker who reigns goals. 🌧️⚽️ | Known to kin as 'The Wind of the West' 🏞️
+111	31	Batuhan Yayıkçı	1995-12-15	https://i.goalzz.com/?i=o%2fp%2f162%2f360%2fbatuhan-yayikci-1.jpg	0	0	An immovable mountain, a relentless river, ceaselessly carving my path on the field's tapestry.
+87	17	Almos Kalafat	1997-10-12	https://i.goalzz.com/?i=o%2fp%2f159%2f633%2falmos-kaan-kalafat-1.jpg	0	0	Winger | Charging like a photon in a crystal maze. Makes a mean omelette du fromage. 🍳💨
+119	18	Çağrı Güney	1992-06-15	https://i.goalzz.com/?i=o%2fp%2f159%2f416%2fahmet-cagri-guney-1.png	0	0	Striker by day, wind chaser by night. My goals are known to cause gusts of excitement! 🌪️⚽️
+95	18	Alper Tursun	1992-02-07	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2fa-tursun.gif	0	0	Keeper with a honk for a clean sheet. Fear the goose in the goal 🥅🦆
+100	19	Alperen Kuyubaşı	1993-01-11	https://i.goalzz.com/?i=o%2fp%2f153%2f980%2falperen-kuyubasi-1.png	0	0	The immaculate regulator of rebounds and savour of unsweetened pancake stacks!🥞🚫
+101	21	Alperen Eskiçırak	1994-04-01	https://i.goalzz.com/?i=hazzard%2futku.jpg	0	0	Backliner with a bashful heart, dispatches challenges like my Grandma does her knitting.🧶🛡️
+108	25	Bartuğ Elmas	1990-07-06	https://i.goalzz.com/?i=o%2fp%2f162%2f67%2fbartug-elmaz-2.png	0	0	A tempest on the pitch, a twister in the goal box. Football's my canvas, goals my magnum opus.
+120	28	Çağatay Kurukalıp	1994-01-25	https://i.goalzz.com/?i=prem%2f103415.jpg	0	0	Mysterious midfielder. They say my footwork is as elusive as Bigfoot himself... 🐾💨
+93	31	Alper Önal	1995-10-30	https://i.goalzz.com/?i=o%2fp%2f156%2f599%2falper-onal-1.jpg	0	0	Full-back and full-time joker. They can't score if they're too busy laughing, right? 😂🛡️
+99	36	Alperen Bektaş	1992-05-23	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2fa.bektas.jpg	0	0	Midfielder with a melodious touch. Master moulder of Maestro Macarons for recovery.🍪🌟
+113	38	Berkan Kutlu	1994-01-24	https://i.goalzz.com/?i=o%2fp%2f157%2f82%2fberkan-kutlu-1.png	0	0	Ebb and flow personified, simultaneously the lighthouse beacon and the storm's fury.
+118	40	Çağlar Söyüncü	1996-03-30	https://i.goalzz.com/?i=o%2fp%2f125%2f579%2fcaglar-soyuncu-1.png	0	0	No princes or princesses here. Just me... a defender breathing fire on the field! 🐉🔥
+98	34	Alperen Babacan	1991-08-18	https://i.goalzz.com/?i=o%2fp%2f138%2f479%2falperen-babacan-1.png	0	0	Bewildering, blistering, and downright bountiful with goals. Claim to fame: once scored a hat trick in PJs.💤⚽️
+117	42	Çağlar Akbaba	1997-08-15	https://i.goalzz.com/?i=o%2fp%2f157%2f101%2fcaglar-akbaba-1.png	0	0	Fleeting as a comet, striking as a thunderbolt – I'm a storyteller where the ball is my quill.
+105	44	Anıl Dikmen	1990-03-03	https://i.goalzz.com/?i=o%2fp%2f161%2f951%2fanil-dikmen-1.jpg	0	0	The great go-to guardian that Brother Grimm forgot to mention. Full of fables, devoid of goals.📖🔐
+92	45	Alper Aşkın	1997-01-14	https://i.goalzz.com/?i=o%2fp%2f166%2f905%2falper-askin-1.png	0	0	Winger, part-time philosopher. Fast as lightning, still can't catch the ice cream truck 🍦⚡️
+110	48	Batuhan Uçan	1992-05-03	https://i.goalzz.com/?i=o%2fp%2f162%2f19%2fbatuhan-ucan-1.jpg	0	0	Defending the fortress from invaders, I'm the eclipse in every striker's sun.
+116	52	Burak Yılmaz	1994-07-06	https://i.goalzz.com/?i=o%2fp%2f173%2f326%2fburak-yilmaz-1.png	0	0	Strings of the game in my hands, conjuring symphonies from the silent chaos.
+109	52	Batuhan Şen	1993-04-20	https://i.goalzz.com/?i=o%2fp%2f132%2f793%2fbatuhan-sen-1.png	0	0	Notes of play echo in my wake, orchestrating ballets on the football stage.
+86	53	Alihan Kubalaş	1993-06-20	https://i.goalzz.com/?i=prem%2f740278.jpg	0	0	Sorcerer of the spherical dance. Pulling strings of the puppet theatre called midfield. 🕹️🎭
+104	54	Anıl Aktaş	1993-07-14	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2fanil.aktas.jpg	0	0	Scorer of sensational and sometimes cheeky goals, Stan lives for Saturday soccer and Sunday scones!⚽️☕️
+90	56	Alparslan Öztürk	1991-12-05	https://i.goalzz.com/?i=33333345566%2falpaslan.jpg	0	0	Aspiring astronaut who decided keeping goals was easier than going to Mars 🚀🥅
+91	56	Alpay Çelebi	1994-04-24	https://i.goalzz.com/?i=o%2fp%2f126%2f624%2falpay-celebi-1.png	0	0	Defender/Potential future superhero. Once saved a goal, a puppy and a world in 90 minutes 💪🌎🐶
+94	66	Alper Potuk	1993-05-20	https://i.goalzz.com/?i=o%2fp%2f107%2f436%2falper-potuk-1.png	0	0	Scoring goals and dropping bad puns since last millennium. ⚽️😉
+114	59	Bertuğ Yıldırım	1991-10-08	https://i.goalzz.com/?i=o%2fp%2f166%2f844%2fbertug-yildirim-1.png	0	0	Poetry in motion, brandishing stealth in cleats, I paint dreams one goal at a time.
+112	59	Berat Özdemir	1997-11-27	https://i.goalzz.com/?i=o%2fp%2f153%2f905%2fberat-ozdemir-1.png	0	0	A darting shadow on the sidelines, stitching fantasy with reality with every dribble.
+106	62	Arda Güler	1992-06-24	https://i.goalzz.com/?i=o%2fp%2f165%2f494%2farda-guler-4.png	0	0	Presents passes with a pinch of panache. Presumably has a degree in Playmaking from Hogwarts.🧙‍♂️🎯
+97	63	Alper Aydın	1997-07-18	https://i.goalzz.com/?i=o%2fp%2f166%2f391%2falperen-aydin-1.png	0	0	Ever seen a winger with the speed of a cheetah and the grace of a ballet dancer? You're about to... 🐆💃
+115	63	Burak Uca	1992-02-17	https://i.goalzz.com/?i=o%2fp%2f101%2f671%2fburak-uca-1.jpg	0	0	The watcher, predicting storms in the calm, a lighthouse in the fog of the offensive onslaught.
+88	63	Alp Arda	1990-09-13	https://i.goalzz.com/?i=o%2fp%2f177%2f139%2falp-arda-1.png	0	0	Striker extraordinaire, pizza bagel aficionado. I bend it like Beckham and slice it like a salami 🍕⚽️
+89	64	Alparslan Erdem	1992-03-28	https://i.goalzz.com/?i=medalss%2f2018-11-19_21-34-35.jpg	0	0	Maestro of the midfield. Providing top-drawer assists and questionable cooking advice since the '90s 🍝🎯
+103	64	Altay Bayındır	1995-11-23	https://i.goalzz.com/?i=o%2fp%2f77%2f443%2faltay-bayindir-1.png	0	0	Full-back with a flavour for frolic. Known to be fatal to attackers’ dreams.💤💔
+107	65	Bahattin Köse	1996-07-15	https://i.goalzz.com/?i=o%2fp%2f162%2f357%2fbahattin-kose-1.png	0	0	Winger with wholesome wackiness. On weekends, I weave dreams on the football field.⚽️🌈
+144	42	Deniz Türüç	1993-05-02	https://i.goalzz.com/?i=o%2fp%2f4%2f523%2fdeniz-turuc-2.png	0	0	Intelligent striker lauded for his quick feet, creativity, and consistent goal record.
+128	54	Cenk Gönen	1991-05-15	https://i.goalzz.com/?i=o%2fp%2f70%2f760%2fcenk-gonen-1.png	0	0	Born in the realm of a striker's fantasy, wielding thunderbolts in my cleats. Predictably unpredictable.
+130	28	Cenk Şahin	1992-02-20	https://i.goalzz.com/?i=o%2fp%2f107%2f617%2fcenk-sahin-1.png	0	0	Guardian of the posts, I ward off advances daring to invade my spectral sanctuary. The ghost in your goal dreams.
+123	18	Caner Erkin	1997-05-15	https://i.goalzz.com/?i=o%2fp%2f18%2f669%2fcaner-erkin-1.jpg	0	0	The braveheart of the backline. Once outran a cheetah... it was chasing me.🐆💨
+149	20	Doğanay Aygün	1994-04-12	https://i.goalzz.com/?i=o%2fp%2f166%2f395%2fdoganay-aygun-1.png	0	0	Midfield general 🔵⚽. His control and vision on the pitch is like a seasoned sailor commanding the high seas.
+153	21	Doğukan Sinik	1996-07-15	https://i.goalzz.com/?i=o%2fp%2f141%2f203%2fdogukan-sinik-1.png	0	0	Fullback ⚫⚽. With runs as deep as a poet's verses, he's the unsung hero who anchors the defense and bolsters the attack.
+146	22	Dilaver Güçlü	1995-07-14	https://i.goalzz.com/?i=vfl_bochum_%2f25.jpg	0	0	Playmaker with a knack for unlocking defenses with his vision and skillful passing.
+125	24	Cem Kablan	1992-02-02	https://i.goalzz.com/?i=o%2fp%2f157%2f188%2fcem-kablan-1.png	0	0	An immovable object between the posts. I've got this whole beastly defense thing down. 👹🥅
+141	24	Deniz Doğan	1995-10-01	https://i.goalzz.com/?i=2014im%2fdogan.jpg	0	0	Towering central defender, remarkable for hard tackling and strong aerial game.
+132	25	Cenk Tosun	1991-04-28	https://i.goalzz.com/?i=o%2fp%2f73%2f0%2fcenk-tosun-1.png	0	0	Infusing speed and spellwork on the pitch. A blur to the untrained eye, a storm for the unready.
+140	25	Demir Ege Tıknaz	1988-02-23	https://i.goalzz.com/?i=o%2fp%2f167%2f840%2fdemir-ege-tiknaz-1.jpg	0	0	Skilled goalkeeper with reflexes like a cat and a knack for saving penalty kicks.
+150	28	Doğucan Haspolat	1988-02-23	https://i.goalzz.com/?i=o%2fp%2f125%2f983%2fdogucan-haspolat-1.png	0	0	Goalkeeper 👐. Known for his cat-like agility, lives for the thrill of an incoming penalty ⚽.
+129	31	Cenk Özkaçar	1994-10-02	https://i.goalzz.com/?i=o%2fp%2f168%2f123%2fcenk-ozkacar-1.png	0	0	Conjuring football spells in the midfield. I see fields of green and lines of destiny intertwined.
+122	32	Caner Bag	1993-10-02	https://i.goalzz.com/?i=o%2fp%2f166%2f400%2fcaner-huseyin-bag-1.png	0	0	Winger | I'm like a bumper car. Keep pushing me, and I'll just swerve around you!🚗💨
+124	34	Caner Osmanpaşa	1995-07-22	https://i.goalzz.com/?i=o%2fp%2f101%2f994%2fcaner-osmanpasa-1.png	0	0	The elusive goal-smashing legend. I thrash nets like a rockstar does a guitar!🎸⚽️
+121	39	Can Ceylan	1991-12-05	https://i.goalzz.com/?i=o%2fp%2f164%2f367%2fcan-ceylan-2.png	0	0	Not all fairy tales have happy endings—especially for opposing strikers. Keeper of the Iron Fortress🏰🥅
+127	39	Cenk Alkılıç	1991-11-29	https://i.goalzz.com/?i=buff%2fcenk-ahmet-alkilic.jpg	0	0	Wingman, but also a renowned spellcaster. Sweeps past you like a broom-speed chase!🧹💥
+151	39	Doğukan Nelik	1995-10-01	https://i.goalzz.com/?i=o%2fp%2f166%2f903%2fdogukan-nelik-1.png	0	0	Central Defender ⚫⚽. An absolute defensive rock, handling aerial duels like a knight in a joust.
+155	40	Duhan Aksu	1989-03-09	https://i.goalzz.com/?i=o%2fp%2f163%2f54%2fduhan-aksu-1.png	0	0	Goalkeeper 🔵⚽. His keen eye and quick reflexes form the bulwark between opponents and goals.
+147	41	Doğan Alemdar	1997-09-12	https://i.goalzz.com/?i=505%2fdogan.jpg	0	0	Tireless winger known for his robust style, precise delivery, and unparalleled work rate.
+126	37	Cengiz Ünder	1997-05-19	https://i.goalzz.com/?i=o%2fp%2f18%2f678%2fcengiz-under-1.png	0	0	Spreading magic across the pitch. My passes are catalysts to victory potions!💫✨
+154	42	Doğukan Toköz	1993-05-02	https://i.goalzz.com/?i=o%2fp%2f143%2f110%2fdorukhan-tokoz-1.png	0	0	Striking sensation 🔴⚽. His fancy footwork and sharpshooter aim are the stuff of legends.
+142	43	Deniz Hümmet	1992-12-03	https://i.goalzz.com/?i=o%2fp%2f107%2f558%2fdeniz-hummet-1.png	0	0	Speedy winger who’s equally adept at crossing and cutting inside to shoot.
+137	46	Cihan Topaloğlu	1997-08-05	https://i.goalzz.com/?i=o%2fp%2f144%2f671%2fcihan-topaloglu-1.png	0	0	Winger in celestial flight, I dash across the green theatre sewing dreams and eluding doubts.
+138	51	Cihar Tarhan	1991-06-15	https://i.goalzz.com/?i=o%2fp%2f144%2f673%2fcinar-tarhan-1.png	0	0	Dependable striker known for his clinical finishing and relentless work ethic.
+139	51	Colin Kazım	1994-04-12	https://i.goalzz.com/?i=o%2fp%2f27%2f482%2fcolin-kazimrichards-1.png	0	0	Midfield maestro, lauded for pinpoint passing accuracy and strategic field vision.
+131	51	Cenk Şen	1995-12-01	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2fc.sen.jpg	0	0	Tall tales unravel wherever I tread. My determined defiance is the bridge between conquest and catastrophe.
+145	53	Deniz Vural	1989-03-09	https://i.goalzz.com/?i=o%2fp%2f107%2f482%2fdeniz-vural-1.png	0	0	Calm and composed goalkeeper, his distribution starts attacks as effectively as it stops them.
+134	53	Cevatcan Ekinci	1993-09-24	https://i.goalzz.com/?i=o%2fp%2f166%2f397%2fcevatcan-ekinci-1.jpg	0	0	Striker emerging from the shadows, my presence is felt before it's seen, echoing in the twine of nets.
+133	61	Cerem Dinçer	1996-07-10	https://i.goalzz.com/?i=o%2fp%2f162%2f359%2fcerem-talha-dincer-1.jpg	0	0	Steady as the north star, fierce as a dragon's breath, I am the stalwart shield in a maelstrom.
+148	57	Doğan Can Davas	1991-06-15	https://i.goalzz.com/?i=o%2fp%2f107%2f565%2fdogan-can-davas-1.png	0	0	Striker 🔴⚽. A master of finding net, keeps the scoring tally ticking like a seasoned pro.
+152	62	Doğukan Özkan	1993-10-02	https://i.goalzz.com/?i=o%2fp%2f160%2f253%2fdogukan-ozkan-1.png	0	0	Winger ⚪⚽. As fleet of foot as Hermes, he dances down the flanks with an artist's flair.
+143	63	Deniz Kadah	1996-07-15	https://i.goalzz.com/?i=o%2fp%2f92%2f605%2fdeniz-kadah-1.png	0	0	No-nonsense fullback, shines in overlapping runs, and estimated to have lungs of steel.
+161	20	Egemen Korkmaz	1982-02-04	https://i.goalzz.com/?i=buff%2fegemen.jpg	0	0	Striker 🔴⚽. His awe-inspiring finishing skills are rewriting the rookie playbook one goal at a time.
+163	19	Emibya Ayyıldız	2003-10-13	https://i.goalzz.com/?i=o%2fp%2f162%2f792%2fembiya-ayyildiz-1.png	0	0	Fullback ⚫⚽. His tactical maturity supports the defence and triggers the attack, all in a day's work.
+160	20	Egehan Gök	2005-04-20	https://i.goalzz.com/?i=gabas%2fegehan.jpg	0	0	Midfielder ⚪⚽. A prodigy in making, his vision and control orchestrates game like a seasoned maestro.
+187	24	Eren Elmalı	2004-02-20	https://i.goalzz.com/?i=o%2fp%2f159%2f628%2feren-elmali-1.png	0	0	"19 and sweeping the field left and right. Daring by day, playmaking by night 🎩💃. Onwards and upwards!" ⛰️⚽
+173	25	Emre Çolak	2003-11-09	https://i.goalzz.com/?i=haf%2femre.jpg	0	0	Rising fullback. Got the left flank under my swagger. Young blood with an old school charm. 🏴‍☠️🔝
+188	25	Eren Erdoğan	2005-03-06	https://i.goalzz.com/?i=o%2fp%2f166%2f426%2feren-erdogan-2.png	0	0	"Scoring is my forte, the pitch is my playground ⚽️💥. Future of forward play."
+165	27	Emir Gültekin	2004-08-25	https://i.goalzz.com/?i=o%2fp%2f176%2f813%2femir-gultekin-1.png	0	0	Striker 🔴⚽. His raw talent and clinical finishes paint a promising picture of a future superstar.
+159	28	Ege Bilsel	2002-05-12	https://i.goalzz.com/?i=o%2fp%2f178%2f377%2fege-bilsel-1.png	0	0	Central Defender ⚫⚽. Young but stands tall, shielding backline like a seasoned warrior.
+168	30	Emirhan Çakır	2002-12-17	https://i.goalzz.com/?i=o%2fp%2f160%2f843%2femirhan-cakir-1.png	0	0	Love stopping goal parties. Age doesn't defy technique. Your up-and-coming wall, Goalkeeper 🧤 #RisingStar ⚽🌟
+179	31	Enes Ünal	2006-12-05	https://i.goalzz.com/?i=jawharanet%2fspain2015%2funai.jpg	0	0	"Age is no barrier when you're this fierce. I guard the posts⛔ and keep the ball out 🧤⚽️. Clocked in at 17 years and counting!"
+176	36	Emre Taşdemir	2006-12-05	https://i.goalzz.com/?i=o%2fp%2f107%2f521%2femre-tasdemir-1.png	0	0	Believer, Achiever, Goalkeeper. Just 17 but already keeping sheets clean. ⛔🥅 #CleanSheetsClub
+178	37	Ender Aygören	2005-02-19	https://i.goalzz.com/?i=prem%2f57699.jpg	0	0	"Dreaming big and making every sprint count 🏃‍♂️ 18-year-old, Future star winger 🔵⚽️. Stand back and watch this space!" 🚀
+177	41	Emrecan Uzunhan	2005-08-17	https://i.goalzz.com/?i=o%2fp%2f172%2f881%2femrecan-uzunhan-1.png	0	0	Young, speedy and ready to fly down the wings! Just 18 but turning heads already. ⚽️🔥 #FutureWinger
+174	43	Emre Kılınç	2003-04-21	https://i.goalzz.com/?i=o%2fp%2f141%2f751%2femre-kilinc-1.png	0	0	20, Conjuring goals outta nowhere, they call me the Midfield Maestro. 🕹️⚽️ #WatchThisSpace
+186	44	Eren Bilen	2003-01-13	https://i.goalzz.com/?i=o%2fp%2f136%2f983%2feren-bilen-1.png	0	0	"Kicking the ball around ⚽ is my thing! Strikin' 'em hot and fresh only at 20 🔥. The goal posts won't know what hit 'em!"
+167	46	Emirhan Aydoğan	2005-06-17	https://i.goalzz.com/?i=o%2fp%2f163%2f58%2femirhan-aydogan-1.png	0	0	Winger ⚫⚽. Known for his dazzling runs and precise crossing, his footprints are already echoing in the pitch.
+170	50	Emirhan İlkhan	2005-05-30	https://i.goalzz.com/?i=o%2fp%2f167%2f491%2femirhan-ilkhan-1.png	0	0	Sculpting the game from the heart of the field. Only 18, but I've got the midfield on my strings. 🎩⚽️ #MagicianInTheMaking
+156	51	Efe Koyuncu	2005-04-12	https://i.goalzz.com/?i=o%2fp%2f173%2f511%2fefe-arda-koyuncu-2.png	0	0	Winger ⚪⚽. With his relentless energy, he’s a workhorse that gallops down the wing like Pegasus.
+171	51	Emirhan Topçu	2004-01-13	https://i.goalzz.com/?i=o%2fp%2f144%2f672%2femirhan-topcu-1.png	0	0	Chasing dreams one goal at a time. A teen with a taste for the net. ⚡🎯 #NextGenStriker
+184	52	Erdi Dikmen	2004-11-18	https://i.goalzz.com/?i=o%2fp%2f159%2f458%2ferdi-dikmen-2.png	0	0	"Live, love, defend. Your next-gen fullback reporting for duty at 19 🚀. Stay tuned - the game is on!" 🖤⚽
+172	52	Emre Akbaba	1992-02-12	https://i.goalzz.com/?i=o%2fp%2f115%2f607%2femre-akbaba-1.png	0	0	19, painting wings with my boots, running down the flanks. 💨The future's on the wing! ⚽🤙
+185	53	Eren Albayrak	2005-05-06	https://i.goalzz.com/?i=messironld%2feren1.jpg	0	0	"Alright, world! Ready to dive, save and conquer at 18. Your aspiring goal-stopper is here 🧤💥"
+162	55	Ekrem Kılıçarslan	2004-01-25	https://i.goalzz.com/?i=o%2fp%2f162%2f808%2fekrem-kilicarslan-1.png	0	0	Winger 🔵⚽. His blistering pace and trickery make him the nightmare in any defender's sleep.
+166	57	Emirecan Altıntaş	2001-11-04	https://i.goalzz.com/?i=jmal%2femircan.jpg	0	0	Goalkeeper 🔵⚽. His unwavering focus and spectacular saves make him the last line of defence any    team would be proud of.
+181	66	Enis Destan	2004-06-22	https://i.goalzz.com/?i=o%2fp%2f129%2f845%2fenis-destan-3.png	0	0	"Knocking the opponents out one tackle at a time 💪🏻. Rock-solid at 19 🏰⚽. The future's in the defense!"
+158	59	Efkan Bekiroğlu	2003-01-14	https://i.goalzz.com/?i=o%2fp%2f157%2f78%2fefkan-bekiroglu-1.png	0	0	Goalkeeper 🔵⚽. His agility and reflexes defy his age, keeping nets safe like an experienced guardian.
+169	60	Emirhan Delibaş	2003-07-26	https://i.goalzz.com/?i=o%2fp%2f167%2f720%2femirhan-delibas-1.png	0	0	Young gun 🔥! Defending like a boss, standing tall in the middle. ⚽ + 🏢 = Me! Central Defender.
+182	61	Erce Kardeşler	2005-03-05	https://i.goalzz.com/?i=o%2fp%2f153%2f758%2ferce-kardesler-1.png	0	0	"Finding nets at 18 ⚽️💥, I'm not your average striker! Get ready for goals, world. See you on the pitch!" ⚡️
+164	62	Emin Bayram	2002-03-06	https://i.goalzz.com/?i=o%2fp%2f152%2f531%2femin-bayram-1.png	0	0	Midfielder ⚪⚽. Logan's game reading and passing prowess could easily rival players twice his age.
+180	65	Eray Birnican	2004-04-13	https://i.goalzz.com/?i=o%2fp%2f18%2f681%2feray-birnican-1.png	0	0	"Upping the MBP-Midfield Banter Play 😎🎩. Bringing my A-game at just 19 ⚽️. Let's drive the game together!" 🚗
+175	54	Emre Mor	2005-02-02	https://i.goalzz.com/?i=teams%2fgermany%2fdortmund%2femre_mor.jpg	0	0	They say age is just a number, I say goals are too. Young gun upfront. 💥 
+197	61	Fatih Aksoy	2004-04-14	https://i.goalzz.com/?i=o%2fp%2f134%2f754%2ffatih-aksoy-1.png	0	0	Unyielding between the posts, defying and defending. Recording clean sheets, one game at a time.
+200	64	Ferhat Yazgan	2000-05-17	https://i.goalzz.com/?i=o%2fp%2f110%2f845%2fferhat-yazgan-1.png	0	0	The defensive anchor of the backline, defying attackers and standing tall under pressure. A fortress on the pitch 🚫⛔.
+190	16	Eren Karadağ	2002-09-12	https://i.goalzz.com/?i=hghf%2feren.jpg	0	0	Dancing down the flanks 🩰. Quick feet, quicker thinking. Winging it like a pro!
+221	19	Hasan Hüseyin Acar	1991-11-30	https://i.goalzz.com/?i=o%2fp%2f107%2f547%2fhasan-huseyin-acar-1.png	0	0	Plugging holes and building molehills into mountains at the back — your #DefensiveDynamo
+206	23	Gökhan Akkan	2001-08-22	https://i.goalzz.com/?i=o%2fp%2f65%2f195%2fgokhan-akkan-1.png	0	0	A rock in the defense, with towering headers and timed tackles. Building walls on the pitch! ⚫⚽
+223	23	Hasan Yurtseven	1985-07-23	https://i.goalzz.com/?i=hghf%2fhasan.jpg	0	0	Netting them like a seasoned fisherman 🎣⚽#Predator
+192	24	Erhun Öztümer	2006-01-20	https://i.goalzz.com/?i=fdhggg%2foztumer.jpg	0	0	Solid as a rock in defense. No bypassing under my watch 🚫⛔. The fortress of future football!
+224	26	Hayrullah Bilazer	1992-04-28	https://i.goalzz.com/?i=o%2fp%2f159%2f450%2fhayrullah-bilazer-2.png	0	0	Wing is the word, speed is the game. On the highway to hall of fame. #WingMaster
+218	26	Halil Akbunar	1986-09-14	https://i.goalzz.com/?i=o%2fp%2f144%2f520%2fhalil-akbunar-1.png	0	0	Dashin' down the wing, crossin' like a king 👑⚽#Winger
+203	27	Furkan Beklevic	2001-01-03	https://i.goalzz.com/?i=o%2fp%2f159%2f457%2ffurkan-beklevic-2.png	0	0	Midfield Dynamo! The heartbeat of the field, orchestrating play with finesse and vision.
+195	29	Erten Ersu	2002-11-21	https://i.goalzz.com/?i=o%2fp%2f90%2f808%2ferten-ersu-1.png	0	0	Defending the colors, anchored in the heart of defense ⛓️⚽. Be warned, forwards!
+193	30	Ersin Destanoğlu	2005-02-08	https://i.goalzz.com/?i=pochettino%2fersin.jpg	0	0	"Running games from the middle of the pitch. The midfield maestro in action💡⚽."
+215	30	Hakan Arslan	1986-03-07	https://i.goalzz.com/?i=o%2fp%2f102%2f77%2fhakan-arslan-1.jpg	0	0	18-yard box predator, finding net with instinctive precision ⚽🎯.
+216	33	Hakan Aydın	1989-05-16	https://i.goalzz.com/?i=o%2fp%2f163%2f241%2fhakan-aydin-1.png	0	0	The defensive stalwart, a fortress shielding attacks, standing tall in defiance 🤲⚽.
+209	33	Gökhan Karadeniz	1993-02-14	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2fg.karadeniz.jpg	0	0	Between the sticks, bolstering the defense 🧤⛔. Making nets safer, one save at a time.
+189	33	Eren Karaağaç	2003-06-01	https://i.goalzz.com/?i=o%2fp%2f172%2f714%2feren-karaagac-1.png	0	0	"At the helm of the midfield, weaving wonders 🕹️⚽. Master of the pitch in the making."
+202	35	Furkan Bayır	1998-11-30	https://i.goalzz.com/?i=o%2fp%2f166%2f895%2ffurkan-bayir-1.png	0	0	Running down the flanks 💨. Creating chances, one sharp cross at a time. Winging it is more than just a phrase!
+207	35	Gökhan Aslan	1999-09-06	https://i.goalzz.com/?i=hitham%2feredivisie_2014%2feredivisie_2015%2fgokhan+alsan.jpg	0	0	A true maestro in midfield. Dictating the tempo of the game, playing the orchestra of passes ⚽🎩.
+199	37	Fatih Yılmaz	1999-04-01	https://i.goalzz.com/?i=o%2fp%2f166%2f355%2ffatih-yilmaz-1.jpg	0	0	Running games from the midfield, connecting dots and forging attacks. A true wizard of the pitch 🕹️⚽!
+208	37	Gökhan Gönül	1995-11-28	https://i.goalzz.com/?i=o%2fp%2f38%2f269%2fgokhan-gonul-1.jpg	0	0	Midfield maestro, orchestrating symphonies with touches and passes 🎵⚽.
+214	40	Güven Yalçın	1988-01-19	https://i.goalzz.com/?i=o%2fp%2f141%2f212%2fguven-yalcin-1.png	0	0	The goalpost is my citadel, keeping, defending, denying each intrusive attempt ⚔️⚽
+213	43	Gürkan Başkan	1992-12-30	https://i.goalzz.com/?i=o%2fp%2f161%2f377%2fgurkan-baskan-1.jpg	0	0	The midfield dynamo, threading passes like pearls on a string 💫⚽.
+204	50	Furkan Soyalp	2000-03-14	https://i.goalzz.com/?i=o%2fp%2f107%2f520%2ffurkan-soyalp-1.png	0	0	An imposing figure in goal, a custodian who says NO to every intrusive attempt 🧤⚽!
+194	52	Ertaç Ozbir	2003-07-19	https://i.goalzz.com/?i=o%2fp%2f90%2f864%2fertac-ozbir-1.png	0	0	Instinctive in the 18-yard box, scoring goals left, right and center. The striker's code in the making.
+198	54	Fatih Şanlıtürk	2001-10-04	https://i.goalzz.com/?i=o%2fp%2f161%2f733%2fyigit-sanliturk-1.png	0	0	A guardian between the sticks 🧤⚽, with the reflexes of a panther and nerves of steel.
+205	56	Gökdeniz Bayraktar	2002-07-19	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2fg.bayrakdar.jpg	0	0	Quickly-decisive, always incisive. Striking fear into the heart of opposition defenders.
+217	66	Hakan Çalhanoğlu	1991-04-21	https://i.goalzz.com/?i=o%2fp%2f93%2f973%2fhakan-calhanoglu-1.png	0	0	Wing wizard, serving assists, weaving magic from the flanks 🌪️⚽.
+211	60	Günay Güvenç	1988-08-21	https://i.goalzz.com/?i=o%2fp%2f106%2f470%2fgunay-guvenc-1.png	0	0	Speed is my language, flanks my turf ⚡💨. Serving crosses, causing chaos.
+212	60	Güray Vural	1990-07-13	https://i.goalzz.com/?i=o%2fp%2f107%2f486%2fguray-vural-1.png	0	0	Striking is an art, and the 18-yard box is my canvas 🎨⚽. Goal? That's my signature.
+191	60	Erencan Yardımcı	2004-12-15	https://i.goalzz.com/?i=o%2fp%2f170%2f739%2ferencan-yardimci-1.png	0	0	Between the sticks is where the magic happens 🧤🛑. Keeper of clean sheets.
+219	62	Halil Dervişoğlu	1989-05-21	https://i.goalzz.com/?i=o%2fp%2f141%2f209%2fhalil-dervisoglu-1.png	0	0	Part poet, part quarterback; playmaker supreme 🎩⚽ #MidfieldMaestro
+196	64	Ertuğrul Ersoy	2003-05-23	https://i.goalzz.com/?i=o%2fp%2f107%2f523%2fertugrul-ersoy-1.png	0	0	Channeling the love for the game down the flanks. On the way to ultimate wing wizardry 🕊️⚽.
+222	45	Hasan Özkan	1990-03-08	https://i.goalzz.com/?i=esouza%2f275615.jpg	0	0	Channeling inner Banks and Buffon, your fearless shot-stopper 🧤⚽ #KeepingItClean
+226	40	İbrahim Akdağ	1986-12-15	https://i.goalzz.com/?i=o%2fp%2f134%2f282%2fibrahim-akdag-1.png	0	0	In the trenches, fighting the good fight - your central defense specialist 🛡️⚽
+225	39	Hüseyin Türkmen	1987-08-09	https://i.goalzz.com/?i=o%2fp%2f116%2f147%2fhuseyin-turkmen-1.png	0	0	In the heart of the battle, anchoring and sailing. #MidfieldGeneral
+231	19	İsmail Yüksek	1989-02-18	https://i.goalzz.com/?i=o%2fp%2f157%2f99%2fismail-yuksek-1.png	0	0	Shielding and fielding at the heart of defence. Breakthrough? Not on my watch 👊⚽️ #WallWhisperer
+261	20	Mert Topuz	1997-09-14	https://i.goalzz.com/?i=o%2fp%2f160%2f282%2fmert-topuz-1.png	0	0	Striking fear in the heart of the net, an executor who never forgets 🎯⚽.
+249	20	Kerem Baykuş	1995-09-11	https://i.goalzz.com/?i=o%2fp%2f157%2f61%2fkerem-baykus-1.png	0	0	Midfield dynamo, on the pitch with a show. Commanding chaos, calm in control 😎⚽.
+241	20	Kahraman Demirtaş	1981-11-21	https://i.goalzz.com/?i=o%2fp%2f165%2f856%2fkahraman-demirtas-1.png	0	0	The unbreachable wall, the guardian of the backline 🧱⚫ #DefenseGuard
+260	22	Mert Müldür	1996-10-21	https://i.goalzz.com/?i=o%2fp%2f142%2f853%2fmert-muldur-1.png	0	0	Zeroing in from the wings, dashing, dancing, lived for the beautiful flings 💫⚽.
+255	27	Koray Altınay	1991-04-07	https://i.goalzz.com/?i=hazzard%2fkoray.jpg	0	0	Sprinting the grass, racing the wind, an artist with the ball at his feet ⚠️⚽.
+240	27	Kağan Moradoğlu	1987-08-03	https://i.goalzz.com/?i=o%2fp%2f163%2f238%2fkagan-moradaoglu-1.png	0	0	Outruns, outmaneuvers, simply outstanding on the wings 💨🌪️ #LightningWinger
+230	30	İrfan Başaran	1985-09-12	https://i.goalzz.com/?i=o%2fp%2f162%2f358%2firfan-basaran-1.jpg	0	0	Lighting up the field from the flanks, catching the wind under my wings 💨⚽️ #WingWanderer
+235	31	İzzet Çelik	1990-08-03	https://i.goalzz.com/?i=o%2fp%2f166%2f172%2fizzet-celik-1.png	0	0	Twisting, turning, looping, learning. Life's more fun on the wings 🌀⚽️ #FlankFunk
+244	32	Kemal Aslan	1980-06-12	https://i.goalzz.com/?i=players%2fturkey%2faslan.jpg	0	0	Targets marked, shots charged. No respite for the nets ⚽️💥 #StrikerExtraordinaire
+257	38	Mert Çetin	1990-06-03	https://i.goalzz.com/?i=o%2fp%2f148%2f653%2fmert-cetin-1.png	0	0	The safe hands between the sticks, foe of strikers, friend of clean sheets 🥅⚽.
+251	38	Kerem Şen	1994-12-19	https://i.goalzz.com/?i=o%2fp%2f177%2f153%2fkerem-sen-1.png	0	0	Soldier of the flanks, quick as lighting, slippery as an eel 💨⚽.
+238	39	Kaan Kanak	1983-12-09	https://i.goalzz.com/?i=o%2fp%2f107%2f540%2fkaan-kanak-1.png	0	0	Waving magic in the midfield, game-changer and the field's heartbeat 💓⚽ #MidfieldMagician
+228	41	İbrahim Yılmaz	1987-06-21	https://i.goalzz.com/?i=o%2fp%2f163%2f64%2fibrahim-yilmaz-1.png	0	0	Saving nets, breaking sweats. The posts are my domain 🆘⚽️ #GoalieLife
+233	42	İrfan Can Eğribayat	1988-03-24	https://i.goalzz.com/?i=o%2fp%2f88%2f429%2firfan-can-egribayat-1.png	0	0	Poetry in motion, at the heart of the action. Creating rhythms in the midfield 🕺⚽️ #FlowFinder
+252	42	Kerem Ersuner	1994-01-30	https://i.goalzz.com/?i=o%2fp%2f161%2f543%2fkerem-yusuf-ersunar-1.jpg	0	0	Brick wall of the defense, stopping goals and creating immense 🚫⚽.
+239	45	Kadir Seven	1984-07-15	https://i.goalzz.com/?i=o%2fp%2f173%2f112%2fkadir-seven-1.png	0	0	Hits the net like a thunderbolt, striker par excellence ⚡⚽️ #ThunderStriker
+248	46	Kerem Kesgin	1992-03-08	https://i.goalzz.com/?i=gabas%2fkerem.jpg	0	0	Grit, grace, and goals galore, mastering the 18-yard lore 💫⚽.
+254	48	Kerem Demirbay	1995-11-23	https://i.goalzz.com/?i=o%2fp%2f93%2f974%2fkerem-demirbay-2.png	0	0	Toppling defenders, threading the needle, striking gold ⚽️💥.
+253	50	Kerim Frei	1993-05-14	https://i.goalzz.com/?i=o%2fp%2f80%2f809%2fkerim-frei-1.png	0	0	Dictating the tempo, mastering the rhythm, the pitch's puppeteer 🎩⚽.
+232	50	İsmail Zehir	1986-07-30	https://i.goalzz.com/?i=o%2fp%2f171%2f139%2fismail-zehir-1.png	0	0	Split-second decisions, goal-bound precision. Finding net's my mission 🎯⚽ #BornStriker
+227	53	İbrahim Pehlivan	1988-10-13	https://i.goalzz.com/?i=o%2fp%2f115%2f540%2fibrahim-pehlivan-1.png	0	0	On the lines, breaking the chains. Born to stop the shots. #DecisiveDefender
+236	54	İzzet Karaboğa	1986-05-20	https://i.goalzz.com/?i=o%2fp%2f160%2f995%2fizzet-karaboga-1.png	0	0	Crafting defence like an artisan, brick by brick. The fortress stands tall ⚔️⚽️ #DefenceDoyen
+229	55	İlkay Durmuş	1985-01-09	https://i.goalzz.com/?i=madridderb%2filkay.jpg	0	0	Striding through midfield, a nimble navigator of the pitch 🏆⚽️ #GrassGeographer
+237	55	Kaan Ayhan	1984-10-23	https://i.goalzz.com/?i=o%2fp%2f75%2f856%2fkaan-ayhan-1.png	0	0	Tracing arcs and sparking cheers. Midfield maestro is here 🌟⚽️ #MidfieldMaverick
+242	59	Kamil Ahmet Çörekçi	1985-09-30	https://i.goalzz.com/?i=kdlhf%2fkamil.jpg	0	0	Rules the roost between the posts, the custodian supreme 🥅🧤 #GuardianOfTheGoal
+234	60	İrfan Can Kahveci	1987-11-15	https://i.goalzz.com/?i=o%2fp%2f107%2f588%2firfan-can-kahveci-1.png	0	0	Denying shots, defying odds. Keeper of the keeper's code 🥅🕶️ #NetProtector
+250	61	Kerem Kalafat	1993-07-21	https://i.goalzz.com/?i=o%2fp%2f157%2f66%2fkerem-kalafat-1.png	0	0	Fearless guard in front of the net, keeper of the clean sheets, savior of bets 🧤⚽.
+245	61	Kenan Karaman	1983-10-29	https://i.goalzz.com/?i=o%2fp%2f93%2f963%2fkenan-karaman-1.png	0	0	Flies through the flanks, eyes on the goal. Wing play reimagined 🚀⚽️ #WingWonder
+256	63	Koray Kılınç	1992-09-25	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2fkoraykilinc.gif	0	0	Storming from the back, the iron pillar of defense, won't crack ⛔⚽.
+246	65	Kenan Yıldız	1983-01-14	https://i.goalzz.com/?i=o%2fp%2f178%2f534%2fkenan-yildiz-1.png	0	0	At the heart of the defense, the pillar that doesn't waver 🗼⚽️ #UltimateUpholder
+259	47	Mert Hakan Yandaş	1995-07-27	https://i.goalzz.com/?i=o%2fp%2f128%2f429%2fmert-hakan-yandas-1.png	0	0	Fearless in the penalty box, making nets shiver and hearts rock 💥⚽.
+265	35	Merih Demiral	1997-08-16	https://i.goalzz.com/?i=o%2fp%2f144%2f589%2fmerih-demiral-1.png	0	0	Between posts, a titan unmoved. For strikers, a riddle unsolved 🧤⚽.
+288	50	Salih Özcan	1998-06-06	https://i.goalzz.com/?i=o%2fp%2f114%2f190%2fsalih-ozcan-2.png	0	0	One with the ball, striking goals, a game recall 🎯⚽.
+282	21	Sadık Baş	1997-08-28	https://i.goalzz.com/?i=o%2fp%2f166%2f842%2fsadik-bas-1.png	0	0	Serpentine agility on the flanks. Speed and precision, enemies outranked 💨⚽.
+295	21	Sedat Şahintürk	2000-05-18	https://i.goalzz.com/?i=anis%2f2017%2f08%2fsedat+sahinturk.jpg	0	0	Master of the wings, driving defense into the rings 🛹⚽.
+263	21	Metehan Mert	1995-11-20	https://i.goalzz.com/?i=o%2fp%2f157%2f265%2fmetehan-mert-3.png	0	0	Resolute as a rock at the back, for strikers nightmare to hack 🛡️⚽.
+294	22	Samet Can Özkan	1998-11-09	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2fs.c.ozkan.jpg	0	0	A nightmare for keepers, within 18-yards, quite the fighter 🥊⚽.
+276	23	Ömer Toprak	1997-04-17	https://i.goalzz.com/?i=o%2fp%2f42%2f588%2fomer-toprak-1.png	0	0	Unyielding pillar in defense, turning every attack into suspense 🛡️⚽️
+267	24	Necip Uysal	1998-02-05	https://i.goalzz.com/?i=o%2fp%2f70%2f769%2fnecip-uysal-1.png	0	0	A fortress in the defense, breaking the dreams of offensive intents ⚔️⚽.
+280	27	Ozan Tufan	1996-04-19	https://i.goalzz.com/?i=guardiolaaaaa%2fozan.jpg	0	0	Midfield mastermind. Pulling strings, bending things. Orchestrating wins 🏆⚽.
+275	30	Ömer Beyaz	1995-08-03	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2fo.beyaz.jpg	0	0	Speed governing the flanks, magic unfolds when the wingman cranks ⚡⚽️
+285	34	Sakıp Aytaç	1999-03-31	https://i.goalzz.com/?i=o%2fp%2f115%2f602%2fsakib-aytac-1.png	0	0	Wind Whisperer. Whooshing down the wing, slicing the field like a king 👑⚽.
+272	35	Okan Koçuk	1993-07-26	https://i.goalzz.com/?i=o%2fp%2f107%2f524%2fokan-kocuk-1.png	0	0	Engines roaring on the flanks, leaving defenders to walk the plank 🔥⚽️
+268	38	Oğulcan Çağlayan	1997-03-12	https://i.goalzz.com/?i=omar_a%2fturk%2fgaziantepspor%2f1375881709-ogulcan-caglayan1.jpg	0	0	Crafting goals with precision, striker with a mission ⚽️💥
+300	41	Selimcan Temel	2000-07-03	https://i.goalzz.com/?i=o%2fp%2f170%2f750%2fselimcan-temel-1.png	0	0	Roaring down the wing, zipping past everything. A side of sting, served with a swing 🚀⚽.
+262	42	Mertcan Cam	1996-05-08	https://i.goalzz.com/?i=o%2fp%2f162%2f351%2fmertcan-cam-1.png	0	0	Turning the wheel in the middle, a spectacle of skills so subtle 🕹️⚽.
+289	42	Salih Uçan	2000-01-14	https://i.goalzz.com/?i=o%2fp%2f90%2f810%2fsalih-ucan-1.png	0	0	Deft on the flanks, carrying the team on swift tanks 🚀⚽.
+298	43	Selçuk İnan	1985-02-10	https://i.goalzz.com/?i=medalss%2f12.jpg	0	0	Battle-hardened goalie, not just part of the scenery, stand-up comedy for every penalty 🃏⚽.
+287	44	Salih Kavrazlı	1997-12-22	https://i.goalzz.com/?i=kdlhf%2f21033.jpg	0	0	Guardian of the goal. Sharp eyes, swift dive, no hole 🕵️⚽.
+299	44	Selim Ay	2002-11-10	https://i.goalzz.com/?i=33333345566%2fselim.jpg	0	0	Footwork slicker than a jazz quartet, stealing hearts as the net pirouette 💖⚽.
+291	46	Samed Kılıç	1997-10-03	https://i.goalzz.com/?i=c.chihab%2fkilic.jpg	0	0	Shot-stopper extraordinaire, supreme guardian of the goal's lair 🦸⚽.
+286	46	Salih Dursun	1995-11-06	https://i.goalzz.com/?i=o%2fp%2f102%2f12%2fsalih-dursun-1.png	0	0	Bulwark on the backline. Iron grit, no transgression shall permit 🛡️⚽.
+269	46	Oğulcan Ulgun	1996-11-26	https://i.goalzz.com/?i=o%2fp%2f153%2f873%2fogulcan-ulgun-1.png	0	0	Executing silken skills on the flanks, your favorite wing commander in action 🕊️⚽️
+271	47	Oğuzhan Özyakup	1995-01-15	https://i.goalzz.com/?i=o%2fp%2f55%2f517%2foguzhan-ozyakup-1.png	0	0	Intrepid guardian of the goal, saying 'No Entry' to every roll 🧤⛔️
+270	47	Oğuz Ceylan	1997-07-19	https://i.goalzz.com/?i=o%2fp%2f153%2f861%2foguz-ceylan-1.png	0	0	Manoeuvering the midfield magic, setting the game's rhythm, and never static 🛠️⚽️
+296	48	Sefa Öztürk	1997-02-28	https://i.goalzz.com/?i=o%2fp%2f166%2f413%2fsefa-ozdemir-1.png	0	0	Unyielding at the back, for attackers, an constant wrack 🏰⚽.
+266	48	Nazım Sangare	1996-06-27	https://i.goalzz.com/?i=o%2fp%2f144%2f478%2fnazim-sangare-1.png	0	0	Classic midfield maestro, pulling strings, creating the perfect show 🎩⚽.
+274	49	Ömer Bayram	1997-10-09	https://i.goalzz.com/?i=medalss%2f11.jpg	0	0	Leading the offensive line, a predator in the 18-yard shrine 🏹⚽️
+293	50	Samet Akaydın	1994-07-04	https://i.goalzz.com/?i=o%2fp%2f163%2f62%2fsamet-akaydin-2.png	0	0	Midfield maestro, conducting the orchestra, game's curator 🪄⚽.
+290	52	Samed Kaya	1999-08-17	https://i.goalzz.com/?i=33333345566%2fsamed.jpg	0	0	Dictating from the center, paints the match's texture 🎨⚽.
+279	54	Orkun Kökçü	1998-02-17	https://i.goalzz.com/?i=o%2fp%2f137%2f406%2forkun-kokcu-1.png	0	0	Flanks are my stage, outpacing rage. Each cross, a well-scripted page 📖⚽.
+273	56	Okay Yokuşlu	1996-02-21	https://i.goalzz.com/?i=ashrafzamrani%2fokay+yokuslu.gif	0	0	Setting up play and dictating the day, midfield maestro in the fray 👑⚽️
+292	56	Samed Onur	1999-04-23	https://i.goalzz.com/?i=o%2fp%2f166%2f813%2fsamed-onur-1.png	0	0	Speed, skill, surprise on the wings, a footballer who sings 🎵⚽.
+283	59	Sadık Çiftpınar	1996-05-12	https://i.goalzz.com/?i=guardiolaaaaa%2fsadikdetay.jpg	0	0	Ground commander. Regal, stand taller. Midfield enchanter 🎭⚽.
+281	57	Ramazan Civelek	1998-07-23	https://i.goalzz.com/?i=o%2fp%2f31%2f731%2framazan-civelek-1.png	0	0	Gaoler of the goal. Shots sizzled, attempts fizzled 🧤⚽.
+284	60	Sefa Kınalı	1998-09-15	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2fsafakinali.gif	0	0	Pointman perfection. Cracking defenses, cultured in precision ⚔️⚽.
+297	62	Sefa Yılmaz	1990-09-22	https://i.goalzz.com/?i=o%2fp%2f101%2f949%2fsefa-yilmaz-1.png	0	0	Safe hands, swift feet, in the goal, firm seat 🧤⚽.
+278	63	Onuralp Çevikkan	1999-01-25	https://i.goalzz.com/?i=o%2fp%2f178%2f397%2fonuralp-cevikkan-1.png	0	0	Striker Supreme. Each goal, a dream standing tall in the green 🥅⚽.
+329	39	Tarkan Serbest	1994-02-08	https://i.goalzz.com/?i=o%2fp%2f134%2f915%2ftarkan-serbest-1.png	0	0	Wings are my domain, pace is my game 🚀⚽.
+318	36	Sıddık Çelik	2004-12-28	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2fs.celik.jpg	0	0	Redefining the striker's tale, when I hit, it never fails ⚽️💥.
+325	17	Taha Tunç	2004-07-18	https://i.goalzz.com/?i=o%2fp%2f157%2f62%2ftaha-tunc-1.png	0	0	Rapid flanks, fierce tanks, expectations outranks 💨⚽.
+307	18	Serdar Özkan	1987-01-01	https://i.goalzz.com/?i=buna%2f2018-11-21_18-50-38.jpg	0	0	Between the sticks, a force to reckon. On my watch, the goal's a no-fly beacon 🎯⚽.
+302	18	Semih Kılıçsoy	2003-02-14	https://i.goalzz.com/?i=o%2fp%2f181%2f768%2fsemih-kilicsoy-1.png	0	0	The defense's ferocious boss, attackers left at a loss 🛡️⚽.
+330	19	Tayfun Aydoğan	2006-03-13	https://i.goalzz.com/?i=o%2fp%2f166%2f401%2ftayfun-aydogan-1.png	0	0	Midfield magician, orchestrating the game with precision 🎩⚽.
+306	22	Serdar Gürler	1991-09-09	https://i.goalzz.com/?i=o%2fp%2f71%2f235%2fserdar-gurler-2.png	0	0	In the trenches, fighting the fight. Turn back, or endure the defender's might ⚔⚽.
+313	23	Serkan Asan	2002-05-24	https://i.goalzz.com/?i=kdlhf%2fserkan.jpg	0	0	Commands the wing area, a sight scarier for the defenders 🕊️⚽.
+321	24	Sinan Osmanoğlu	1990-06-30	https://i.goalzz.com/?i=o%2fp%2f173%2f311%2fsinan-osmanoglu-1.png	0	0	Goalkeeper in command, breach my defense if you can 🥅⛔.
+301	25	Semih Karadeniz	2001-01-25	https://i.goalzz.com/?i=33333345566%2fsemih.jpg	0	0	Calm in the chaos, guiding force of the team's cosmos. Our midfield maestro 🎹⚽.
+317	26	Servet Çetin	1981-10-04	https://i.goalzz.com/?i=players%2fturkey%2fserv.jpg	0	0	On the flanks with the ball, makes my opponents' jaws fall 😱⚽.
+308	27	Serdar Poyraz	2002-06-14	https://i.goalzz.com/?i=o%2fp%2f161%2f411%2fserdar-poyraz-1.png	0	0	Precision with every shot, strikers' role is what I've got 🌠⚽.
+320	30	Sinan Kurt	1995-03-02	https://i.goalzz.com/?i=o%2fp%2f166%2f171%2fsinan-kurt-1.png	0	0	An artist in midfield, dance of dominance mildly veiled 🎼⚽.
+328	32	Tarık Çetin	1997-10-14	https://i.goalzz.com/?i=hghf%2ftarik.jpg	0	0	Goals are my language, the pitch is my stage ⚽️🎭.
+335	33	Tolga Ciğerci	1992-03-23	https://i.goalzz.com/?i=o%2fp%2f72%2f684%2ftolga-cigerci-1.png	0	0	Running down the wings, a song the crowd sings 🎵⚽.
+339	34	Ufuk Akyol	1997-08-27	https://i.goalzz.com/?i=o%2fp%2f153%2f957%2fufuk-akyol-1.png	0	0	Wing warrior, football's charmer ☄⚽.
+312	34	Serhat Ahmetoğlu	2003-07-31	https://i.goalzz.com/?i=o%2fp%2f162%2f93%2fserhat-ahmetoglu-1.png	0	0	Unleashes venom with every strike, keepers' fright in the night 🦂⚽.
+304	35	Serdar Aziz	1990-10-23	https://i.goalzz.com/?i=o%2fp%2f70%2f984%2fserdar-aziz-1.png	0	0	Whipping up whirlwinds from the wing, leaving defenders in a fling 💫⚽.
+310	36	Sergen Picinciol	1997-04-29	https://i.goalzz.com/?i=o%2fp%2f166%2f353%2fsergen-picinciol-1.png	0	0	Master of the pitch's pace, midfield is my space 🌌⚽.
+314	36	Serkan Göksu	1993-08-16	https://i.goalzz.com/?i=o%2fp%2f173%2f223%2fserkan-goksu-1.png	0	0	Midfield maestro with the ball, opponents are at my beck and call 🎩⚽.
+337	37	Tolgay Arslan	1990-08-16	https://i.goalzz.com/?i=o%2fp%2f84%2f587%2ftolgay-arslan-1.png	0	0	Between the posts, a bulwark, deterrence spoke 🚧⚽.
+316	38	Serkan Özbalta	1979-02-05	https://i.goalzz.com/?i=o%2fp%2f170%2f832%2fserkan-ozbalta-1.png	0	0	A sorcerer with the ball at foot, through the net, every shot I put ⚡⚽.
+326	38	Taha Yalçıner	2005-02-28	https://i.goalzz.com/?i=buff%2ftaha-yalciner.jpg	0	0	efensive wall, standing tall, deters all 🛡️⚽.
+305	44	Serdar Dursun	1991-10-19	https://i.goalzz.com/?i=o%2fp%2f155%2f891%2fserdar-dursun-1.png	0	0	Midfield's metronome. Control, distribute, repeat. Football's poem in repeat 📘⚽.
+332	45	Taylan Antalyalı	1995-05-23	https://i.goalzz.com/?i=o%2fp%2f107%2f597%2ftaylan-antalyali-1.png	0	0	Attacking the flanks, breaking ranks, gets the thanks 👊⚽.
+309	48	Serdar Saatçi	2003-09-27	https://i.goalzz.com/?i=o%2fp%2f161%2f583%2fserdar-saatci-2.png	0	0	Battles on the flanks, tearing up the tanks 🚀⚽.
+311	49	Sergen Yatağan	2004-02-20	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2fs.yatagan.jpg	0	0	Steady at the rear, putting attackers' dreams to sear 🔥⚽.
+333	50	Tayyip Sanuc	2006-12-08	https://i.goalzz.com/?i=o%2fp%2f166%2f155%2ftayyip-sanuc-1.png	0	0	The heart of the midfield, a shield and a sword 🛡️⚔️⚽.
+327	53	Talha Ülvan	2004-11-04	https://i.goalzz.com/?i=o%2fp%2f175%2f341%2ftalha-ulvan-1.png	0	0	Shot-stopper, game topper, attackers' draughts prosper 🥅✨.
+334	55	Tiago Çukur	2002-04-01	https://i.goalzz.com/?i=o%2fp%2f172%2f486%2ftiago-cukur-1.png	0	0	Striking goals with might, shining bright in the spotlight 💡⚽.
+338	55	Tunahan Taşçı	2001-09-04	https://i.goalzz.com/?i=o%2fp%2f173%2f435%2ftunahan-tasci-1.png	0	0	Taming the ball, curating goal galleries for all ⚽️🎨.
+319	66	Sinan Bolat	1988-09-03	https://i.goalzz.com/?i=o%2fp%2f59%2f538%2fsinan-bolat-1.png	0	0	Soaring down the wings, a nightmare in defenders' dreams 🦅⚽.
+303	62	Şener Özbayraklı	2003-08-19	https://i.goalzz.com/?i=o%2fp%2f107%2f522%2fsener-ozbayrakli-1.png	0	0	Eye for goal. Cool under pressure. Your worst nightmare, goalie's oppressor ⚽️🎯.
+323	63	Süleyman Cebeci	2005-04-25	https://i.goalzz.com/?i=o%2fp%2f163%2f240%2fsuleyman-cebeci-1.png	0	0	In the midfield, rules bend, creates the tempo, sets the trend ⏳⚽.
+315	64	Serkan Kırıntılı	2001-12-30	https://i.goalzz.com/?i=33333345566%2fprsnda.jpg	0	0	Tower of strength at the back, attackers' attacks are out of whack 🗼⚽.
+340	65	Uğur Arslan Kuru	1989-02-16	https://i.goalzz.com/?i=katkotati%2ffootballer%2ftur%2fugur-kuru.jpg	0	0	Midfield maestro, engine never slow 🎶⚽.
+324	65	Taha Tepe	2006-10-09	https://i.goalzz.com/?i=o%2fp%2f157%2f57%2ftaha-tepe-1.png	0	0	Cracks the net, striking right, spotlights on my goal flight 🚀⚽.
+201	16	Furkan Akyüz	2002-02-26	https://i.goalzz.com/?i=o%2fp%2f179%2f851%2ffurkan-akyuz-1.png	0	0	Born to strike ⚽💥! Calls the 18-yard box home and has a knack for finding the net.
+331	16	Tayfur Bingol	1993-04-19	https://i.goalzz.com/?i=o%2fp%2f90%2f829%2ftayfur-bingol-1.png	0	0	Goalkeeper supreme, the dream of every team 🧤⚽.
+277	16	Onur Bulut	1995-09-25	https://i.goalzz.com/?i=o%2fp%2f125%2f581%2fonur-bulut-1.png	0	0	Agile hands, firm stance, guardianship of the goal at a glance 🚫⚽️
+53	16	Ahmet Kartal	1995-06-30	https://i.goalzz.com/?i=o%2fp%2f159%2f624%2fahmet-zekeriyya-kart-1.jpg	0	0	Defense and attack? I've got both on lock. Forward dribblers, you've been warned. #FullbackFearFactor
+102	16	Alperen Uysal	1997-02-16	https://i.goalzz.com/?i=o%2fp%2f106%2f347%2falperen-uysal-1.png	0	0	Winger who whisks through wide lanes like a windstorm, unwrapping defenses like Christmas gifts.🎁💨
+354	17	Yavuz Buğra Boyar	1998-08-10	https://i.goalzz.com/?i=o%2fp%2f160%2f234%2fyavuz-bugra-boyar-1.png	0	0	Striker's tale, where words fail, goals prevail 🎯⚽.
+258	17	Mert Günok	1997-02-15	https://i.goalzz.com/?i=medalss%2f2018-11-19_12-51-44.jpg	0	0	Dancing with the ball at my feet, creating wizardry, a spectacle hard to beat 😎⚽.
+365	17	Zeki Yavru	1991-09-05	https://i.goalzz.com/?i=o%2fp%2f90%2f819%2fzeki-yavru-1.png	0	0	Wing conqueror, skill glosser, game enhancer 🦅⚽.
+356	48	Yiğit Kafkasyalı	1998-06-13	https://i.goalzz.com/?i=o%2fp%2f153%2f976%2fyigit-kafkasyali-2.png	0	0	Fortress in defense, repelling every offense 🏰⚽.
+157	18	Efecan Karaca	1995-07-14	https://i.goalzz.com/?i=o%2fp%2f57%2f464%2fefecan-karaca-1.png	0	0	Playmaker 🔵⚽. He weaves threads of gameplay effortlessly, like a maestro conducting a grand symphony.
+362	18	Yusuf Yazıcı	1997-01-29	https://i.goalzz.com/?i=o%2fp%2f105%2f631%2fyusuf-yazici-1.png	0	0	Flank specialist, skill economist, precision optimist 🎯⚽.
+16	19	İlhan Parlak	1987-01-19	https://i.goalzz.com/?i=o%2fp%2f25%2f545%2f304lhan-parlak-1.png	0	0	📍Izmir, Turkey | ⚽ Midfielder | 💫 Dreaming Big | 🎓Ege University | 🚀 Free-kick Specialist.
+360	19	Yusuf Erdoğan	1994-12-12	https://i.goalzz.com/?i=o%2fp%2f102%2f1%2fyusuf-erdogan-1.png	0	0	Tempo setter, game better, midfield letter 🖋️⚽.
+56	21	Ahmet Özden	1992-07-16	https://i.goalzz.com/?i=o%2fp%2f115%2f603%2fahmet-ozden-1.png	0	0	Midfield's my stage, football's my script. Pulling the strings between the white lines. #GamePlayGuru
+366	21	Ziya Erdal	1988-01-05	https://i.goalzz.com/?i=iscoooo%2fziyad.jpg	0	0	Defense fortress, attack stress, clean success 🛡️⚽.
+243	23	Kazımcan Karataş	1988-04-26	https://i.goalzz.com/?i=o%2fp%2f166%2f424%2fkazimcan-karatas-1.png	0	0	A maestro in cleats, turns games around in the midfield like clockwork 🎼⚽ #MidfieldMaestro
+344	24	Umut Bozok	1996-09-10	https://i.goalzz.com/?i=o%2fp%2f131%2f845%2fumut-bozok-1.png	0	0	Scoring spree, unlocking defenses key 🔑⚽.
+347	25	Umut Nayir	1993-06-28	https://i.goalzz.com/?i=o%2fp%2f101%2f962%2fumut-nayir-2.png	0	0	Saving shots, guarding slots, connecting the dots 🧮⚽.
+352	26	Yasin Öztekin	1987-07-14	https://i.goalzz.com/?i=per%2fyasisn.jpg	0	0	Master of the flank, with skills worth every franc ⚡⚽.
+264	27	Murat Sipahioğu	1998-04-30	https://i.goalzz.com/?i=o%2fp%2f159%2f629%2fmurat-sipahioglu-1.jpg	0	0	Lightning speed, razor sharp cross, your favorite wing boss 💨⚽.
+358	29	Yunus Akgün	2000-07-07	https://i.goalzz.com/?i=o%2fp%2f130%2f553%2fyunus-akgun-1.png	0	0	Clinical striker, goal provider, joy rider ⛹️⚽.
+361	29	Yusuf Sarı	1998-04-21	https://i.goalzz.com/?i=o%2fp%2f145%2f66%2fyusuf-sari-1.png	0	0	Goal gatekeeper, attackers' experience reaper 🧤⚽.
+359	30	Yunus Mallı	1992-04-17	https://i.goalzz.com/?i=o%2fp%2f61%2f837%2fyunus-malli-1.png	0	0	Fierce flank, skill tank, opposition sank ⚡⚽.
+220	31	Hasan Ali Kaldırım	1987-01-18	https://i.goalzz.com/?i=o%2fp%2f90%2f809%2fhasan-ali-kaldirim-1.png	0	0	Quick on my feet, quicker on the retreat. Your friendly neighbourhood full-back ⚔️⚽
+363	32	Zafer Görgen	2000-06-21	https://i.goalzz.com/?i=hghf%2fresim.jpg	0	0	Midfield orchestrator, opposition's dictator 🎼⚽.
+357	33	Yiğithan Güveli	1998-05-16	https://i.goalzz.com/?i=o%2fp%2f31%2f877%2fyigithan-guveli-1.png	0	0	Gloved gladiator, defensive vindicator, strikers' eliminator 🥅👊.
+342	37	Uğur Uçar	1987-04-05	https://i.goalzz.com/?i=medalss%2f2018-11-19_21-32-29.jpg	0	0	Flitting on the flanks, skills deserving thanks 🦋⚽.
+350	39	Veysel Ünal	2001-07-03	https://i.goalzz.com/?i=o%2fp%2f157%2f84%2fveysel-unal-1.png	0	0	Midfield's emperor, games were his concert, the pitch was his parlor 👑⚽.
+346	40	Umut Meraş	1995-12-20	https://i.goalzz.com/?i=ggdytw%2fv_685.jpg	0	0	Stern at the back, from attackers nothing to lack 💪⚽.
+349	40	Veysel Sarı	1988-04-12	https://i.goalzz.com/?i=o%2fp%2f110%2f504%2fveysel-sari-1.png	0	0	Dictating the wing's tempo, a legacy hard to let go 🕊️⚽.
+351	29	Volkan Babacan	1988-08-11	https://i.goalzz.com/?i=o%2fp%2f45%2f536%2fvolkan-babacan-1.png	0	0	Unwavering guardian of the goal, his saves made us whole 🧤⚽.
+345	43	Umut Bulut	1983-03-15	https://i.goalzz.com/?i=hated%2fumut.jpg	0	0	Power on the flanks, pushing up the ranks 🔌⚽.
+135	44	Ceyhun Gülselam	1990-03-03	https://i.goalzz.com/?i=jmal%2fceyhun.jpg	0	0	A behemoth between the sticks, I am the anvil upon which opposition dreams are shattered.
+353	49	Yavuz Aygün	1996-06-27	https://i.goalzz.com/?i=o%2fp%2f162%2f859%2fyavuz-aygun-1.png	0	0	Quarterback of the pitch, passes stitched, matches bewitched 📖⚽.
+348	55	Vedat Karakuş	1975-04-18	https://i.goalzz.com/?i=o%2fp%2f144%2f653%2fvedat-karakus-1.png	0	0	Proven prowess in goal-scoring, a living legend in the making ⚽️🔥.
+364	61	Zeki Çelik	1997-02-17	https://i.goalzz.com/?i=o%2fp%2f129%2f803%2fzeki-celik-1.png	0	0	Goal assailant, precision consultant, game resultant ⚽️💡.
+343	64	Uğurcan Çakır	1996-04-05	https://i.goalzz.com/?i=o%2fp%2f101%2f992%2fugurcan-cakir-1.png	0	0	Dictating the game, making fame in the midfield lane 🚦⚽.
+183	33	Erdal Kılıçaslan	2003-09-07	https://i.goalzz.com/?i=omar_a%2feuro%2fosmanlispor_%2f2016-08-26_225714.jpg	0	0	"They call me the Wing Commander 👨‍✈️ Driven, dedicated, and a touch speedy at 20. Strap in, it's gonna be a wild ride! 🔵⚽."
+322	34	Soner Aydoğdu	1991-01-05	https://i.goalzz.com/?i=o%2fp%2f90%2f818%2fsoner-aydogdu-1.png	0	0	Master of the wings, knows all the beautiful things 🏞️⚽.
+136	35	Cihan Karaman	1992-06-16	https://i.goalzz.com/?i=teams%2fgermany%2ffc_union-berlin%2fcihan-kahraman.jpg	0	0	Whisperer to the spherical muse, my dance on the field orchestrates tales of triumphant toil.
+96	49	Alper Uludağ	1990-06-12	https://i.goalzz.com/?i=o%2fp%2f107%2f452%2falper-uludag-1.png	0	0	Conductor of the midfield symphony. Also known to dabble in amateur squirrel photography 🐿️🎶
+355	49	Yavuz Ulaş Genç	2001-03-10	https://i.goalzz.com/?i=o%2fp%2f160%2f968%2fyavuz-ulas-genc-1.jpg	0	0	Dashes on the flanks, filling in the ranks, fans give thanks 💨⚽.
+50	56	Ahmet Gürleyen	1992-03-11	https://i.goalzz.com/?i=teams%2fgermany%2ffsv_mainz_05_%2fahmet_gurleyen.jpg	0	0	Not all heroes wear capes, some guard net posts. Best goalkeeper this side of the solar system. 🚀 #StarKeeper
+82	64	Ali Yavuz Kol	1996-07-07	https://i.goalzz.com/?i=o%2fp%2f144%2f29%2fali-yavuz-kol-1.jpg	0	0	Zipping down the pitch like a gazelle with jetpacks. ‘The Winged Wonder’ to my postman. 🚀📬
+336	65	Tolga Kalendar	2007-02-03	https://i.goalzz.com/?i=o%2fp%2f166%2f156%2ftolga-kalender-1.png	0	0	A fortress in the defense, breaking down opponent's offense 🏰⚽.
+210	66	Göktan Gurpuz	1990-06-15	https://i.goalzz.com/?i=o%2fp%2f173%2f305%2fgoktan-gurpuz-2.png	0	0	Controls the game from the backline, playing defensive notes that echo resilience and tenacity 💪⚽.
+247	66	Kerem Aktürkoğlu	1984-05-19	https://i.goalzz.com/?i=o%2fp%2f159%2f392%2fmuhammed-kerem-aktur-1.png	0	0	Denying every inch of space, the goalkeeper who dares to defy 🚫⚽ #DenialDynamo
 \.
 
 
 --
--- TOC entry 3771 (class 0 OID 16522)
+-- TOC entry 3781 (class 0 OID 16522)
 -- Dependencies: 220
 -- Data for Name: Referee; Type: TABLE DATA; Schema: public; Owner: Emrecan
 --
@@ -1587,7 +1716,7 @@ COPY public."Referee" ("refereeId", "fullName", birthday, email, "imgPath", "lic
 
 
 --
--- TOC entry 3781 (class 0 OID 16693)
+-- TOC entry 3791 (class 0 OID 16693)
 -- Dependencies: 232
 -- Data for Name: Statistics; Type: TABLE DATA; Schema: public; Owner: Emrecan
 --
@@ -1597,7 +1726,7 @@ COPY public."Statistics" ("clubId", "leagueId", "winCount", "drawCount", "loseCo
 
 
 --
--- TOC entry 3773 (class 0 OID 16533)
+-- TOC entry 3783 (class 0 OID 16533)
 -- Dependencies: 222
 -- Data for Name: Venue; Type: TABLE DATA; Schema: public; Owner: Emrecan
 --
@@ -1657,16 +1786,16 @@ COPY public."Venue" ("venueId", name, capacity, address, "imgPath", email) FROM 
 
 
 --
--- TOC entry 3799 (class 0 OID 0)
+-- TOC entry 3809 (class 0 OID 0)
 -- Dependencies: 230
 -- Name: Club_clubId_seq; Type: SEQUENCE SET; Schema: public; Owner: Emrecan
 --
 
-SELECT pg_catalog.setval('public."Club_clubId_seq"', 15, true);
+SELECT pg_catalog.setval('public."Club_clubId_seq"', 66, true);
 
 
 --
--- TOC entry 3800 (class 0 OID 0)
+-- TOC entry 3810 (class 0 OID 0)
 -- Dependencies: 233
 -- Name: Fixture_fixtureId_seq; Type: SEQUENCE SET; Schema: public; Owner: Emrecan
 --
@@ -1675,16 +1804,16 @@ SELECT pg_catalog.setval('public."Fixture_fixtureId_seq"', 1, false);
 
 
 --
--- TOC entry 3801 (class 0 OID 0)
+-- TOC entry 3811 (class 0 OID 0)
 -- Dependencies: 223
 -- Name: League_leagueId_seq; Type: SEQUENCE SET; Schema: public; Owner: Emrecan
 --
 
-SELECT pg_catalog.setval('public."League_leagueId_seq"', 9, true);
+SELECT pg_catalog.setval('public."League_leagueId_seq"', 29, true);
 
 
 --
--- TOC entry 3802 (class 0 OID 0)
+-- TOC entry 3812 (class 0 OID 0)
 -- Dependencies: 224
 -- Name: League_organizerId_seq; Type: SEQUENCE SET; Schema: public; Owner: Emrecan
 --
@@ -1693,7 +1822,7 @@ SELECT pg_catalog.setval('public."League_organizerId_seq"', 1, false);
 
 
 --
--- TOC entry 3803 (class 0 OID 0)
+-- TOC entry 3813 (class 0 OID 0)
 -- Dependencies: 216
 -- Name: Organizer_organizerId_seq; Type: SEQUENCE SET; Schema: public; Owner: Emrecan
 --
@@ -1702,7 +1831,7 @@ SELECT pg_catalog.setval('public."Organizer_organizerId_seq"', 55, true);
 
 
 --
--- TOC entry 3804 (class 0 OID 0)
+-- TOC entry 3814 (class 0 OID 0)
 -- Dependencies: 217
 -- Name: Participant_participantId_seq; Type: SEQUENCE SET; Schema: public; Owner: Emrecan
 --
@@ -1711,7 +1840,7 @@ SELECT pg_catalog.setval('public."Participant_participantId_seq"', 362, true);
 
 
 --
--- TOC entry 3805 (class 0 OID 0)
+-- TOC entry 3815 (class 0 OID 0)
 -- Dependencies: 226
 -- Name: Player_playerId_seq; Type: SEQUENCE SET; Schema: public; Owner: Emrecan
 --
@@ -1720,7 +1849,7 @@ SELECT pg_catalog.setval('public."Player_playerId_seq"', 366, true);
 
 
 --
--- TOC entry 3806 (class 0 OID 0)
+-- TOC entry 3816 (class 0 OID 0)
 -- Dependencies: 219
 -- Name: Referee_refereeId_seq; Type: SEQUENCE SET; Schema: public; Owner: Emrecan
 --
@@ -1729,7 +1858,7 @@ SELECT pg_catalog.setval('public."Referee_refereeId_seq"', 57, true);
 
 
 --
--- TOC entry 3807 (class 0 OID 0)
+-- TOC entry 3817 (class 0 OID 0)
 -- Dependencies: 221
 -- Name: Venue_venueId_seq; Type: SEQUENCE SET; Schema: public; Owner: Emrecan
 --
@@ -1738,7 +1867,7 @@ SELECT pg_catalog.setval('public."Venue_venueId_seq"', 57, true);
 
 
 --
--- TOC entry 3595 (class 2606 OID 16681)
+-- TOC entry 3603 (class 2606 OID 16681)
 -- Name: Club club_pk; Type: CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -1747,7 +1876,7 @@ ALTER TABLE ONLY public."Club"
 
 
 --
--- TOC entry 3599 (class 2606 OID 16719)
+-- TOC entry 3607 (class 2606 OID 16719)
 -- Name: Fixture fixture_pk; Type: CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -1756,7 +1885,7 @@ ALTER TABLE ONLY public."Fixture"
 
 
 --
--- TOC entry 3591 (class 2606 OID 16581)
+-- TOC entry 3599 (class 2606 OID 16581)
 -- Name: League league_pk; Type: CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -1765,7 +1894,7 @@ ALTER TABLE ONLY public."League"
 
 
 --
--- TOC entry 3573 (class 2606 OID 16481)
+-- TOC entry 3581 (class 2606 OID 16481)
 -- Name: Organizer organizer_email_uk; Type: CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -1774,7 +1903,7 @@ ALTER TABLE ONLY public."Organizer"
 
 
 --
--- TOC entry 3575 (class 2606 OID 16457)
+-- TOC entry 3583 (class 2606 OID 16457)
 -- Name: Organizer organizer_pk; Type: CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -1783,7 +1912,7 @@ ALTER TABLE ONLY public."Organizer"
 
 
 --
--- TOC entry 3577 (class 2606 OID 16465)
+-- TOC entry 3585 (class 2606 OID 16465)
 -- Name: Organizer organizer_username_uk; Type: CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -1792,7 +1921,7 @@ ALTER TABLE ONLY public."Organizer"
 
 
 --
--- TOC entry 3579 (class 2606 OID 16483)
+-- TOC entry 3587 (class 2606 OID 16483)
 -- Name: Participant participant_email_uk; Type: CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -1801,7 +1930,7 @@ ALTER TABLE ONLY public."Participant"
 
 
 --
--- TOC entry 3581 (class 2606 OID 16448)
+-- TOC entry 3589 (class 2606 OID 16448)
 -- Name: Participant participant_pk; Type: CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -1810,7 +1939,7 @@ ALTER TABLE ONLY public."Participant"
 
 
 --
--- TOC entry 3583 (class 2606 OID 16473)
+-- TOC entry 3591 (class 2606 OID 16473)
 -- Name: Participant participant_username_uk; Type: CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -1819,7 +1948,7 @@ ALTER TABLE ONLY public."Participant"
 
 
 --
--- TOC entry 3601 (class 2606 OID 16751)
+-- TOC entry 3609 (class 2606 OID 16751)
 -- Name: Performance performance_pk; Type: CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -1828,7 +1957,7 @@ ALTER TABLE ONLY public."Performance"
 
 
 --
--- TOC entry 3593 (class 2606 OID 16627)
+-- TOC entry 3601 (class 2606 OID 16627)
 -- Name: Player player_pk; Type: CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -1837,7 +1966,7 @@ ALTER TABLE ONLY public."Player"
 
 
 --
--- TOC entry 3585 (class 2606 OID 16531)
+-- TOC entry 3593 (class 2606 OID 16531)
 -- Name: Referee referee_email_uk; Type: CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -1846,7 +1975,7 @@ ALTER TABLE ONLY public."Referee"
 
 
 --
--- TOC entry 3587 (class 2606 OID 16529)
+-- TOC entry 3595 (class 2606 OID 16529)
 -- Name: Referee referee_pk; Type: CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -1855,7 +1984,7 @@ ALTER TABLE ONLY public."Referee"
 
 
 --
--- TOC entry 3597 (class 2606 OID 16702)
+-- TOC entry 3605 (class 2606 OID 16702)
 -- Name: Statistics statistics_pk; Type: CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -1864,7 +1993,7 @@ ALTER TABLE ONLY public."Statistics"
 
 
 --
--- TOC entry 3589 (class 2606 OID 16540)
+-- TOC entry 3597 (class 2606 OID 16540)
 -- Name: Venue venue_pk; Type: CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -1873,7 +2002,7 @@ ALTER TABLE ONLY public."Venue"
 
 
 --
--- TOC entry 3605 (class 2606 OID 16682)
+-- TOC entry 3613 (class 2606 OID 16682)
 -- Name: Club club_league_fk; Type: FK CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -1882,7 +2011,7 @@ ALTER TABLE ONLY public."Club"
 
 
 --
--- TOC entry 3608 (class 2606 OID 16730)
+-- TOC entry 3616 (class 2606 OID 16730)
 -- Name: Fixture fixture_club_away_fk; Type: FK CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -1891,7 +2020,7 @@ ALTER TABLE ONLY public."Fixture"
 
 
 --
--- TOC entry 3609 (class 2606 OID 16725)
+-- TOC entry 3617 (class 2606 OID 16725)
 -- Name: Fixture fixture_club_home_fk; Type: FK CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -1900,7 +2029,7 @@ ALTER TABLE ONLY public."Fixture"
 
 
 --
--- TOC entry 3610 (class 2606 OID 16720)
+-- TOC entry 3618 (class 2606 OID 16720)
 -- Name: Fixture fixture_league_fk; Type: FK CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -1909,7 +2038,7 @@ ALTER TABLE ONLY public."Fixture"
 
 
 --
--- TOC entry 3611 (class 2606 OID 16735)
+-- TOC entry 3619 (class 2606 OID 16735)
 -- Name: Fixture fixture_referee_fk; Type: FK CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -1918,7 +2047,7 @@ ALTER TABLE ONLY public."Fixture"
 
 
 --
--- TOC entry 3612 (class 2606 OID 16740)
+-- TOC entry 3620 (class 2606 OID 16740)
 -- Name: Fixture fixture_venue_fk; Type: FK CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -1927,7 +2056,7 @@ ALTER TABLE ONLY public."Fixture"
 
 
 --
--- TOC entry 3604 (class 2606 OID 16588)
+-- TOC entry 3612 (class 2606 OID 16588)
 -- Name: League league_organizer_fk; Type: FK CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -1936,7 +2065,7 @@ ALTER TABLE ONLY public."League"
 
 
 --
--- TOC entry 3602 (class 2606 OID 16687)
+-- TOC entry 3610 (class 2606 OID 16687)
 -- Name: Participant participant_club_fk; Type: FK CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -1945,7 +2074,7 @@ ALTER TABLE ONLY public."Participant"
 
 
 --
--- TOC entry 3603 (class 2606 OID 16668)
+-- TOC entry 3611 (class 2606 OID 16668)
 -- Name: Participant participant_player_fk; Type: FK CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -1954,7 +2083,7 @@ ALTER TABLE ONLY public."Participant"
 
 
 --
--- TOC entry 3613 (class 2606 OID 16757)
+-- TOC entry 3621 (class 2606 OID 16757)
 -- Name: Performance performance_fixture_fk; Type: FK CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -1963,7 +2092,7 @@ ALTER TABLE ONLY public."Performance"
 
 
 --
--- TOC entry 3614 (class 2606 OID 16752)
+-- TOC entry 3622 (class 2606 OID 16752)
 -- Name: Performance performance_player_fk; Type: FK CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -1972,7 +2101,7 @@ ALTER TABLE ONLY public."Performance"
 
 
 --
--- TOC entry 3606 (class 2606 OID 16703)
+-- TOC entry 3614 (class 2606 OID 16703)
 -- Name: Statistics statistics_club_fk; Type: FK CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -1981,7 +2110,7 @@ ALTER TABLE ONLY public."Statistics"
 
 
 --
--- TOC entry 3607 (class 2606 OID 16708)
+-- TOC entry 3615 (class 2606 OID 16708)
 -- Name: Statistics statistics_league_fk; Type: FK CONSTRAINT; Schema: public; Owner: Emrecan
 --
 
@@ -1989,7 +2118,7 @@ ALTER TABLE ONLY public."Statistics"
     ADD CONSTRAINT statistics_league_fk FOREIGN KEY ("leagueId") REFERENCES public."League"("leagueId");
 
 
--- Completed on 2023-12-30 08:46:13 +03
+-- Completed on 2023-12-31 03:17:16 +03
 
 --
 -- PostgreSQL database dump complete

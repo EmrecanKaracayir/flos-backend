@@ -26,6 +26,12 @@ export interface IMyPlayerProvider {
   isMyPlayerDeletable: (participantId: number) => Promise<boolean>;
 
   deleteMyPlayer: (participantId: number) => Promise<void>;
+
+  isClubEditable: (participantId: number) => Promise<boolean>;
+
+  amITheCaptain: (participantId: number) => Promise<boolean>;
+
+  resignFromClub: (participantId: number) => Promise<void>;
 }
 
 export enum MyPlayerQueries {
@@ -38,4 +44,8 @@ export enum MyPlayerQueries {
   IS_MY_PLAYER_IN_STATE_$PRID_$STATES = `SELECT EXISTS (SELECT "state" FROM "MyPlayerView" WHERE "participantId" = $1 AND "state" = ANY($2::"PlayerState"[])) AS "exists"`,
   FREE_PLAYER_FROM_PARTICIPANT_$PRID = `UPDATE "Participant" SET "playerId" = NULL WHERE "participantId" = $1`,
   DELETE_PLAYER_$PLID = `DELETE FROM "Player" WHERE "playerId" = $1`,
+  GET_CLUB_ID_$PRID = `SELECT "clubId" FROM "MyClubPlayerView" WHERE "playerId" = (SELECT "playerId" FROM "Participant" WHERE "participantId" = $1)`,
+  IS_CLUB_IN_STATE_$CLID_$STATES = `SELECT EXISTS (SELECT "state" FROM "ClubView" WHERE "clubId" = $1 AND "state" = ANY($2::"ClubState"[])) AS "exists"`,
+  AM_I_THE_CAPTAIN_$PRID = `SELECT EXISTS (SELECT 1 FROM "Participant" as pr INNER JOIN "Player" as pl ON pr."clubId" = pl."clubId" WHERE pr."participantId" = $1) AS "exists"`,
+  RESIGN_FROM_CLUB_$PRID = `UPDATE "Player" SET "clubId" = NULL WHERE "playerId" = (SELECT "playerId" FROM "Participant" WHERE "participantId" = $1)`,
 }

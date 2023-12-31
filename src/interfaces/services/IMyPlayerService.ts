@@ -28,4 +28,9 @@ export interface IMyPlayerService {
     participantId: number,
     clientErrors: IClientError[],
   ) => Promise<IAppResponse<void | null>>;
+
+  deleteMyPlayerResign: (
+    participantId: number,
+    clientErrors: IClientError[],
+  ) => Promise<IAppResponse<void | null>>;
 }

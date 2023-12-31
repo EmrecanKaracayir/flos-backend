@@ -3,6 +3,7 @@ import { pool } from "../core/database/pool";
 import { DELETABLE_CLUB_STATES } from "../core/rules/clubRules";
 import { AVAILABLE_PLAYER_STATES } from "../core/rules/playerRules";
 import { IMyClubModel } from "../interfaces/models/IMyClubModel";
+import { IMyClubPlayerModel } from "../interfaces/models/IMyClubPlayerModel";
 import { IPlayerModel } from "../interfaces/models/IPlayerModel";
 import { IExistsModel } from "../interfaces/models/util/IExistsModel";
 import {
@@ -15,6 +16,7 @@ import {
 } from "../interfaces/schemas/responses/app/IServerError";
 import { ClubModel } from "../models/ClubModel";
 import { MyClubModel } from "../models/MyClubModel";
+import { MyClubPlayerModel } from "../models/MyClubPlayerModel";
 import { PlayerModel } from "../models/PlayerModel";
 import { ExistsModel } from "../models/util/ExistsModel";
 
@@ -254,7 +256,7 @@ export class MyClubProvider implements IMyClubProvider {
 
   public async getMyClubPlayers(
     participantId: number,
-  ): Promise<IPlayerModel[]> {
+  ): Promise<IMyClubPlayerModel[]> {
     const playersRes: QueryResult = await pool.query(
       MyClubQueries.GET_MY_CLUB_PLAYERS_$PRID,
       [participantId],
@@ -263,10 +265,10 @@ export class MyClubProvider implements IMyClubProvider {
     if (!playersRecs) {
       return [];
     }
-    if (!PlayerModel.areValidModels(playersRecs)) {
+    if (!MyClubPlayerModel.areValidModels(playersRecs)) {
       throw new ModelMismatchError(playersRecs);
     }
-    return playersRecs as IPlayerModel[];
+    return playersRecs as IMyClubPlayerModel[];
   }
 
   public async doesPlayerExist(playerId: number): Promise<boolean> {
@@ -348,7 +350,25 @@ export class MyClubProvider implements IMyClubProvider {
     playerId: number,
   ): Promise<boolean> {
     const existsRes: QueryResult = await pool.query(
-      MyClubQueries.IS_PLAYER_IN_MY_CLUB_$PRID_$CLID,
+      MyClubQueries.IS_PLAYER_IN_MY_CLUB_$PRID_$PLID,
+      [participantId, playerId],
+    );
+    const existsRec: unknown = existsRes.rows[0];
+    if (!existsRec) {
+      throw new UnexpectedQueryResultError();
+    }
+    if (!ExistsModel.isValidModel(existsRec)) {
+      throw new ModelMismatchError(existsRec);
+    }
+    return (existsRec as IExistsModel).exists;
+  }
+
+  public async isPlayerMine(
+    participantId: number,
+    playerId: number,
+  ): Promise<boolean> {
+    const existsRes: QueryResult = await pool.query(
+      MyClubQueries.IS_PLAYER_MINE_$PRID_$PLID,
       [participantId, playerId],
     );
     const existsRec: unknown = existsRes.rows[0];

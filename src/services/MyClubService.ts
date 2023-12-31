@@ -10,6 +10,7 @@ import {
   isStringMatchingRegex,
 } from "../core/utils/strings";
 import { IMyClubModel } from "../interfaces/models/IMyClubModel";
+import { IMyClubPlayerModel } from "../interfaces/models/IMyClubPlayerModel";
 import { IPlayerModel } from "../interfaces/models/IPlayerModel";
 import { IMyClubProvider } from "../interfaces/providers/IMyClubProvider";
 import { IMyClubReq } from "../interfaces/schemas/requests/routes/my/club/IMyClubReq";
@@ -238,7 +239,7 @@ export class MyClubService implements IMyClubService {
         null,
       );
     }
-    const models: IPlayerModel[] =
+    const models: IMyClubPlayerModel[] =
       await this.myClubProvider.getMyClubPlayers(participantId);
     return new AppResponse<IMyClubPlayersRes[]>(
       new HttpStatus(HttpStatusCode.OK),
@@ -358,6 +359,16 @@ export class MyClubService implements IMyClubService {
       clientErrors.push(
         new ClientError(ClientErrorCode.PLAYER_NOT_FOUND_FOR_REMOVAL),
       );
+      return new AppResponse<null>(
+        new HttpStatus(HttpStatusCode.CONFLICT),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    if (await this.myClubProvider.isPlayerMine(participantId, playerId)) {
+      clientErrors.push(new ClientError(ClientErrorCode.CANNOT_REMOVE_CAPTAIN));
       return new AppResponse<null>(
         new HttpStatus(HttpStatusCode.CONFLICT),
         null,

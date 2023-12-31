@@ -10,6 +10,7 @@ import {
   isStringMatchingRegex,
 } from "../core/utils/strings";
 import { IClubModel } from "../interfaces/models/IClubModel";
+import { IMyLeagueClubModel } from "../interfaces/models/IMyLeagueClubModel";
 import { IMyLeagueModel } from "../interfaces/models/IMyLeagueModel";
 import { IMyLeaguesProvider } from "../interfaces/providers/IMyLeaguesProvider";
 import { IMyLeagues$ClubsReq } from "../interfaces/schemas/requests/routes/my/leagues/$leagueId/clubs/IMyLeagues$ClubsReq";
@@ -246,7 +247,7 @@ export class MyLeaguesService implements IMyLeaguesService {
         null,
       );
     }
-    const models: IClubModel[] =
+    const models: IMyLeagueClubModel[] =
       await this.myLeaguesProvider.getMyLeagueClubs(leagueId);
     return new AppResponse<IMyLeagues$ClubsRes[]>(
       new HttpStatus(HttpStatusCode.OK),

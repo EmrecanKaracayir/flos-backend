@@ -6,6 +6,7 @@ import {
 } from "../core/rules/clubRules";
 import { EDITABLE_LEAGUE_STATES } from "../core/rules/leagueRules";
 import { IClubModel } from "../interfaces/models/IClubModel";
+import { IMyLeagueClubModel } from "../interfaces/models/IMyLeagueClubModel";
 import { IMyLeagueModel } from "../interfaces/models/IMyLeagueModel";
 import { IExistsModel } from "../interfaces/models/util/IExistsModel";
 import {
@@ -18,6 +19,7 @@ import {
 } from "../interfaces/schemas/responses/app/IServerError";
 import { ClubModel } from "../models/ClubModel";
 import { LeagueModel } from "../models/LeagueModel";
+import { MyLeagueClubModel } from "../models/MyLeagueClubModel";
 import { MyLeagueModel } from "../models/MyLeagueModel";
 import { ExistsModel } from "../models/util/ExistsModel";
 
@@ -197,7 +199,9 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
     }
   }
 
-  public async getMyLeagueClubs(leagueId: number): Promise<IClubModel[]> {
+  public async getMyLeagueClubs(
+    leagueId: number,
+  ): Promise<IMyLeagueClubModel[]> {
     const clubsRes: QueryResult = await pool.query(
       MyLeaguesQueries.GET_MY_LEAGUE_CLUBS_$LGID,
       [leagueId],
@@ -206,10 +210,10 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
     if (!clubsRecs) {
       return [];
     }
-    if (!ClubModel.areValidModels(clubsRecs)) {
+    if (!MyLeagueClubModel.areValidModels(clubsRecs)) {
       throw new ModelMismatchError(clubsRecs);
     }
-    return clubsRecs as IClubModel[];
+    return clubsRecs as IMyLeagueClubModel[];
   }
 
   public async doesClubExist(clubId: number): Promise<boolean> {

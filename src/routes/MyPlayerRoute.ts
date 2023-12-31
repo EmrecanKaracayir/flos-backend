@@ -31,5 +31,11 @@ export class MyPlayerRoute implements IRoute {
       "/",
       this.myPlayerController.deleteMyPlayer.bind(this.myPlayerController),
     );
+    this.router.delete(
+      "/resign",
+      this.myPlayerController.deleteMyPlayerResign.bind(
+        this.myPlayerController,
+      ),
+    );
   }
 }

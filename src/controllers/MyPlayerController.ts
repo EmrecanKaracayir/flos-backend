@@ -218,4 +218,45 @@ export class MyPlayerController implements IMyPlayerController {
       return next(error);
     }
   }
+
+  public async deleteMyPlayerResign(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<Response | void> {
+    // Response declaration
+    const clientErrors: Array<IClientError> = [];
+    // Logic
+    try {
+      // Parse token (Has to be valid, otherwise it would not have reached this point)
+      const authPayload: AuthPayload = AuthHelper.verifyToken(
+        req.headers.authorization!.split(" ")[1],
+      );
+      // Hand over to service
+      const serviceRes: IAppResponse<void | null> =
+        await this.myPlayerService.deleteMyPlayerResign(
+          authPayload.userId,
+          clientErrors,
+        );
+      if (!serviceRes.httpStatus.isSuccess()) {
+        // Respond without token
+        return res.status(serviceRes.httpStatus.code).send(serviceRes);
+      }
+      // Respond with token
+      return res.status(serviceRes.httpStatus.code).send(
+        new AppResponse<void>(
+          serviceRes.httpStatus,
+          serviceRes.serverError,
+          serviceRes.clientErrors,
+          serviceRes.data,
+          AuthHelper.generateToken({
+            userId: authPayload.userId,
+            userRole: authPayload.userRole,
+          }),
+        ),
+      );
+    } catch (error) {
+      return next(error);
+    }
+  }
 }

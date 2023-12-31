@@ -110,6 +110,8 @@ export enum ClientErrorCode {
   INVALID_PLAYER_BIRTHDAY_CONTENT = 70905,
   INVALID_PLAYER_BIOGRAPHY_LENGTH = 70906,
   INVALID_PLAYER_IMAGE_PATH_CONTENT = 70907,
+  PLAYER_CANNOT_RESIGN_AS_CAPTAIN = 70908,
+  PLAYER_CANNOT_RESIGN = 70909,
   // - - 710XX: /my/club errors
   PARTICIPANT_HAS_NO_CLUB = 71000,
   PARTICIPANT_HAS_A_CLUB = 71001,
@@ -125,6 +127,7 @@ export enum ClientErrorCode {
   PLAYER_NOT_FOUND_FOR_ADDITION = 71011,
   PLAYER_NOT_AVAILABLE_FOR_ADDITION = 71012,
   PLAYER_NOT_FOUND_FOR_REMOVAL = 71013,
+  CANNOT_REMOVE_CAPTAIN = 71014,
   // - - 711XX: /available errors
   // - - 799XX: /* error
   RESOURCE_NOT_FOUND = 79900,
@@ -240,6 +243,9 @@ export const clientErrorMessages: ClientErrorMessages = {
   [ClientErrorCode.INVALID_PLAYER_BIOGRAPHY_LENGTH]: `Provided biography wasn't in the length range of ${PLAYER_BIOGRAPHY_MIN_LENGTH} to ${PLAYER_BIOGRAPHY_MAX_LENGTH}.`,
   [ClientErrorCode.INVALID_PLAYER_IMAGE_PATH_CONTENT]:
     "Provided image path was not in the valid format. Must be a valid URL.",
+  [ClientErrorCode.PLAYER_CANNOT_RESIGN_AS_CAPTAIN]:
+    "The player cannot resign as captain. Delete the club instead.",
+  [ClientErrorCode.PLAYER_CANNOT_RESIGN]: `The player cannot resign from the club. Club's state must be one of '[${EDITABLE_CLUB_STATES}]' to allow resigning.`,
   // - - 710XX: /my/club errors
   [ClientErrorCode.PARTICIPANT_HAS_NO_CLUB]:
     "The participant has no club. A club must be created first.",
@@ -263,6 +269,8 @@ export const clientErrorMessages: ClientErrorMessages = {
   [ClientErrorCode.PLAYER_NOT_AVAILABLE_FOR_ADDITION]: `The player is not available for addition. Its state must be one of '[${AVAILABLE_PLAYER_STATES}]' to be added.`,
   [ClientErrorCode.PLAYER_NOT_FOUND_FOR_REMOVAL]:
     "No player was found with the provided id in club. The player must be in the participant's club to be removed.",
+  [ClientErrorCode.CANNOT_REMOVE_CAPTAIN]:
+    "The captain cannot be removed from the club. Delete the club instead.",
   // - - 711XX: /available errors
   // - - 799XX: /* error
   [ClientErrorCode.RESOURCE_NOT_FOUND]:

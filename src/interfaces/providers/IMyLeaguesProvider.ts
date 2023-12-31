@@ -1,4 +1,5 @@
 import { IClubModel } from "../models/IClubModel";
+import { IMyLeagueClubModel } from "../models/IMyLeagueClubModel";
 import { IMyLeagueModel } from "../models/IMyLeagueModel";
 
 export interface IMyLeaguesProvider {
@@ -37,7 +38,7 @@ export interface IMyLeaguesProvider {
 
   deleteMyLeague: (leagueId: number) => Promise<void>;
 
-  getMyLeagueClubs: (leagueId: number) => Promise<IClubModel[]>;
+  getMyLeagueClubs: (leagueId: number) => Promise<IMyLeagueClubModel[]>;
 
   doesClubExist: (clubId: number) => Promise<boolean>;
 
@@ -59,7 +60,7 @@ export enum MyLeaguesQueries {
   UPDATE_LEAGUE_$LGID_$NAME_$PRIZE_$DESC_$LPATH = `UPDATE "League" SET "name" = $2, "prize" = $3, "description" = $4, "logoPath" = $5 WHERE "leagueId" = $1`,
   FREE_LEAGUE_FROM_CLUBS_$LGID = `UPDATE "Club" SET "leagueId" = NULL WHERE "leagueId" = $1`,
   DELETE_LEAGUE_$LGID = `DELETE FROM "League" WHERE "leagueId" = $1`,
-  GET_MY_LEAGUE_CLUBS_$LGID = `SELECT * FROM "Club" WHERE "leagueId" = $1`,
+  GET_MY_LEAGUE_CLUBS_$LGID = `SELECT * FROM "MyLeagueClubView" WHERE "leagueId" = $1`,
   DOES_CLUB_EXIST_$CLID = `SELECT EXISTS (SELECT * FROM "Club" WHERE "clubId" = $1) AS "exists"`,
   IS_CLUB_IN_STATE_$CLID_$STATES = `SELECT EXISTS (SELECT "state" FROM "ClubView" WHERE "clubId" = $1 AND "state" = ANY($2::"ClubState"[])) AS "exists"`,
   ADD_CLUB_TO_LEAGUE_$LGID_$CLID = `UPDATE "Club" SET "leagueId" = $1 WHERE "clubId" = $2`,

@@ -27,4 +27,10 @@ export interface IMyPlayerController {
     res: Response,
     next: NextFunction,
   ) => Promise<Response | void>;
+
+  deleteMyPlayerResign: (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => Promise<Response | void>;
 }
