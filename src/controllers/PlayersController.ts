@@ -16,6 +16,7 @@ import { AppResponse } from "../schemas/responses/AppResponse";
 import { ClientError } from "../schemas/responses/app/ClientError";
 import { HttpStatus } from "../schemas/responses/app/HttpStatus";
 import { PlayersService } from "../services/PlayersService";
+import { IPlayers$Res } from "../interfaces/schemas/responses/routes/players/$playerId/IPlayers$Res";
 
 export class PlayersController implements IPlayersController {
   public readonly playersService: IPlayersService;
@@ -78,7 +79,7 @@ export class PlayersController implements IPlayersController {
           );
       }
       // Hand over to service
-      const serviceRes: IAppResponse<IPlayersRes | null> =
+      const serviceRes: IAppResponse<IPlayers$Res | null> =
         await this.playersService.getPlayers$(
           parseInt(req.params.playerId),
           clientErrors,

@@ -6,6 +6,7 @@ import {
   IClientError,
 } from "../interfaces/schemas/responses/app/IClientError";
 import { HttpStatusCode } from "../interfaces/schemas/responses/app/IHttpStatus";
+import { IReferees$Res } from "../interfaces/schemas/responses/routes/referees/$refereeId/IReferees$Res";
 import { IRefereesRes } from "../interfaces/schemas/responses/routes/referees/IRefereesRes";
 import { IRefereesService } from "../interfaces/services/IRefereesService";
 import { RefereesProvider } from "../providers/RefereesProvider";
@@ -37,7 +38,7 @@ export class RefereesService implements IRefereesService {
   public async getReferees$(
     refereeId: number,
     clientErrors: IClientError[],
-  ): Promise<IAppResponse<IRefereesRes | null>> {
+  ): Promise<IAppResponse<IReferees$Res | null>> {
     const model: IRefereeModel | null =
       await this.refereesProvider.getReferee(refereeId);
     if (!model) {
@@ -52,7 +53,7 @@ export class RefereesService implements IRefereesService {
         null,
       );
     }
-    return new AppResponse<IRefereesRes>(
+    return new AppResponse<IReferees$Res>(
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,

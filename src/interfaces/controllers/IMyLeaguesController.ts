@@ -51,4 +51,10 @@ export interface IMyLeaguesController {
     res: Response,
     next: NextFunction,
   ) => Promise<Response | void>;
+
+  putMyLeagues$Start: (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => Promise<Response | void>;
 }

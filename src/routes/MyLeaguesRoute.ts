@@ -53,5 +53,11 @@ export class MyLeaguesRoute implements IRoute {
         this.myLeaguesController,
       ),
     );
+    this.router.put(
+      "/:leagueId/start",
+      this.myLeaguesController.putMyLeagues$Start.bind(
+        this.myLeaguesController,
+      ),
+    );
   }
 }

@@ -1,4 +1,5 @@
 import { IClubModel } from "../models/IClubModel";
+import { IFixtureModel } from "../models/IFixtureModel";
 import { IMyLeagueClubModel } from "../models/IMyLeagueClubModel";
 import { IMyLeagueModel } from "../models/IMyLeagueModel";
 
@@ -49,6 +50,22 @@ export interface IMyLeaguesProvider {
   isClubInLeague: (leagueId: number, clubId: number) => Promise<boolean>;
 
   removeClubFromMyLeague: (clubId: number) => Promise<void>;
+
+  isMyLeagueStartable: (leagueId: number) => Promise<boolean>;
+
+  doesMyLeagueHaveSufficientClubs: (leagueId: number) => Promise<boolean>;
+
+  getMyLeagueClubIds: (leagueId: number) => Promise<number[]>;
+
+  getMyLeagueRefereeIds: (clubCount: number) => Promise<number[]>;
+
+  getMyLeagueVenueIds: (clubCount: number) => Promise<number[]>;
+
+  startMyLeague: (
+    organizerId: number,
+    leagueId: number,
+    fixtures: IFixtureModel[],
+  ) => Promise<IMyLeagueModel>;
 }
 
 export enum MyLeaguesQueries {
@@ -67,4 +84,9 @@ export enum MyLeaguesQueries {
   GET_CLUB_$CLID = `SELECT * FROM "ClubView" WHERE "clubId" = $1`,
   IS_CLUB_IN_LEAGUE_$CLID_$LGID = `SELECT EXISTS (SELECT "clubId" FROM "Club" WHERE "clubId" = $1 AND "leagueId" = $2) AS "exists"`,
   REMOVE_CLUB_FROM_LEAGUE_$CLID = `UPDATE "Club" SET "leagueId" = NULL WHERE "clubId" = $1`,
+  GET_MY_LEAGUE_REFEREES_$CLCNT = `SELECT * FROM "RefereeView" ORDER BY RANDOM() LIMIT $1`,
+  GET_MY_LEAGUE_VENUES_$CLCNT = `SELECT * FROM "VenueView" ORDER BY RANDOM() LIMIT $1`,
+  UPDATE_LEAGUE_$LGID_$STATE = `UPDATE "League" SET "state" = $2::"LeagueState" WHERE "leagueId" = $1`,
+  CREATE_STATISTICS_$CLID_$LGID = `INSERT INTO "Statistics" ("clubId", "leagueId") VALUES ($1, $2)`,
+  CREATE_FIXTURE_$LGID_$HCID_$ACID_$WEEK_$RFID_$VNID = `INSERT INTO "Fixture" ("leagueId", "homeClubId", "awayClubId", "week", "refereeId", "venueId") VALUES ($1, $2, $3, $4, $5, $6)`,
 }

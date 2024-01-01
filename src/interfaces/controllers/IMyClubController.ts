@@ -45,4 +45,10 @@ export interface IMyClubController {
     res: Response,
     next: NextFunction,
   ) => Promise<Response | void>;
+
+  deleteMyClubResign: (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => Promise<Response | void>;
 }

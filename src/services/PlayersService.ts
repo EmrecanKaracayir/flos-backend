@@ -6,6 +6,7 @@ import {
   IClientError,
 } from "../interfaces/schemas/responses/app/IClientError";
 import { HttpStatusCode } from "../interfaces/schemas/responses/app/IHttpStatus";
+import { IPlayers$Res } from "../interfaces/schemas/responses/routes/players/$playerId/IPlayers$Res";
 import { IPlayersRes } from "../interfaces/schemas/responses/routes/players/IPlayersRes";
 import { IPlayersService } from "../interfaces/services/IPlayersService";
 import { PlayersProvider } from "../providers/PlayersProvider";
@@ -37,7 +38,7 @@ export class PlayersService implements IPlayersService {
   public async getPlayers$(
     playerId: number,
     clientErrors: IClientError[],
-  ): Promise<IAppResponse<IPlayersRes | null>> {
+  ): Promise<IAppResponse<IPlayers$Res | null>> {
     const model: IPlayerModel | null =
       await this.playersProvider.getPlayer(playerId);
     if (!model) {
@@ -52,7 +53,7 @@ export class PlayersService implements IPlayersService {
         null,
       );
     }
-    return new AppResponse<IPlayersRes>(
+    return new AppResponse<IPlayers$Res>(
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,

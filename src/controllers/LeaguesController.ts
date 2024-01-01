@@ -16,6 +16,7 @@ import { AppResponse } from "../schemas/responses/AppResponse";
 import { ClientError } from "../schemas/responses/app/ClientError";
 import { HttpStatus } from "../schemas/responses/app/HttpStatus";
 import { LeaguesService } from "../services/LeaguesService";
+import { ILeagues$Res } from "../interfaces/schemas/responses/routes/leagues/$leagueId/ILeagues$Res";
 
 export class LeaguesController implements ILeaguesController {
   public readonly leaguesService: ILeaguesService;
@@ -78,7 +79,7 @@ export class LeaguesController implements ILeaguesController {
           );
       }
       // Hand over to service
-      const serviceRes: IAppResponse<ILeaguesRes | null> =
+      const serviceRes: IAppResponse<ILeagues$Res | null> =
         await this.leaguesService.getLeagues$(
           parseInt(req.params.leagueId),
           clientErrors,

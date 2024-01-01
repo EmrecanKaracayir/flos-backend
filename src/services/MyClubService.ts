@@ -387,6 +387,42 @@ export class MyClubService implements IMyClubService {
     );
   }
 
+  public async deleteMyClubResign(
+    participantId: number,
+    clientErrors: IClientError[],
+  ): Promise<IAppResponse<void | null>> {
+    if (!(await this.myClubProvider.doesMyClubExist(participantId))) {
+      clientErrors.push(
+        new ClientError(ClientErrorCode.PARTICIPANT_HAS_NO_CLUB),
+      );
+      return new AppResponse<null>(
+        new HttpStatus(HttpStatusCode.NOT_FOUND),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    if (!(await this.myClubProvider.isLeagueEditable(participantId))) {
+      clientErrors.push(new ClientError(ClientErrorCode.CLUB_CANNOT_RESIGN));
+      return new AppResponse<null>(
+        new HttpStatus(HttpStatusCode.CONFLICT),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    await this.myClubProvider.resignFromLeague(participantId);
+    return new AppResponse<void>(
+      new HttpStatus(HttpStatusCode.NO_CONTENT),
+      null,
+      clientErrors,
+      null,
+      null,
+    );
+  }
+
   private validateFields(
     name: string,
     description: string,

@@ -16,6 +16,7 @@ import { AppResponse } from "../schemas/responses/AppResponse";
 import { ClientError } from "../schemas/responses/app/ClientError";
 import { HttpStatus } from "../schemas/responses/app/HttpStatus";
 import { ClubsService } from "../services/ClubsService";
+import { IClubs$Res } from "../interfaces/schemas/responses/routes/clubs/$clubId/IClubs$Res";
 
 export class ClubsController implements IClubsController {
   public readonly clubsService: IClubsService;
@@ -78,7 +79,7 @@ export class ClubsController implements IClubsController {
           );
       }
       // Hand over to service
-      const serviceRes: IAppResponse<IClubsRes | null> =
+      const serviceRes: IAppResponse<IClubs$Res | null> =
         await this.clubsService.getClubs$(
           parseInt(req.params.clubId),
           clientErrors,

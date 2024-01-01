@@ -50,6 +50,10 @@ export interface IMyClubProvider {
   isPlayerMine: (participantId: number, playerId: number) => Promise<boolean>;
 
   removePlayerFromMyClub: (playerId: number) => Promise<void>;
+
+  isLeagueEditable: (participantId: number) => Promise<boolean>;
+
+  resignFromLeague: (participantId: number) => Promise<void>;
 }
 
 export enum MyClubQueries {
@@ -74,4 +78,7 @@ export enum MyClubQueries {
   IS_PLAYER_IN_MY_CLUB_$PRID_$PLID = `SELECT EXISTS (SELECT "playerId" FROM "Player" WHERE "playerId" = $2 AND "clubId" = (SELECT "clubId" FROM "MyClubView" WHERE "participantId" = $1)) AS "exists"`,
   IS_PLAYER_MINE_$PRID_$PLID = `SELECT EXISTS (SELECT "playerId" FROM "Participant" WHERE "participantId" = $1 AND "playerId" = $2) AS "exists"`,
   REMOVE_PLAYER_FROM_CLUB_$PLID = `UPDATE "Player" SET "clubId" = NULL WHERE "playerId" = $1`,
+  GET_LEAGUE_ID_$PRID = `SELECT "leagueId" FROM "Club" WHERE "clubId" = (SELECT "clubId" FROM "Participant" WHERE "participantId" = $1)`,
+  IS_LEAGUE_IN_STATE_$LID_$STATES = `SELECT EXISTS (SELECT "state" FROM "LeagueView" WHERE "leagueId" = $1 AND "state" = ANY($2::"LeagueState"[])) AS "exists"`,
+  RESIGN_FROM_LEAGUE_$PRID = `UPDATE "Club" SET "leagueId" = NULL WHERE "clubId" = (SELECT "clubId" FROM "Participant" WHERE "participantId" = $1)`,
 }

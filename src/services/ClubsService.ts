@@ -6,12 +6,14 @@ import {
   IClientError,
 } from "../interfaces/schemas/responses/app/IClientError";
 import { HttpStatusCode } from "../interfaces/schemas/responses/app/IHttpStatus";
+import { IClubs$Res } from "../interfaces/schemas/responses/routes/clubs/$clubId/IClubs$Res";
 import { IClubsRes } from "../interfaces/schemas/responses/routes/clubs/IClubsRes";
 import { IClubsService } from "../interfaces/services/IClubsService";
 import { ClubsProvider } from "../providers/ClubsProvider";
 import { AppResponse } from "../schemas/responses/AppResponse";
 import { ClientError } from "../schemas/responses/app/ClientError";
 import { HttpStatus } from "../schemas/responses/app/HttpStatus";
+import { Clubs$Res } from "../schemas/responses/routes/clubs/$clubId/Clubs$Res";
 import { ClubsRes } from "../schemas/responses/routes/clubs/ClubsRes";
 
 export class ClubsService implements IClubsService {
@@ -37,7 +39,7 @@ export class ClubsService implements IClubsService {
   public async getClubs$(
     clubId: number,
     clientErrors: IClientError[],
-  ): Promise<IAppResponse<IClubsRes | null>> {
+  ): Promise<IAppResponse<IClubs$Res | null>> {
     const model: IClubModel | null = await this.clubsProvider.getClub(clubId);
     if (!model) {
       clientErrors.push(
@@ -51,11 +53,11 @@ export class ClubsService implements IClubsService {
         null,
       );
     }
-    return new AppResponse<IClubsRes>(
+    return new AppResponse<IClubs$Res>(
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      ClubsRes.fromModel(model),
+      Clubs$Res.fromModel(model),
       null,
     );
   }

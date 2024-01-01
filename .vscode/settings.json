@@ -1,6 +1,7 @@
 {
   "cSpell.words": [
     "BDAY",
+    "CLCNT",
     "CLID",
     "CLIDS",
     "codepaths",
@@ -8,6 +9,8 @@
     "Emrecan",
     "FIFA",
     "flos",
+    "FXID",
+    "HCID",
     "ILIKE",
     "IPATH",
     "LGID",
@@ -18,6 +21,7 @@
     "psql",
     "PSWRD",
     "RFID",
+    "Startable",
     "UNNEST",
     "VNID"
   ],

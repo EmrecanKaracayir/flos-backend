@@ -16,6 +16,7 @@ import { AppResponse } from "../schemas/responses/AppResponse";
 import { ClientError } from "../schemas/responses/app/ClientError";
 import { HttpStatus } from "../schemas/responses/app/HttpStatus";
 import { RefereesService } from "../services/RefereesService";
+import { IReferees$Res } from "../interfaces/schemas/responses/routes/referees/$refereeId/IReferees$Res";
 
 export class RefereesController implements IRefereesController {
   public readonly refereesService: IRefereesService;
@@ -78,7 +79,7 @@ export class RefereesController implements IRefereesController {
           );
       }
       // Hand over to service
-      const serviceRes: IAppResponse<IRefereesRes | null> =
+      const serviceRes: IAppResponse<IReferees$Res | null> =
         await this.refereesService.getReferees$(
           parseInt(req.params.refereeId),
           clientErrors,

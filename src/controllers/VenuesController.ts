@@ -10,6 +10,7 @@ import {
   HttpStatusCode,
   IHttpStatus,
 } from "../interfaces/schemas/responses/app/IHttpStatus";
+import { IVenues$Res } from "../interfaces/schemas/responses/routes/venues/$venueId/IVenues$Res";
 import { IVenuesRes } from "../interfaces/schemas/responses/routes/venues/IVenuesRes";
 import { IVenuesService } from "../interfaces/services/IVenuesService";
 import { AppResponse } from "../schemas/responses/AppResponse";
@@ -78,7 +79,7 @@ export class VenuesController implements IVenuesController {
           );
       }
       // Hand over to service
-      const serviceRes: IAppResponse<IVenuesRes | null> =
+      const serviceRes: IAppResponse<IVenues$Res | null> =
         await this.venuesService.getVenues$(
           parseInt(req.params.venueId),
           clientErrors,

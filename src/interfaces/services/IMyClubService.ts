@@ -47,4 +47,9 @@ export interface IMyClubService {
     playerId: number,
     clientErrors: IClientError[],
   ) => Promise<IAppResponse<void | null>>;
+
+  deleteMyClubResign: (
+    participantId: number,
+    clientErrors: IClientError[],
+  ) => Promise<IAppResponse<void | null>>;
 }

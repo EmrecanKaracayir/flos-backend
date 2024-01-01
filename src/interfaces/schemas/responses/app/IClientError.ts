@@ -21,6 +21,8 @@ import {
   LEAGUE_DESCRIPTION_MIN_LENGTH,
   LEAGUE_NAME_MAX_LENGTH,
   LEAGUE_NAME_MIN_LENGTH,
+  STARTABLE_LEAGUE_STATES,
+  SUFFICIENT_CLUBS_COUNT,
 } from "../../../../core/rules/leagueRules";
 import {
   AVAILABLE_PLAYER_STATES,
@@ -101,6 +103,8 @@ export enum ClientErrorCode {
   CLUB_NOT_FOUND_FOR_ADDITION = 70811,
   CLUB_NOT_AVAILABLE_FOR_ADDITION = 70812,
   CLUB_NOT_FOUND_FOR_REMOVAL = 70813,
+  LEAGUE_CANNOT_BE_STARTED = 70814,
+  INSUFFICIENT_CLUBS_COUNT = 70815,
   // - - 709XX: /my/player errors
   PARTICIPANT_HAS_NO_PLAYER = 70900,
   PARTICIPANT_HAS_A_PLAYER = 70901,
@@ -128,7 +132,12 @@ export enum ClientErrorCode {
   PLAYER_NOT_AVAILABLE_FOR_ADDITION = 71012,
   PLAYER_NOT_FOUND_FOR_REMOVAL = 71013,
   CANNOT_REMOVE_CAPTAIN = 71014,
+  CLUB_CANNOT_RESIGN = 71015,
   // - - 711XX: /available errors
+  // - - 712XX: /fixtures errors
+  MISSING_PARAMETER_$FXID = 71200,
+  INVALID_PARAMETER_$FXID = 71201,
+  NO_FIXTURE_FOUND_IN_FIXTURES = 71202,
   // - - 799XX: /* error
   RESOURCE_NOT_FOUND = 79900,
 }
@@ -230,6 +239,8 @@ export const clientErrorMessages: ClientErrorMessages = {
   [ClientErrorCode.CLUB_NOT_AVAILABLE_FOR_ADDITION]: `The club is not available for addition. Its state must be one of '[${AVAILABLE_CLUB_STATES}]' to be added.`,
   [ClientErrorCode.CLUB_NOT_FOUND_FOR_REMOVAL]:
     "No club was found with the provided id in league. The club must be in the organizer's league to be removed.",
+  [ClientErrorCode.LEAGUE_CANNOT_BE_STARTED]: `The league cannot be started. Its state must be one of '[${STARTABLE_LEAGUE_STATES}]' to be started.`,
+  [ClientErrorCode.INSUFFICIENT_CLUBS_COUNT]: `The league cannot be started. It must have at least ${SUFFICIENT_CLUBS_COUNT} clubs.`,
   // - - 709XX: /my/player errors
   [ClientErrorCode.PARTICIPANT_HAS_NO_PLAYER]:
     "The participant has no player. A player must be created first.",
@@ -271,7 +282,15 @@ export const clientErrorMessages: ClientErrorMessages = {
     "No player was found with the provided id in club. The player must be in the participant's club to be removed.",
   [ClientErrorCode.CANNOT_REMOVE_CAPTAIN]:
     "The captain cannot be removed from the club. Delete the club instead.",
+  [ClientErrorCode.CLUB_CANNOT_RESIGN]: `The club cannot resign from the league. League's state must be one of '[${EDITABLE_LEAGUE_STATES}]' to allow resigning.`,
   // - - 711XX: /available errors
+  // - - 712XX: /fixtures errors
+  [ClientErrorCode.MISSING_PARAMETER_$FXID]:
+    "Parameter 'fixtureId' was missing.",
+  [ClientErrorCode.INVALID_PARAMETER_$FXID]:
+    "Provided parameter 'fixtureId' was invalid.",
+  [ClientErrorCode.NO_FIXTURE_FOUND_IN_FIXTURES]:
+    "No fixture was found with the provided id.",
   // - - 799XX: /* error
   [ClientErrorCode.RESOURCE_NOT_FOUND]:
     "The requested resource couldn't be found.",

@@ -1,6 +1,7 @@
 import { ILeaguesProvider } from "../providers/ILeaguesProvider";
 import { IAppResponse } from "../schemas/responses/IAppResponse";
 import { IClientError } from "../schemas/responses/app/IClientError";
+import { ILeagues$Res } from "../schemas/responses/routes/leagues/$leagueId/ILeagues$Res";
 import { ILeaguesRes } from "../schemas/responses/routes/leagues/ILeaguesRes";
 
 export interface ILeaguesService {
@@ -13,5 +14,5 @@ export interface ILeaguesService {
   getLeagues$: (
     leagueId: number,
     clientErrors: IClientError[],
-  ) => Promise<IAppResponse<ILeaguesRes | null>>;
+  ) => Promise<IAppResponse<ILeagues$Res | null>>;
 }

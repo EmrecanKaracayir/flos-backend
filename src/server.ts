@@ -7,6 +7,7 @@ import { FailureMiddleware } from "./middlewares/FailureMiddleware";
 import { LoggerMiddleware } from "./middlewares/LoggerMiddleware";
 import { AvailableRoute } from "./routes/AvailableRoute";
 import { ClubsRoute } from "./routes/ClubsRoute";
+import { FixturesRoute } from "./routes/FixturesRoute";
 import { LeaguesRoute } from "./routes/LeaguesRoute";
 import { LoginRoute } from "./routes/LoginRoute";
 import { MyClubRoute } from "./routes/MyClubRoute";
@@ -32,6 +33,7 @@ app.use(LoggerMiddleware.log);
 // Routes without Authentication
 app.use(`${API_PREFIX}/${AvailableRoute.path}`, new AvailableRoute().router);
 app.use(`${API_PREFIX}/${ClubsRoute.path}`, new ClubsRoute().router);
+app.use(`${API_PREFIX}/${FixturesRoute.path}`, new FixturesRoute().router);
 app.use(`${API_PREFIX}/${LeaguesRoute.path}`, new LeaguesRoute().router);
 app.use(`${API_PREFIX}/${LoginRoute.path}`, new LoginRoute().router);
 app.use(`${API_PREFIX}/${PlayersRoute.path}`, new PlayersRoute().router);

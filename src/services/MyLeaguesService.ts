@@ -1,3 +1,4 @@
+import { FixtureState } from "../core/enums/fixtureState";
 import { URL_MUST_REGEX } from "../core/rules/common/urlRules";
 import {
   LEAGUE_DESCRIPTION_MAX_LENGTH,
@@ -5,11 +6,14 @@ import {
   LEAGUE_NAME_MAX_LENGTH,
   LEAGUE_NAME_MIN_LENGTH,
 } from "../core/rules/leagueRules";
+import { rotateNA } from "../core/utils/arrays";
+import { DUMMY_CLUB_ID } from "../core/utils/constants";
 import {
   isStringInLengthBetween,
   isStringMatchingRegex,
 } from "../core/utils/strings";
 import { IClubModel } from "../interfaces/models/IClubModel";
+import { IFixtureModel } from "../interfaces/models/IFixtureModel";
 import { IMyLeagueClubModel } from "../interfaces/models/IMyLeagueClubModel";
 import { IMyLeagueModel } from "../interfaces/models/IMyLeagueModel";
 import { IMyLeaguesProvider } from "../interfaces/providers/IMyLeaguesProvider";
@@ -25,6 +29,7 @@ import { IMyLeagues$Clubs$Res } from "../interfaces/schemas/responses/routes/my/
 import { IMyLeagues$ClubsRes } from "../interfaces/schemas/responses/routes/my/leagues/$leagueId/clubs/IMyLeagues$ClubsRes";
 import { IMyLeaguesRes } from "../interfaces/schemas/responses/routes/my/leagues/IMyLeaguesRes";
 import { IMyLeaguesService } from "../interfaces/services/IMyLeaguesService";
+import { FixtureModel } from "../models/FixtureModel";
 import { MyLeaguesProvider } from "../providers/MyLeaguesProvider";
 import { AppResponse } from "../schemas/responses/AppResponse";
 import { ClientError } from "../schemas/responses/app/ClientError";
@@ -381,6 +386,72 @@ export class MyLeaguesService implements IMyLeaguesService {
     );
   }
 
+  public async putMyLeagues$Start(
+    organizerId: number,
+    leagueId: number,
+    clientErrors: IClientError[],
+  ): Promise<IAppResponse<IMyLeaguesRes | null>> {
+    if (
+      !(await this.myLeaguesProvider.doesMyLeagueExist(organizerId, leagueId))
+    ) {
+      clientErrors.push(
+        new ClientError(ClientErrorCode.NO_LEAGUE_FOUND_IN_MY_LEAGUES),
+      );
+      return new AppResponse<null>(
+        new HttpStatus(HttpStatusCode.CONFLICT),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    if (!(await this.myLeaguesProvider.isMyLeagueStartable(leagueId))) {
+      clientErrors.push(
+        new ClientError(ClientErrorCode.LEAGUE_CANNOT_BE_STARTED),
+      );
+      return new AppResponse<null>(
+        new HttpStatus(HttpStatusCode.CONFLICT),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    if (
+      !(await this.myLeaguesProvider.doesMyLeagueHaveSufficientClubs(leagueId))
+    ) {
+      clientErrors.push(
+        new ClientError(ClientErrorCode.INSUFFICIENT_CLUBS_COUNT),
+      );
+      return new AppResponse<null>(
+        new HttpStatus(HttpStatusCode.CONFLICT),
+        null,
+        clientErrors,
+        null,
+        null,
+      );
+    }
+    const clubIds: number[] =
+      await this.myLeaguesProvider.getMyLeagueClubIds(leagueId);
+    const model: IMyLeagueModel = await this.myLeaguesProvider.startMyLeague(
+      organizerId,
+      leagueId,
+      this.prepareFixtures(
+        leagueId,
+        clubIds,
+        await this.myLeaguesProvider.getMyLeagueRefereeIds(clubIds.length),
+        await this.myLeaguesProvider.getMyLeagueVenueIds(clubIds.length),
+      ),
+    );
+    return new AppResponse<IMyLeaguesRes>(
+      new HttpStatus(HttpStatusCode.OK),
+      null,
+      clientErrors,
+      MyLeaguesRes.fromModel(model),
+      null,
+    );
+  }
+
   private validateFields(
     name: string,
     prize: number,
@@ -424,5 +495,63 @@ export class MyLeaguesService implements IMyLeaguesService {
         new ClientError(ClientErrorCode.INVALID_LEAGUE_LOGO_PATH_CONTENT),
       );
     }
+  }
+
+  private prepareFixtures(
+    leagueId: number,
+    clubIds: number[],
+    refereeIds: number[],
+    venueIds: number[],
+  ): IFixtureModel[] {
+    const fixtures: IFixtureModel[] = [];
+    let teams: number[] = [...clubIds];
+    if (teams.length % 2 !== 0) {
+      teams.push(DUMMY_CLUB_ID);
+    }
+
+    const halfWeeks: number = teams.length - 1;
+    const matchesPerWeek: number = teams.length / 2;
+
+    for (let week: number = 0; week < 2 * halfWeeks; week++) {
+      teams = rotateNA(teams);
+
+      for (let match: number = 0; match < matchesPerWeek; match++) {
+        const homeTeamId: number =
+          week < halfWeeks ? teams[match] : teams[teams.length - 1 - match];
+        const awayTeamId: number =
+          week < halfWeeks ? teams[teams.length - 1 - match] : teams[match];
+
+        const refereeId: number =
+          refereeIds[(match + week) % refereeIds.length];
+        const venueId: number = venueIds[(match + week) % venueIds.length];
+
+        if (homeTeamId != DUMMY_CLUB_ID && awayTeamId != DUMMY_CLUB_ID) {
+          fixtures.push(
+            new FixtureModel(
+              -1,
+              leagueId,
+              "",
+              homeTeamId,
+              awayTeamId,
+              "",
+              "",
+              -1,
+              -1,
+              "",
+              "",
+              null,
+              null,
+              week + 1,
+              refereeId,
+              "",
+              venueId,
+              "",
+              FixtureState.NOT_PLAYED,
+            ),
+          );
+        }
+      }
+    }
+    return fixtures;
   }
 }

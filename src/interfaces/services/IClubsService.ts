@@ -1,6 +1,7 @@
 import { IClubsProvider } from "../providers/IClubsProvider";
 import { IAppResponse } from "../schemas/responses/IAppResponse";
 import { IClientError } from "../schemas/responses/app/IClientError";
+import { IClubs$Res } from "../schemas/responses/routes/clubs/$clubId/IClubs$Res";
 import { IClubsRes } from "../schemas/responses/routes/clubs/IClubsRes";
 
 export interface IClubsService {
@@ -13,5 +14,5 @@ export interface IClubsService {
   getClubs$: (
     clubId: number,
     clientErrors: IClientError[],
-  ) => Promise<IAppResponse<IClubsRes | null>>;
+  ) => Promise<IAppResponse<IClubs$Res | null>>;
 }

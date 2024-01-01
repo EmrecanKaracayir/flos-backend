@@ -1,13 +1,19 @@
 import { QueryResult } from "pg";
 import { pool } from "../core/database/pool";
+import { LeagueState } from "../core/enums/leagueState";
+import { AVAILABLE_CLUB_STATES } from "../core/rules/clubRules";
 import {
-  AVAILABLE_CLUB_STATES,
-  DELETABLE_CLUB_STATES,
-} from "../core/rules/clubRules";
-import { EDITABLE_LEAGUE_STATES } from "../core/rules/leagueRules";
+  DELETABLE_LEAGUE_STATES,
+  EDITABLE_LEAGUE_STATES,
+  STARTABLE_LEAGUE_STATES,
+  SUFFICIENT_CLUBS_COUNT,
+} from "../core/rules/leagueRules";
 import { IClubModel } from "../interfaces/models/IClubModel";
+import { IFixtureModel } from "../interfaces/models/IFixtureModel";
 import { IMyLeagueClubModel } from "../interfaces/models/IMyLeagueClubModel";
 import { IMyLeagueModel } from "../interfaces/models/IMyLeagueModel";
+import { IRefereeModel } from "../interfaces/models/IRefereeModel";
+import { IVenueModel } from "../interfaces/models/IVenueModel";
 import { IExistsModel } from "../interfaces/models/util/IExistsModel";
 import {
   IMyLeaguesProvider,
@@ -21,6 +27,8 @@ import { ClubModel } from "../models/ClubModel";
 import { LeagueModel } from "../models/LeagueModel";
 import { MyLeagueClubModel } from "../models/MyLeagueClubModel";
 import { MyLeagueModel } from "../models/MyLeagueModel";
+import { RefereeModel } from "../models/RefereeModel";
+import { VenueModel } from "../models/VenueModel";
 import { ExistsModel } from "../models/util/ExistsModel";
 
 export class MyLeaguesProvider implements IMyLeaguesProvider {
@@ -171,7 +179,7 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
   public async isMyLeagueDeletable(leagueId: number): Promise<boolean> {
     const existsRes: QueryResult = await pool.query(
       MyLeaguesQueries.IS_MY_LEAGUE_IN_STATE_$PRID_$STATES,
-      [leagueId, DELETABLE_CLUB_STATES],
+      [leagueId, DELETABLE_LEAGUE_STATES],
     );
     const existsRec: unknown = existsRes.rows[0];
     if (!existsRec) {
@@ -304,6 +312,155 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
         clubId,
       ]);
       await pool.query("COMMIT");
+    } catch (error) {
+      await pool.query("ROLLBACK");
+      throw error;
+    }
+  }
+
+  public async isMyLeagueStartable(leagueId: number): Promise<boolean> {
+    const existsRes: QueryResult = await pool.query(
+      MyLeaguesQueries.IS_MY_LEAGUE_IN_STATE_$PRID_$STATES,
+      [leagueId, STARTABLE_LEAGUE_STATES],
+    );
+    const existsRec: unknown = existsRes.rows[0];
+    if (!existsRec) {
+      throw new UnexpectedQueryResultError();
+    }
+    if (!ExistsModel.isValidModel(existsRec)) {
+      throw new ModelMismatchError(existsRec);
+    }
+    return (existsRec as IExistsModel).exists;
+  }
+
+  public async doesMyLeagueHaveSufficientClubs(
+    leagueId: number,
+  ): Promise<boolean> {
+    const clubsRes: QueryResult = await pool.query(
+      MyLeaguesQueries.GET_MY_LEAGUE_CLUBS_$LGID,
+      [leagueId],
+    );
+    const clubsRecs: unknown[] = clubsRes.rows;
+    if (!clubsRecs) {
+      return false;
+    }
+    if (!MyLeagueClubModel.areValidModels(clubsRecs)) {
+      throw new ModelMismatchError(clubsRecs);
+    }
+    return clubsRecs.length >= SUFFICIENT_CLUBS_COUNT;
+  }
+
+  public async getMyLeagueClubIds(leagueId: number): Promise<number[]> {
+    const clubsRes: QueryResult = await pool.query(
+      MyLeaguesQueries.GET_MY_LEAGUE_CLUBS_$LGID,
+      [leagueId],
+    );
+    const clubsRecs: unknown[] = clubsRes.rows;
+    if (!clubsRecs) {
+      return [];
+    }
+    if (!MyLeagueClubModel.areValidModels(clubsRecs)) {
+      throw new ModelMismatchError(clubsRecs);
+    }
+    return (clubsRecs as IMyLeagueClubModel[]).map(
+      (club: IMyLeagueClubModel): number => club.clubId,
+    );
+  }
+
+  public async getMyLeagueRefereeIds(clubCount: number): Promise<number[]> {
+    const refereesRes: QueryResult = await pool.query(
+      MyLeaguesQueries.GET_MY_LEAGUE_REFEREES_$CLCNT,
+      [clubCount],
+    );
+    const refereesRecs: unknown[] = refereesRes.rows;
+    if (!refereesRecs) {
+      return [];
+    }
+    if (!RefereeModel.areValidModels(refereesRecs)) {
+      throw new ModelMismatchError(refereesRecs);
+    }
+    return (refereesRecs as IRefereeModel[]).map(
+      (referee: IRefereeModel): number => referee.refereeId,
+    );
+  }
+
+  public async getMyLeagueVenueIds(clubCount: number): Promise<number[]> {
+    const venuesRes: QueryResult = await pool.query(
+      MyLeaguesQueries.GET_MY_LEAGUE_VENUES_$CLCNT,
+      [clubCount],
+    );
+    const venuesRecs: unknown[] = venuesRes.rows;
+    if (!venuesRecs) {
+      return [];
+    }
+    if (!VenueModel.areValidModels(venuesRecs)) {
+      throw new ModelMismatchError(venuesRecs);
+    }
+    return (venuesRecs as IVenueModel[]).map(
+      (venue: IVenueModel): number => venue.venueId,
+    );
+  }
+
+  public async startMyLeague(
+    organizerId: number,
+    leagueId: number,
+    fixtures: IFixtureModel[],
+  ): Promise<IMyLeagueModel> {
+    await pool.query("BEGIN");
+    try {
+      // Start league
+      await pool.query(MyLeaguesQueries.UPDATE_LEAGUE_$LGID_$STATE, [
+        leagueId,
+        LeagueState.IN_PROGRESS,
+      ]);
+      // Get clubIds
+      const clubsRes: QueryResult = await pool.query(
+        MyLeaguesQueries.GET_MY_LEAGUE_CLUBS_$LGID,
+        [leagueId],
+      );
+      const clubsRecs: unknown[] = clubsRes.rows;
+      if (!clubsRecs) {
+        throw new UnexpectedQueryResultError();
+      }
+      if (!MyLeagueClubModel.areValidIdModels(clubsRecs)) {
+        throw new ModelMismatchError(clubsRecs);
+      }
+      // Create Statistics
+      for (const club of clubsRecs) {
+        await pool.query(MyLeaguesQueries.CREATE_STATISTICS_$CLID_$LGID, [
+          club.clubId,
+          leagueId,
+        ]);
+      }
+      // Create fixtures
+      for (const fixture of fixtures) {
+        await pool.query(
+          MyLeaguesQueries.CREATE_FIXTURE_$LGID_$HCID_$ACID_$WEEK_$RFID_$VNID,
+          [
+            fixture.leagueId,
+            fixture.homeClubId,
+            fixture.awayClubId,
+            fixture.week,
+            fixture.refereeId,
+            fixture.venueId,
+          ],
+        );
+      }
+      // Get MyLeagueModel by leagueId
+      const myLeagueRes: QueryResult = await pool.query(
+        MyLeaguesQueries.GET_MY_LEAGUE_$ORID_$LGID,
+        [organizerId, leagueId],
+      );
+      const myLeagueRec: unknown = myLeagueRes.rows[0];
+      if (!myLeagueRec) {
+        throw new UnexpectedQueryResultError();
+      }
+      if (!MyLeagueModel.isValidModel(myLeagueRec)) {
+        throw new ModelMismatchError(myLeagueRec);
+      }
+      await pool.query("COMMIT");
+      // Return MyLeagueModel
+      return myLeagueRec as IMyLeagueModel;
     } catch (error) {
       await pool.query("ROLLBACK");
       throw error;

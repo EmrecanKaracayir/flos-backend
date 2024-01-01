@@ -6,6 +6,7 @@ import {
   IClientError,
 } from "../interfaces/schemas/responses/app/IClientError";
 import { HttpStatusCode } from "../interfaces/schemas/responses/app/IHttpStatus";
+import { ILeagues$Res } from "../interfaces/schemas/responses/routes/leagues/$leagueId/ILeagues$Res";
 import { ILeaguesRes } from "../interfaces/schemas/responses/routes/leagues/ILeaguesRes";
 import { ILeaguesService } from "../interfaces/services/ILeaguesService";
 import { LeaguesProvider } from "../providers/LeaguesProvider";
@@ -37,7 +38,7 @@ export class LeaguesService implements ILeaguesService {
   public async getLeagues$(
     leagueId: number,
     clientErrors: IClientError[],
-  ): Promise<IAppResponse<ILeaguesRes | null>> {
+  ): Promise<IAppResponse<ILeagues$Res | null>> {
     const model: ILeagueModel | null =
       await this.leaguesProvider.getLeague(leagueId);
     if (!model) {
@@ -52,7 +53,7 @@ export class LeaguesService implements ILeaguesService {
         null,
       );
     }
-    return new AppResponse<ILeaguesRes>(
+    return new AppResponse<ILeagues$Res>(
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,

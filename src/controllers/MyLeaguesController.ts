@@ -590,4 +590,72 @@ export class MyLeaguesController implements IMyLeaguesController {
       return next(error);
     }
   }
+
+  public async putMyLeagues$Start(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<Response | void> {
+    // Response declaration
+    const clientErrors: Array<IClientError> = [];
+    // Logic
+    try {
+      // Parse token (Has to be valid, otherwise it would not have reached this point)
+      const authPayload: AuthPayload = AuthHelper.verifyToken(
+        req.headers.authorization!.split(" ")[1],
+      );
+      if (!req.params.leagueId) {
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
+        clientErrors.push(
+          new ClientError(ClientErrorCode.MISSING_PARAMETER_MY_LEAGUES_$LGID),
+        );
+        return res
+          .status(httpStatus.code)
+          .send(
+            new AppResponse<null>(httpStatus, null, clientErrors, null, null),
+          );
+      }
+      if (!canParseToInt(req.params.leagueId)) {
+        const httpStatus: IHttpStatus = new HttpStatus(
+          HttpStatusCode.BAD_REQUEST,
+        );
+        clientErrors.push(
+          new ClientError(ClientErrorCode.INVALID_PARAMETER_MY_LEAGUES_$LGID),
+        );
+        return res
+          .status(httpStatus.code)
+          .send(
+            new AppResponse<null>(httpStatus, null, clientErrors, null, null),
+          );
+      }
+      // Hand over to service
+      const serviceRes: IAppResponse<IMyLeaguesRes | null> =
+        await this.myLeaguesService.putMyLeagues$Start(
+          authPayload.userId,
+          parseInt(req.params.leagueId),
+          clientErrors,
+        );
+      if (!serviceRes.httpStatus.isSuccess()) {
+        // Respond without token
+        return res.status(serviceRes.httpStatus.code).send(serviceRes);
+      }
+      // Respond with token
+      return res.status(serviceRes.httpStatus.code).send(
+        new AppResponse<IMyLeaguesRes>(
+          serviceRes.httpStatus,
+          serviceRes.serverError,
+          serviceRes.clientErrors,
+          serviceRes.data,
+          AuthHelper.generateToken({
+            userId: authPayload.userId,
+            userRole: authPayload.userRole,
+          }),
+        ),
+      );
+    } catch (error) {
+      return next(error);
+    }
+  }
 }
