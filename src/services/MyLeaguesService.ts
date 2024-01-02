@@ -25,6 +25,7 @@ import {
   IClientError,
 } from "../interfaces/schemas/responses/app/IClientError";
 import { HttpStatusCode } from "../interfaces/schemas/responses/app/IHttpStatus";
+import { IMyLeagues$Res } from "../interfaces/schemas/responses/routes/my/leagues/$leagueId/IMyLeagues$Res";
 import { IMyLeagues$Clubs$Res } from "../interfaces/schemas/responses/routes/my/leagues/$leagueId/clubs/$clubId/IMyLeagues$Clubs$Res";
 import { IMyLeagues$ClubsRes } from "../interfaces/schemas/responses/routes/my/leagues/$leagueId/clubs/IMyLeagues$ClubsRes";
 import { IMyLeaguesRes } from "../interfaces/schemas/responses/routes/my/leagues/IMyLeaguesRes";
@@ -34,6 +35,7 @@ import { MyLeaguesProvider } from "../providers/MyLeaguesProvider";
 import { AppResponse } from "../schemas/responses/AppResponse";
 import { ClientError } from "../schemas/responses/app/ClientError";
 import { HttpStatus } from "../schemas/responses/app/HttpStatus";
+import { MyLeagues$Res } from "../schemas/responses/routes/my/leagues/$leagueId/MyLeagues$Res";
 import { MyLeagues$Clubs$Res } from "../schemas/responses/routes/my/leagues/$leagueId/clubs/$clubId/MyLeagues$Clubs$Res";
 import { MyLeagues$ClubsRes } from "../schemas/responses/routes/my/leagues/$leagueId/clubs/MyLeagues$ClubsRes";
 import { MyLeaguesRes } from "../schemas/responses/routes/my/leagues/MyLeaguesRes";
@@ -102,7 +104,7 @@ export class MyLeaguesService implements IMyLeaguesService {
     organizerId: number,
     leagueId: number,
     clientErrors: IClientError[],
-  ): Promise<IAppResponse<IMyLeaguesRes | null>> {
+  ): Promise<IAppResponse<IMyLeagues$Res | null>> {
     const model: IMyLeagueModel | null =
       await this.myLeaguesProvider.getMyLeague(organizerId, leagueId);
     if (!model) {
@@ -117,11 +119,16 @@ export class MyLeaguesService implements IMyLeaguesService {
         null,
       );
     }
-    return new AppResponse<IMyLeaguesRes>(
+    return new AppResponse<IMyLeagues$Res>(
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      MyLeaguesRes.fromModel(model),
+      new MyLeagues$Res(
+        MyLeaguesRes.fromModel(model),
+        MyLeagues$ClubsRes.fromModels(
+          await this.myLeaguesProvider.getMyLeagueClubs(leagueId),
+        ),
+      ),
       null,
     );
   }
@@ -131,7 +138,7 @@ export class MyLeaguesService implements IMyLeaguesService {
     leagueId: number,
     req: IMyLeaguesReq,
     clientErrors: IClientError[],
-  ): Promise<IAppResponse<IMyLeaguesRes | null>> {
+  ): Promise<IAppResponse<IMyLeagues$Res | null>> {
     if (
       !(await this.myLeaguesProvider.doesMyLeagueExist(organizerId, leagueId))
     ) {
@@ -183,11 +190,16 @@ export class MyLeaguesService implements IMyLeaguesService {
       req.description,
       req.logoPath,
     );
-    return new AppResponse<IMyLeaguesRes>(
+    return new AppResponse<IMyLeagues$Res>(
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      MyLeaguesRes.fromModel(model),
+      new MyLeagues$Res(
+        MyLeaguesRes.fromModel(model),
+        MyLeagues$ClubsRes.fromModels(
+          await this.myLeaguesProvider.getMyLeagueClubs(leagueId),
+        ),
+      ),
       null,
     );
   }

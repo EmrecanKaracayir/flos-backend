@@ -15,6 +15,7 @@ import { ClientError } from "../schemas/responses/app/ClientError";
 import { HttpStatus } from "../schemas/responses/app/HttpStatus";
 import { Clubs$Res } from "../schemas/responses/routes/clubs/$clubId/Clubs$Res";
 import { ClubsRes } from "../schemas/responses/routes/clubs/ClubsRes";
+import { PlayersRes } from "../schemas/responses/routes/players/PlayersRes";
 
 export class ClubsService implements IClubsService {
   public readonly clubsProvider: IClubsProvider;
@@ -41,6 +42,7 @@ export class ClubsService implements IClubsService {
     clientErrors: IClientError[],
   ): Promise<IAppResponse<IClubs$Res | null>> {
     const model: IClubModel | null = await this.clubsProvider.getClub(clubId);
+    await this.clubsProvider.getClubPlayers(clubId);
     if (!model) {
       clientErrors.push(
         new ClientError(ClientErrorCode.NO_CLUB_FOUND_IN_CLUBS),
@@ -57,7 +59,10 @@ export class ClubsService implements IClubsService {
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      Clubs$Res.fromModel(model),
+      new Clubs$Res(
+        Clubs$Res.fromModel(model),
+        PlayersRes.fromModels(await this.clubsProvider.getClubPlayers(clubId)),
+      ),
       null,
     );
   }

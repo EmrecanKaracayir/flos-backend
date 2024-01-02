@@ -1,11 +1,13 @@
 import { QueryResult } from "pg";
 import { pool } from "../core/database/pool";
+import { IClubModel } from "../interfaces/models/IClubModel";
 import { ILeagueModel } from "../interfaces/models/ILeagueModel";
 import {
   ILeaguesProvider,
   LeaguesQueries,
 } from "../interfaces/providers/ILeaguesProvider";
 import { ModelMismatchError } from "../interfaces/schemas/responses/app/IServerError";
+import { ClubModel } from "../models/ClubModel";
 import { LeagueModel } from "../models/LeagueModel";
 
 export class LeaguesProvider implements ILeaguesProvider {
@@ -34,5 +36,20 @@ export class LeaguesProvider implements ILeaguesProvider {
       throw new ModelMismatchError(leagueRec);
     }
     return leagueRec as ILeagueModel;
+  }
+
+  public async getLeagueClubs(leagueId: number): Promise<IClubModel[]> {
+    const clubRes: QueryResult = await pool.query(
+      LeaguesQueries.GET_LEAGUE_CLUBS_$LGID,
+      [leagueId],
+    );
+    const clubRecs: unknown[] = clubRes.rows;
+    if (!clubRecs) {
+      return [];
+    }
+    if (!ClubModel.areValidModels(clubRecs)) {
+      throw new ModelMismatchError(clubRecs);
+    }
+    return clubRecs as IClubModel[];
   }
 }

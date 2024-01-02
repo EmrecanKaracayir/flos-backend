@@ -3,6 +3,7 @@ import { IMyLeagues$ClubsReq } from "../schemas/requests/routes/my/leagues/$leag
 import { IMyLeaguesReq } from "../schemas/requests/routes/my/leagues/IMyLeaguesReq";
 import { IAppResponse } from "../schemas/responses/IAppResponse";
 import { IClientError } from "../schemas/responses/app/IClientError";
+import { IMyLeagues$Res } from "../schemas/responses/routes/my/leagues/$leagueId/IMyLeagues$Res";
 import { IMyLeagues$Clubs$Res } from "../schemas/responses/routes/my/leagues/$leagueId/clubs/$clubId/IMyLeagues$Clubs$Res";
 import { IMyLeagues$ClubsRes } from "../schemas/responses/routes/my/leagues/$leagueId/clubs/IMyLeagues$ClubsRes";
 import { IMyLeaguesRes } from "../schemas/responses/routes/my/leagues/IMyLeaguesRes";
@@ -25,14 +26,14 @@ export interface IMyLeaguesService {
     organizerId: number,
     leagueId: number,
     clientErrors: IClientError[],
-  ) => Promise<IAppResponse<IMyLeaguesRes | null>>;
+  ) => Promise<IAppResponse<IMyLeagues$Res | null>>;
 
   putMyLeagues$: (
     organizerId: number,
     leagueId: number,
     req: IMyLeaguesReq,
     clientErrors: IClientError[],
-  ) => Promise<IAppResponse<IMyLeaguesRes | null>>;
+  ) => Promise<IAppResponse<IMyLeagues$Res | null>>;
 
   deleteMyLeagues$: (
     organizerId: number,

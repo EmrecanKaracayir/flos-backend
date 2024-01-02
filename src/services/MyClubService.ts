@@ -30,6 +30,7 @@ import { ClientError } from "../schemas/responses/app/ClientError";
 import { HttpStatus } from "../schemas/responses/app/HttpStatus";
 import { MyClubRes } from "../schemas/responses/routes/my/club/MyClubRes";
 import { MyClubPlayersRes } from "../schemas/responses/routes/my/club/players/MyClubPlayersRes";
+import { PlayersRes } from "../schemas/responses/routes/players/PlayersRes";
 
 export class MyClubService implements IMyClubService {
   public readonly myClubProvider: IMyClubProvider;
@@ -60,7 +61,12 @@ export class MyClubService implements IMyClubService {
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      MyClubRes.fromModel(model),
+      new MyClubRes(
+        MyClubRes.fromModel(model),
+        PlayersRes.fromModels(
+          await this.myClubProvider.getMyClubPlayers(participantId),
+        ),
+      ),
       null,
     );
   }
@@ -127,7 +133,7 @@ export class MyClubService implements IMyClubService {
       new HttpStatus(HttpStatusCode.CREATED),
       null,
       clientErrors,
-      MyClubRes.fromModel(model),
+      new MyClubRes(MyClubRes.fromModel(model), PlayersRes.fromModels([])),
       null,
     );
   }
@@ -180,7 +186,12 @@ export class MyClubService implements IMyClubService {
       new HttpStatus(HttpStatusCode.OK),
       null,
       clientErrors,
-      MyClubRes.fromModel(model),
+      new MyClubRes(
+        MyClubRes.fromModel(model),
+        PlayersRes.fromModels(
+          await this.myClubProvider.getMyClubPlayers(participantId),
+        ),
+      ),
       null,
     );
   }
