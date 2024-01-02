@@ -5,7 +5,7 @@
 -- Dumped from database version 16.1
 -- Dumped by pg_dump version 16.1
 
--- Started on 2024-01-02 10:07:15 +03
+-- Started on 2024-01-02 20:36:13 +03
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -19,7 +19,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 922 (class 1247 OID 16792)
+-- TOC entry 919 (class 1247 OID 16792)
 -- Name: ClubState; Type: TYPE; Schema: public; Owner: Emrecan
 --
 
@@ -34,7 +34,7 @@ CREATE TYPE public."ClubState" AS ENUM (
 ALTER TYPE public."ClubState" OWNER TO "Emrecan";
 
 --
--- TOC entry 943 (class 1247 OID 16896)
+-- TOC entry 931 (class 1247 OID 16896)
 -- Name: FixtureState; Type: TYPE; Schema: public; Owner: Emrecan
 --
 
@@ -193,7 +193,7 @@ CREATE TABLE public."Player" (
 ALTER TABLE public."Player" OWNER TO "Emrecan";
 
 --
--- TOC entry 239 (class 1259 OID 16831)
+-- TOC entry 237 (class 1259 OID 16831)
 -- Name: ClubView; Type: VIEW; Schema: public; Owner: Emrecan
 --
 
@@ -303,7 +303,7 @@ CREATE TABLE public."Venue" (
 ALTER TABLE public."Venue" OWNER TO "Emrecan";
 
 --
--- TOC entry 244 (class 1259 OID 16920)
+-- TOC entry 240 (class 1259 OID 16920)
 -- Name: FixtureView; Type: VIEW; Schema: public; Owner: Emrecan
 --
 
@@ -450,7 +450,22 @@ ALTER SEQUENCE public."League_organizerId_seq" OWNED BY public."League"."organiz
 
 
 --
--- TOC entry 242 (class 1259 OID 16876)
+-- TOC entry 235 (class 1259 OID 16745)
+-- Name: Performance; Type: TABLE; Schema: public; Owner: Emrecan
+--
+
+CREATE TABLE public."Performance" (
+    "playerId" integer NOT NULL,
+    "fixtureId" integer NOT NULL,
+    "goalCount" integer DEFAULT 0 NOT NULL,
+    "assistCount" integer DEFAULT 0 NOT NULL
+);
+
+
+ALTER TABLE public."Performance" OWNER TO "Emrecan";
+
+--
+-- TOC entry 244 (class 1259 OID 16942)
 -- Name: MyClubPlayerView; Type: VIEW; Schema: public; Owner: Emrecan
 --
 
@@ -460,8 +475,12 @@ CREATE VIEW public."MyClubPlayerView" AS
     "Club".name AS "clubName",
     "Player"."fullName",
     (EXTRACT(year FROM age(("Player".birthday)::timestamp with time zone)))::integer AS age,
-    "Player".goals,
-    "Player".assists,
+    ( SELECT COALESCE(sum("Performance"."goalCount"), (0)::bigint) AS sum
+           FROM public."Performance"
+          WHERE ("Performance"."playerId" = "Player"."playerId")) AS goals,
+    ( SELECT COALESCE(sum("Performance"."assistCount"), (0)::bigint) AS sum
+           FROM public."Performance"
+          WHERE ("Performance"."playerId" = "Player"."playerId")) AS assists,
     "Participant".email AS "participantEmail",
     "Player".biography,
     "Player"."imgPath",
@@ -471,13 +490,14 @@ CREATE VIEW public."MyClubPlayerView" AS
         END AS state
    FROM ((public."Player"
      JOIN public."Participant" ON (("Player"."playerId" = "Participant"."playerId")))
-     LEFT JOIN public."Club" ON (("Player"."clubId" = "Club"."clubId")));
+     LEFT JOIN public."Club" ON (("Player"."clubId" = "Club"."clubId")))
+  ORDER BY "Player".goals DESC;
 
 
 ALTER VIEW public."MyClubPlayerView" OWNER TO "Emrecan";
 
 --
--- TOC entry 240 (class 1259 OID 16837)
+-- TOC entry 238 (class 1259 OID 16837)
 -- Name: MyClubView; Type: VIEW; Schema: public; Owner: Emrecan
 --
 
@@ -509,7 +529,7 @@ CREATE VIEW public."MyClubView" AS
 ALTER VIEW public."MyClubView" OWNER TO "Emrecan";
 
 --
--- TOC entry 245 (class 1259 OID 16925)
+-- TOC entry 241 (class 1259 OID 16925)
 -- Name: MyFixtureView; Type: VIEW; Schema: public; Owner: Emrecan
 --
 
@@ -548,7 +568,25 @@ CREATE VIEW public."MyFixtureView" AS
 ALTER VIEW public."MyFixtureView" OWNER TO "Emrecan";
 
 --
--- TOC entry 243 (class 1259 OID 16881)
+-- TOC entry 232 (class 1259 OID 16693)
+-- Name: Statistics; Type: TABLE; Schema: public; Owner: Emrecan
+--
+
+CREATE TABLE public."Statistics" (
+    "clubId" integer NOT NULL,
+    "leagueId" integer NOT NULL,
+    "winCount" integer DEFAULT 0 NOT NULL,
+    "drawCount" integer DEFAULT 0 NOT NULL,
+    "loseCount" integer DEFAULT 0 NOT NULL,
+    scored integer DEFAULT 0 NOT NULL,
+    conceded integer DEFAULT 0 NOT NULL
+);
+
+
+ALTER TABLE public."Statistics" OWNER TO "Emrecan";
+
+--
+-- TOC entry 245 (class 1259 OID 16953)
 -- Name: MyLeagueClubView; Type: VIEW; Schema: public; Owner: Emrecan
 --
 
@@ -567,20 +605,28 @@ CREATE VIEW public."MyLeagueClubView" AS
     "Club"."cupCount",
     "Participant".email AS "participantEmail",
     "Club".description,
-    "Club"."logoPath"
-   FROM (((public."Club"
+    "Club"."logoPath",
+    COALESCE((("Statistics"."winCount" + "Statistics"."drawCount") + "Statistics"."loseCount"), 0) AS played,
+    COALESCE("Statistics"."winCount", 0) AS wins,
+    COALESCE("Statistics"."drawCount", 0) AS draws,
+    COALESCE("Statistics"."loseCount", 0) AS loses,
+    COALESCE(("Statistics".scored - "Statistics".conceded), 0) AS average,
+    COALESCE((("Statistics"."winCount" * 3) + "Statistics"."drawCount"), 0) AS points
+   FROM ((((public."Club"
      JOIN public."Participant" ON (("Club"."clubId" = "Participant"."clubId")))
      LEFT JOIN ( SELECT "Player"."clubId",
             count(*) AS count
            FROM public."Player"
           GROUP BY "Player"."clubId") "playerByClub" ON (("playerByClub"."clubId" = "Club"."clubId")))
-     LEFT JOIN public."League" ON (("Club"."leagueId" = "League"."leagueId")));
+     LEFT JOIN public."League" ON (("Club"."leagueId" = "League"."leagueId")))
+     LEFT JOIN public."Statistics" ON ((("Club"."clubId" = "Statistics"."clubId") AND ("Club"."leagueId" = "Statistics"."leagueId"))))
+  ORDER BY COALESCE((("Statistics"."winCount" * 3) + "Statistics"."drawCount"), 0) DESC, COALESCE(("Statistics".scored - "Statistics".conceded), 0) DESC, COALESCE("Statistics"."winCount", 0) DESC, "Club".name;
 
 
 ALTER VIEW public."MyLeagueClubView" OWNER TO "Emrecan";
 
 --
--- TOC entry 237 (class 1259 OID 16810)
+-- TOC entry 236 (class 1259 OID 16810)
 -- Name: MyLeagueView; Type: VIEW; Schema: public; Owner: Emrecan
 --
 
@@ -600,7 +646,7 @@ CREATE VIEW public."MyLeagueView" AS
 ALTER VIEW public."MyLeagueView" OWNER TO "Emrecan";
 
 --
--- TOC entry 238 (class 1259 OID 16815)
+-- TOC entry 243 (class 1259 OID 16937)
 -- Name: MyPlayerView; Type: VIEW; Schema: public; Owner: Emrecan
 --
 
@@ -610,8 +656,12 @@ CREATE VIEW public."MyPlayerView" AS
     "Club".name AS "clubName",
     "Player"."fullName",
     (EXTRACT(year FROM age(("Player".birthday)::timestamp with time zone)))::integer AS age,
-    "Player".goals,
-    "Player".assists,
+    ( SELECT COALESCE(sum("Performance"."goalCount"), (0)::bigint) AS sum
+           FROM public."Performance"
+          WHERE ("Performance"."playerId" = "Player"."playerId")) AS goals,
+    ( SELECT COALESCE(sum("Performance"."assistCount"), (0)::bigint) AS sum
+           FROM public."Performance"
+          WHERE ("Performance"."playerId" = "Player"."playerId")) AS assists,
     "Participant".email AS "participantEmail",
     "Player".biography,
     "Player"."imgPath",
@@ -677,22 +727,7 @@ ALTER SEQUENCE public."Participant_participantId_seq" OWNED BY public."Participa
 
 
 --
--- TOC entry 235 (class 1259 OID 16745)
--- Name: Performance; Type: TABLE; Schema: public; Owner: Emrecan
---
-
-CREATE TABLE public."Performance" (
-    "playerId" integer NOT NULL,
-    "fixtureId" integer NOT NULL,
-    "goalCount" integer DEFAULT 0 NOT NULL,
-    "assistCount" integer DEFAULT 0 NOT NULL
-);
-
-
-ALTER TABLE public."Performance" OWNER TO "Emrecan";
-
---
--- TOC entry 236 (class 1259 OID 16786)
+-- TOC entry 242 (class 1259 OID 16930)
 -- Name: PlayerView; Type: VIEW; Schema: public; Owner: Emrecan
 --
 
@@ -701,8 +736,12 @@ CREATE VIEW public."PlayerView" AS
     "Club".name AS "clubName",
     "Player"."fullName",
     (EXTRACT(year FROM age(("Player".birthday)::timestamp with time zone)))::integer AS age,
-    "Player".goals,
-    "Player".assists,
+    ( SELECT COALESCE(sum("Performance"."goalCount"), (0)::bigint) AS sum
+           FROM public."Performance"
+          WHERE ("Performance"."playerId" = "Player"."playerId")) AS goals,
+    ( SELECT COALESCE(sum("Performance"."assistCount"), (0)::bigint) AS sum
+           FROM public."Performance"
+          WHERE ("Performance"."playerId" = "Player"."playerId")) AS assists,
     "Participant".email AS "participantEmail",
     "Player".biography,
     "Player"."imgPath",
@@ -743,7 +782,7 @@ ALTER SEQUENCE public."Player_playerId_seq" OWNED BY public."Player"."playerId";
 
 
 --
--- TOC entry 241 (class 1259 OID 16842)
+-- TOC entry 239 (class 1259 OID 16842)
 -- Name: RefereeView; Type: VIEW; Schema: public; Owner: Emrecan
 --
 
@@ -783,24 +822,6 @@ ALTER SEQUENCE public."Referee_refereeId_seq" OWNER TO "Emrecan";
 
 ALTER SEQUENCE public."Referee_refereeId_seq" OWNED BY public."Referee"."refereeId";
 
-
---
--- TOC entry 232 (class 1259 OID 16693)
--- Name: Statistics; Type: TABLE; Schema: public; Owner: Emrecan
---
-
-CREATE TABLE public."Statistics" (
-    "clubId" integer NOT NULL,
-    "leagueId" integer NOT NULL,
-    "winCount" integer DEFAULT 0 NOT NULL,
-    "drawCount" integer DEFAULT 0 NOT NULL,
-    "loseCount" integer DEFAULT 0 NOT NULL,
-    scored integer DEFAULT 0 NOT NULL,
-    conceded integer DEFAULT 0 NOT NULL
-);
-
-
-ALTER TABLE public."Statistics" OWNER TO "Emrecan";
 
 --
 -- TOC entry 228 (class 1259 OID 16660)
@@ -976,7 +997,6 @@ COPY public."Club" ("clubId", name, description, "logoPath", "leagueId", "cupCou
 --
 
 COPY public."Fixture" ("fixtureId", "leagueId", "homeClubId", "awayClubId", "homeTeamScore", "awayTeamScore", week, "refereeId", "venueId") FROM stdin;
-91	12	17	36	\N	\N	1	56	11
 92	12	66	40	\N	\N	1	37	37
 93	12	37	21	\N	\N	1	12	8
 94	12	39	38	\N	\N	1	16	47
@@ -1066,6 +1086,7 @@ COPY public."Fixture" ("fixtureId", "leagueId", "homeClubId", "awayClubId", "hom
 178	12	40	39	\N	\N	18	39	21
 179	12	21	24	\N	\N	18	56	11
 180	12	38	16	\N	\N	18	37	37
+91	12	17	36	3	6	1	56	11
 \.
 
 
@@ -1500,6 +1521,18 @@ COPY public."Participant" ("participantId", username, password, email, "playerId
 --
 
 COPY public."Performance" ("playerId", "fixtureId", "goalCount", "assistCount") FROM stdin;
+87	91	0	1
+258	91	1	1
+325	91	1	2
+354	91	1	1
+365	91	0	1
+58	91	1	0
+71	91	1	0
+99	91	1	0
+176	91	0	2
+314	91	2	0
+318	91	1	0
+310	91	0	1
 \.
 
 
@@ -1930,7 +1963,6 @@ COPY public."Referee" ("refereeId", "fullName", birthday, email, "imgPath", "lic
 --
 
 COPY public."Statistics" ("clubId", "leagueId", "winCount", "drawCount", "loseCount", scored, conceded) FROM stdin;
-17	12	0	0	0	0	0
 37	12	0	0	0	0	0
 39	12	0	0	0	0	0
 24	12	0	0	0	0	0
@@ -1940,6 +1972,7 @@ COPY public."Statistics" ("clubId", "leagueId", "winCount", "drawCount", "loseCo
 40	12	0	0	0	0	0
 36	12	0	0	0	0	0
 66	12	0	0	0	0	0
+17	12	0	0	0	0	0
 \.
 
 
@@ -2336,7 +2369,7 @@ ALTER TABLE ONLY public."Statistics"
     ADD CONSTRAINT statistics_league_fk FOREIGN KEY ("leagueId") REFERENCES public."League"("leagueId");
 
 
--- Completed on 2024-01-02 10:07:15 +03
+-- Completed on 2024-01-02 20:36:13 +03
 
 --
 -- PostgreSQL database dump complete

@@ -1,12 +1,12 @@
-import { IClubModel } from "../models/IClubModel";
 import { ILeagueModel } from "../models/ILeagueModel";
+import { IMyLeagueClubModel } from "../models/IMyLeagueClubModel";
 
 export interface ILeaguesProvider {
   getLeagues: () => Promise<ILeagueModel[]>;
 
   getLeague: (leagueId: number) => Promise<ILeagueModel | null>;
 
-  getLeagueClubs: (leagueId: number) => Promise<IClubModel[]>;
+  getLeagueClubs: (leagueId: number) => Promise<IMyLeagueClubModel[]>;
 }
 
 export enum LeaguesQueries {

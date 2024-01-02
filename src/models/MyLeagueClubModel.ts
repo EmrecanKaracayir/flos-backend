@@ -9,6 +9,12 @@ export class MyLeagueClubModel
   constructor(
     baseModel: IBaseClubModel,
     public readonly leagueId: number,
+    public readonly played: number,
+    public readonly wins: number,
+    public readonly draws: number,
+    public readonly losses: number,
+    public readonly average: number,
+    public readonly points: number,
   ) {
     super(
       baseModel.clubId,

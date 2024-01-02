@@ -1,11 +1,11 @@
-import { IClubsRes } from "../../../../../interfaces/schemas/responses/routes/clubs/IClubsRes";
+import { IBaseLeagueClubRes } from "../../../../../interfaces/schemas/responses/base/IBaseLeagueClubRes";
 import { ILeagues$Res } from "../../../../../interfaces/schemas/responses/routes/leagues/$leagueId/ILeagues$Res";
 import { BaseLeagueRes } from "../../../base/BaseLeagueRes";
 
 export class Leagues$Res extends BaseLeagueRes implements ILeagues$Res {
   constructor(
     baseModel: BaseLeagueRes,
-    public readonly clubs: IClubsRes[],
+    public readonly clubs: IBaseLeagueClubRes[],
   ) {
     super(
       baseModel.leagueId,

@@ -13,7 +13,7 @@ import { LeaguesProvider } from "../providers/LeaguesProvider";
 import { AppResponse } from "../schemas/responses/AppResponse";
 import { ClientError } from "../schemas/responses/app/ClientError";
 import { HttpStatus } from "../schemas/responses/app/HttpStatus";
-import { ClubsRes } from "../schemas/responses/routes/clubs/ClubsRes";
+import { BaseLeagueClubRes } from "../schemas/responses/base/BaseLeagueClubRes";
 import { Leagues$Res } from "../schemas/responses/routes/leagues/$leagueId/Leagues$Res";
 import { LeaguesRes } from "../schemas/responses/routes/leagues/LeaguesRes";
 
@@ -61,7 +61,7 @@ export class LeaguesService implements ILeaguesService {
       clientErrors,
       new Leagues$Res(
         LeaguesRes.fromModel(model),
-        ClubsRes.fromModels(
+        BaseLeagueClubRes.fromModels(
           await this.leaguesProvider.getLeagueClubs(leagueId),
         ),
       ),

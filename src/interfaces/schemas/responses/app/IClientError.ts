@@ -138,6 +138,11 @@ export enum ClientErrorCode {
   MISSING_PARAMETER_$FXID = 71200,
   INVALID_PARAMETER_$FXID = 71201,
   NO_FIXTURE_FOUND_IN_FIXTURES = 71202,
+  // - - 713XX: /my/fixtures errors
+  MISSING_PARAMETER_MY_FIXTURES_$FXID = 71300,
+  INVALID_PARAMETER_MY_FIXTURES_$FXID = 71301,
+  NO_FIXTURE_FOUND_IN_MY_FIXTURES = 71302,
+  FIXTURE_ALREADY_SIMULATED = 71303,
   // - - 799XX: /* error
   RESOURCE_NOT_FOUND = 79900,
 }
@@ -291,6 +296,15 @@ export const clientErrorMessages: ClientErrorMessages = {
     "Provided parameter 'fixtureId' was invalid.",
   [ClientErrorCode.NO_FIXTURE_FOUND_IN_FIXTURES]:
     "No fixture was found with the provided id.",
+  // - - 713XX: /my/fixtures errors
+  [ClientErrorCode.MISSING_PARAMETER_MY_FIXTURES_$FXID]:
+    "Parameter 'fixtureId' was missing.",
+  [ClientErrorCode.INVALID_PARAMETER_MY_FIXTURES_$FXID]:
+    "Provided parameter 'fixtureId' was invalid.",
+  [ClientErrorCode.NO_FIXTURE_FOUND_IN_MY_FIXTURES]:
+    "The organizer has no fixture with the provided id.",
+  [ClientErrorCode.FIXTURE_ALREADY_SIMULATED]:
+    "The fixture has already been simulated.",
   // - - 799XX: /* error
   [ClientErrorCode.RESOURCE_NOT_FOUND]:
     "The requested resource couldn't be found.",

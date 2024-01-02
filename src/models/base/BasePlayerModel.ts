@@ -8,8 +8,8 @@ export class BasePlayerModel implements IBasePlayerModel {
     public readonly fullName: string,
     public readonly state: PlayerState,
     public readonly age: number,
-    public readonly goals: number,
-    public readonly assists: number,
+    public readonly goals: string,
+    public readonly assists: string,
     public readonly participantEmail: string,
     public readonly biography: string,
     public readonly imgPath: string,
@@ -26,8 +26,8 @@ export class BasePlayerModel implements IBasePlayerModel {
       typeof model.fullName === "string" &&
       Object.values(PlayerState).includes(model.state as PlayerState) &&
       typeof model.age === "number" &&
-      typeof model.goals === "number" &&
-      typeof model.assists === "number" &&
+      typeof model.goals === "string" &&
+      typeof model.assists === "string" &&
       typeof model.participantEmail === "string" &&
       typeof model.biography === "string" &&
       typeof model.imgPath === "string"

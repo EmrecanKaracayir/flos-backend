@@ -1,5 +1,6 @@
 import { PlayerState } from "../../../core/enums/playerState";
 import { IBasePlayerModel } from "../../../interfaces/models/base/IBasePlayerModel";
+import { PrecisionLossError } from "../../../interfaces/schemas/responses/app/IServerError";
 import { IBasePlayerRes } from "../../../interfaces/schemas/responses/base/IBasePlayerRes";
 
 export class BasePlayerRes implements IBasePlayerRes {
@@ -17,14 +18,20 @@ export class BasePlayerRes implements IBasePlayerRes {
   ) {}
 
   public static fromModel(model: IBasePlayerModel): IBasePlayerRes {
+    if (!Number.isSafeInteger(Number(model.goals))) {
+      throw new PrecisionLossError("bigint", "number");
+    }
+    if (!Number.isSafeInteger(Number(model.assists))) {
+      throw new PrecisionLossError("bigint", "number");
+    }
     return new BasePlayerRes(
       model.playerId,
       model.clubName,
       model.fullName,
       model.state,
       model.age,
-      model.goals,
-      model.assists,
+      Number(model.goals),
+      Number(model.assists),
       model.participantEmail,
       model.biography,
       model.imgPath,

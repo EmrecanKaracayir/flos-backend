@@ -1,3 +1,3 @@
-import { IBaseClubRes } from "../../../../../base/IBaseClubRes";
+import { IBaseLeagueClubRes } from "../../../../../base/IBaseLeagueClubRes";
 
-export interface IMyLeagues$ClubsRes extends IBaseClubRes {}
+export interface IMyLeagues$ClubsRes extends IBaseLeagueClubRes {}

@@ -6,8 +6,8 @@ export interface IBasePlayerModel {
   readonly fullName: string;
   readonly state: PlayerState;
   readonly age: number;
-  readonly goals: number;
-  readonly assists: number;
+  readonly goals: string;
+  readonly assists: string;
   readonly participantEmail: string;
   readonly biography: string;
   readonly imgPath: string;
