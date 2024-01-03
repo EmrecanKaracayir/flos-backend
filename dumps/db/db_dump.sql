@@ -5,7 +5,7 @@
 -- Dumped from database version 16.1
 -- Dumped by pg_dump version 16.1
 
--- Started on 2024-01-03 17:49:48 +03
+-- Started on 2024-01-03 17:56:45 +03
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -586,7 +586,7 @@ CREATE TABLE public."Statistics" (
 ALTER TABLE public."Statistics" OWNER TO "Emrecan";
 
 --
--- TOC entry 245 (class 1259 OID 16953)
+-- TOC entry 245 (class 1259 OID 16960)
 -- Name: MyLeagueClubView; Type: VIEW; Schema: public; Owner: Emrecan
 --
 
@@ -609,7 +609,7 @@ CREATE VIEW public."MyLeagueClubView" AS
     COALESCE((("Statistics"."winCount" + "Statistics"."drawCount") + "Statistics"."loseCount"), 0) AS played,
     COALESCE("Statistics"."winCount", 0) AS wins,
     COALESCE("Statistics"."drawCount", 0) AS draws,
-    COALESCE("Statistics"."loseCount", 0) AS loses,
+    COALESCE("Statistics"."loseCount", 0) AS losses,
     COALESCE(("Statistics".scored - "Statistics".conceded), 0) AS average,
     COALESCE((("Statistics"."winCount" * 3) + "Statistics"."drawCount"), 0) AS points
    FROM ((((public."Club"
@@ -2367,7 +2367,7 @@ ALTER TABLE ONLY public."Statistics"
     ADD CONSTRAINT statistics_league_fk FOREIGN KEY ("leagueId") REFERENCES public."League"("leagueId");
 
 
--- Completed on 2024-01-03 17:49:48 +03
+-- Completed on 2024-01-03 17:56:45 +03
 
 --
 -- PostgreSQL database dump complete
