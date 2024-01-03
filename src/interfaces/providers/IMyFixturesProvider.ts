@@ -1,3 +1,5 @@
+import { FixtureState } from "../../core/enums/fixtureState";
+import { LeagueState } from "../../core/enums/leagueState";
 import { IMyClubPlayerModel } from "../models/IMyClubPlayerModel";
 import { IMyFixtureModel } from "../models/IMyFixtureModel";
 
@@ -40,6 +42,10 @@ export interface IMyFixturesProvider {
     scored: number,
     conceded: number,
   ) => Promise<void>;
+
+  wasTheLastFixtureOfSeason: (leagueId: number) => Promise<boolean>;
+
+  finishLeague: (leagueId: number) => Promise<void>;
 }
 
 export enum MyFixturesQueries {
@@ -51,4 +57,9 @@ export enum MyFixturesQueries {
   UPDATE_FIXTURE_$FXID_$HSCORE_$ASCORE = `UPDATE "Fixture" SET "homeTeamScore" = $2, "awayTeamScore" = $3 WHERE "fixtureId" = $1`,
   ADD_PERFORMANCE_$PLID_$FXID_$GCOUNT_$ACOUNT = `INSERT INTO "Performance" ("playerId", "fixtureId", "goalCount", "assistCount") VALUES ($1, $2, $3, $4)`,
   UPDATE_STATISTICS_$CLID_$LGID_$WCOUNT_$DCOUNT_$LCOUNT_$SCORED_$CONCEDED = `UPDATE "Statistics" SET "winCount" = "winCount" + $3, "drawCount" = "drawCount" + $4, "loseCount" = "loseCount" + $5, "scored" = "scored" + $6, "conceded" = "conceded" + $7 WHERE "clubId" = $1 AND "leagueId" = $2`,
+  ARE_THERE_ANY_FIXTURES_LEFT_$LGID = `SELECT EXISTS (SELECT "fixtureId" FROM "FixtureView" WHERE "leagueId" = $1 AND "state" = ${FixtureState.NOT_PLAYED}::"Fixture") AS "exists"`,
+  GET_WINNER_CLUB_ID_$LGID = `SELECT "clubId" FROM "MyLeagueClubView" WHERE "leagueId" = $1 LIMIT 1`,
+  UPDATE_CUP_COUNT_$CLID = `UPDATE "Club" SET "cupCount" = "cupCount" + 1 WHERE "clubId" = $1`,
+  FINISH_LEAGUE_$LGID = `UPDATE "League" SET "state" = ${LeagueState.FINISHED}::"LeagueState" WHERE "leagueId" = $1`,
+  FREE_LEAGUE_FROM_CLUBS_$LGID = `UPDATE "Club" SET "leagueId" = NULL WHERE "leagueId" = $1`,
 }

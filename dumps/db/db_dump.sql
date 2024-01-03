@@ -5,7 +5,7 @@
 -- Dumped from database version 16.1
 -- Dumped by pg_dump version 16.1
 
--- Started on 2024-01-03 17:56:45 +03
+-- Started on 2024-01-03 19:03:32 +03
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -2367,7 +2367,7 @@ ALTER TABLE ONLY public."Statistics"
     ADD CONSTRAINT statistics_league_fk FOREIGN KEY ("leagueId") REFERENCES public."League"("leagueId");
 
 
--- Completed on 2024-01-03 17:56:45 +03
+-- Completed on 2024-01-03 19:03:32 +03
 
 --
 -- PostgreSQL database dump complete

@@ -250,6 +250,14 @@ export class MyFixturesService implements IMyFixturesService {
       awayGoals,
       homeGoals,
     );
+
+    // Check if last fixture of the season
+    if (
+      await this.myFixturesProvider.wasTheLastFixtureOfSeason(fixture.leagueId)
+    ) {
+      // finish league
+      await this.myFixturesProvider.finishLeague(fixture.leagueId);
+    }
   }
 }
 

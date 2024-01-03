@@ -12,9 +12,10 @@ import {
   ModelMismatchError,
   UnexpectedQueryResultError,
 } from "../interfaces/schemas/responses/app/IServerError";
+import { ClubModel } from "../models/ClubModel";
+import { MyClubPlayerModel } from "../models/MyClubPlayerModel";
 import { MyFixtureModel } from "../models/MyFixtureModel";
 import { ExistsModel } from "../models/util/ExistsModel";
-import { MyClubPlayerModel } from "../models/MyClubPlayerModel";
 
 export class MyFixturesProvider implements IMyFixturesProvider {
   public async getMyFixtures(organizerId: number): Promise<IMyFixtureModel[]> {
@@ -135,5 +136,52 @@ export class MyFixturesProvider implements IMyFixturesProvider {
       MyFixturesQueries.UPDATE_STATISTICS_$CLID_$LGID_$WCOUNT_$DCOUNT_$LCOUNT_$SCORED_$CONCEDED,
       [clubId, leagueId, winCount, drawCount, loseCount, scored, conceded],
     );
+  }
+
+  public async wasTheLastFixtureOfSeason(leagueId: number): Promise<boolean> {
+    const existsRes: QueryResult = await pool.query(
+      MyFixturesQueries.ARE_THERE_ANY_FIXTURES_LEFT_$LGID,
+      [leagueId],
+    );
+    const existsRec: unknown = existsRes.rows[0];
+    if (!existsRec) {
+      throw new UnexpectedQueryResultError();
+    }
+    if (!ExistsModel.isValidModel(existsRec)) {
+      throw new ModelMismatchError(existsRec);
+    }
+    return !(existsRec as IExistsModel).exists;
+  }
+
+  public async finishLeague(leagueId: number): Promise<void> {
+    await pool.query("BEGIN");
+    try {
+      // Get champion
+      const clubIdRes: QueryResult = await pool.query(
+        MyFixturesQueries.GET_WINNER_CLUB_ID_$LGID,
+        [leagueId],
+      );
+      const clubIdRec: unknown = clubIdRes.rows[0];
+      if (!clubIdRec) {
+        throw new UnexpectedQueryResultError();
+      }
+      if (!ClubModel.isValidIdModel(clubIdRec)) {
+        throw new ModelMismatchError(clubIdRec);
+      }
+      // update cup count
+      await pool.query(MyFixturesQueries.UPDATE_CUP_COUNT_$CLID, [
+        clubIdRec.clubId,
+      ]);
+      // free league from clubs
+      await pool.query(MyFixturesQueries.FREE_LEAGUE_FROM_CLUBS_$LGID, [
+        leagueId,
+      ]);
+      // finish league
+      await pool.query(MyFixturesQueries.FINISH_LEAGUE_$LGID, [leagueId]);
+      await pool.query("COMMIT");
+    } catch (error) {
+      await pool.query("ROLLBACK");
+      throw error;
+    }
   }
 }
