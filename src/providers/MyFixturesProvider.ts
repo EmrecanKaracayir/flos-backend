@@ -1,6 +1,8 @@
 import { QueryResult } from "pg";
 import { pool } from "../core/database/pool";
 import { FixtureState } from "../core/enums/fixtureState";
+import { LeagueState } from "../core/enums/leagueState";
+import { AVAILABLE_FIXTURE_STATES } from "../core/rules/fixtureRules";
 import { IMyClubPlayerModel } from "../interfaces/models/IMyClubPlayerModel";
 import { IMyFixtureModel } from "../interfaces/models/IMyFixtureModel";
 import { IExistsModel } from "../interfaces/models/util/IExistsModel";
@@ -20,8 +22,8 @@ import { ExistsModel } from "../models/util/ExistsModel";
 export class MyFixturesProvider implements IMyFixturesProvider {
   public async getMyFixtures(organizerId: number): Promise<IMyFixtureModel[]> {
     const myFixturesRes: QueryResult = await pool.query(
-      MyFixturesQueries.GET_MY_FIXTURES_$ORID,
-      [organizerId],
+      MyFixturesQueries.GET_MY_FIXTURES_$ORID_$STATE,
+      [organizerId, AVAILABLE_FIXTURE_STATES],
     );
     const myFixturesRecs: unknown[] = myFixturesRes.rows;
     if (!myFixturesRecs) {
@@ -140,8 +142,8 @@ export class MyFixturesProvider implements IMyFixturesProvider {
 
   public async wasTheLastFixtureOfSeason(leagueId: number): Promise<boolean> {
     const existsRes: QueryResult = await pool.query(
-      MyFixturesQueries.ARE_THERE_ANY_FIXTURES_LEFT_$LGID,
-      [leagueId],
+      MyFixturesQueries.IS_FIXTURE_IN_STATE_$FXID_$STATES,
+      [leagueId, AVAILABLE_FIXTURE_STATES],
     );
     const existsRec: unknown = existsRes.rows[0];
     if (!existsRec) {
@@ -177,7 +179,10 @@ export class MyFixturesProvider implements IMyFixturesProvider {
         leagueId,
       ]);
       // finish league
-      await pool.query(MyFixturesQueries.FINISH_LEAGUE_$LGID, [leagueId]);
+      await pool.query(MyFixturesQueries.SET_LEAGUE_STATE_$LGID_$STATE, [
+        leagueId,
+        LeagueState.FINISHED,
+      ]);
       await pool.query("COMMIT");
     } catch (error) {
       await pool.query("ROLLBACK");

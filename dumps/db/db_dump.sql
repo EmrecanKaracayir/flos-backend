@@ -5,7 +5,7 @@
 -- Dumped from database version 16.1
 -- Dumped by pg_dump version 16.1
 
--- Started on 2024-01-03 23:01:57 +03
+-- Started on 2024-01-03 23:22:26 +03
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -562,7 +562,8 @@ CREATE VIEW public."MyFixtureView" AS
      JOIN public."Club" h ON ((f."homeClubId" = h."clubId")))
      JOIN public."Club" a ON ((f."awayClubId" = a."clubId")))
      JOIN public."Referee" r ON ((f."refereeId" = r."refereeId")))
-     JOIN public."Venue" v ON ((f."venueId" = v."venueId")));
+     JOIN public."Venue" v ON ((f."venueId" = v."venueId")))
+  ORDER BY f.week;
 
 
 ALTER VIEW public."MyFixtureView" OWNER TO "Emrecan";
@@ -939,15 +940,7 @@ ALTER TABLE ONLY public."Venue" ALTER COLUMN "venueId" SET DEFAULT nextval('publ
 COPY public."Club" ("clubId", name, description, "logoPath", "leagueId", "cupCount") FROM stdin;
 25	Karşıyaka FK	⚽ Karşıyaka FC | Heart & Hustle | Est. 1912 | 📍 Karşıyaka, Izmir | 🔴🟢 Where Legacy Lives On | Be part of the journey: #KarşıyakaUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f2%2f393%2fkarsiyaka-1.png	20	0
 44	Çayırova Spor	⚽ Çayırova Spor FC | Green Power, Black Strength | Established 1980 | 📍 Çayırova, Kocaeli | 🟢⚫ Where Passion Plays | Share our journey: #ÇayırovaRising 🔝	https://i.goalzz.com/?i=o%2ft%2f37%2f219%2fcayirova-spor-1.png	10	0
-24	Hacettepe Spor	⚽ Hacettepe Spor | Est. 1954 | 📍 Ankara | 🟪⚪ Passion & Precision | Empowering Youth | Share our journey: #HacettepeRising 🔝	https://i.goalzz.com/?i=4_safi_only%2fturk%2fhacettepelogo.gif	12	0
 27	Kurtalan Spor	⚽ Kurtalan Spor FC | Power & Persistence | Est. 1957 | 📍 Kurtalan, Siirt | 🟦⚪ Where passion takes the lead | We are #KurtalanSporUnite 🔝	https://i.goalzz.com/?i=o%2ft%2f24%2f559%2fkurtalan-spor-1.png	19	0
-40	Aydınspor FK	⚽ Aydınspor FC | Unity in Black & White | Established 1923 | 📍 Aydın | ⚫⚪ Legacy, Passion, Power | All for the Game: #AydınsporRising 🔝	https://i.goalzz.com/?i=ash03%2faydinspor.jpg	12	0
-39	Beşiktaş Çarşı	⚽ Beşiktaş Çarşı | The Heartbeat of Beşiktaş | Est. 1982 | 📍 İstanbul | ⚫⚪ Where Fan Passion Meets Football | Join the chorus: #ÇarşıUnited 🔝	https://i.goalzz.com/?i=katkotati%2fequipe%2ftur%2fbesiktas.gif	12	0
-37	Fenerbahçe GFB	⚽ Fenerbahçe GFB | 💙💛 Passion Burns Here | Founded 1907 | 📍 Istanbul | Rising to Every Challenge | Follow the Flame: #FenerbahçeGFB 	https://i.goalzz.com/?i=katkotati%2fequipe%2ftur%2ffenerbahce.gif	12	0
-38	Galatasaray UA	⚽ Galatasaray UltraAslan | 🔴🟡 Roaring Spirit of Istanbul | Est. 1980 | 📍 Istanbul | Fan Power Unleashed | Stand with us: #UltraAslanUnited 🔝	https://i.goalzz.com/?i=katkotati%2fequipe%2ftur%2fgalatasaray.jpg	12	0
-21	Esenler Erokspor	⚽ Esenler Erokspor FC | Unity in Football | Established 1984 | 📍 Esenler, Istanbul | 💚💛 Fierce on the Field | Tag along: #EroksporRising 🔝	https://i.goalzz.com/?i=medalss%2f45269.jpg	12	0
-36	Araklıspor	⚽ Araklıspor FC | Strength in Stripes, Power in Play | Est. 1954 | 📍 Araklı, Trabzon | ⚫🟢 Where Passion Thrives | Gear up for glory: #AraklısporUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f11%2f116%2faraklispor-1.png	12	0
-16	Beykozspor FK	⚽ Beykozspor FC | Since 1908 |📍 Istanbul | 🏆 Passion & Talent | #Beykozspor 🔴🟡	https://i.goalzz.com/?i=o%2ft%2f12%2f406%2fbeykozspor-1.png	12	0
 34	Tirespor 1922	⚽ Tirespor 1922 FC | Rooted in Tradition, Reaching for Triumph | Est. 1922 | 📍 Tire, Izmir | 🔴⚪ Upholding Legacy | Be part of the story: #Tire1922Rise 🔝	https://i.goalzz.com/?i=o%2ft%2f24%2f602%2ftirespor-1922-1.png	19	0
 41	Bergama BS	⚽ Bergama Belediyespor FC | Red Heart, Blue Spirit | Founded 1959 | 📍 Bergama, Izmir | 🔴🔵 Building a Better Game | Stand with us: #BergamaUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f22%2f160%2fbergama-belediyespor-1.png	19	0
 28	Merzifonspor FK	⚽ Merzifonspor FC | Born to Play, Built to Win | Est. 1954 | 📍 Merzifon, Amasya | 🔵⚪ Marching Forward with Harmony | Experience our journey #MerzifonsporPride 🔝	https://i.goalzz.com/?i=o%2ft%2f22%2f180%2fmerzifonspor-1.png	19	0
@@ -960,11 +953,13 @@ COPY public."Club" ("clubId", name, description, "logoPath", "leagueId", "cupCou
 30	Pazarspor FK	⚽ Pazarspor FC | Fuelled by Passion, Driven by Ambition | Est. 1968 | 📍 Pazar, Rize | 🔵⚪ Wave of the Northern Black Sea | Join the wave: #PazarsporUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f7%2f536%2fpazarspor-1.png	15	0
 22	Foça Belediyespor	⚽ Foça Belediyespor FC | Football & Community | Est. 1959 | 📍 Foça, Izmir | 🟢🔵 United Under One Goal | Join the journey: #FoçaVictoryRise 🔝	https://i.goalzz.com/?i=zizzzo%2f50732.jpg	15	0
 23	Gebzespor FK	⚽ Gebzespor FC | Founded 1955 | 📍 Gebze, Kocaeli | 🟣⚪ Celebrating Our Colors | Strength in Unity | Follow Our Stride: #GebzesporStrong 🔝	https://i.goalzz.com/?i=o%2ft%2f9%2f518%2fgebzespor-1.png	15	0
+24	Hacettepe Spor	⚽ Hacettepe Spor | Est. 1954 | 📍 Ankara | 🟪⚪ Passion & Precision | Empowering Youth | Share our journey: #HacettepeRising 🔝	https://i.goalzz.com/?i=4_safi_only%2fturk%2fhacettepelogo.gif	\N	0
+39	Beşiktaş Çarşı	⚽ Beşiktaş Çarşı | The Heartbeat of Beşiktaş | Est. 1982 | 📍 İstanbul | ⚫⚪ Where Fan Passion Meets Football | Join the chorus: #ÇarşıUnited 🔝	https://i.goalzz.com/?i=katkotati%2fequipe%2ftur%2fbesiktas.gif	\N	0
+37	Fenerbahçe GFB	⚽ Fenerbahçe GFB | 💙💛 Passion Burns Here | Founded 1907 | 📍 Istanbul | Rising to Every Challenge | Follow the Flame: #FenerbahçeGFB 	https://i.goalzz.com/?i=katkotati%2fequipe%2ftur%2ffenerbahce.gif	\N	0
+21	Esenler Erokspor	⚽ Esenler Erokspor FC | Unity in Football | Established 1984 | 📍 Esenler, Istanbul | 💚💛 Fierce on the Field | Tag along: #EroksporRising 🔝	https://i.goalzz.com/?i=medalss%2f45269.jpg	\N	0
 54	Soma Spor FK	⚽ Somaspor FC | Established 1979 | 📍 Soma, Manisa | ⚫⚪ Where Tradition Meets Tenacity | Be part of the journey: #SomasporUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f40%2f146%2fsoma-spor-dernegi-1.png	10	0
 33	Torbalıspor FK	⚽ Torbalıspor FC | Heritage and Heart | Est. 1954 | 📍 Torbalı, Izmir | 🔴⚪ Fueling Passion | Chart our journey: #TorbalısporRising 🔝	https://i.goalzz.com/?i=o%2ft%2f16%2f649%2ftorbalispor-1.png	20	0
-17	Bucaspor FK	⚽ Bucaspor FC | Est. 1928 | 📍 Buca, Izmir | 🏆 Grit & Glory | 🔵🟡 Empowering talent | Follow our journey #BucasporRising 🔝	https://i.goalzz.com/?i=-vitchmen-%2fbuca.jpg	12	0
 32	Trabzon Kanuni FK	⚽ Trabzon Kanuni FC | Tradition Meets Triumph | Est. 1982 | 📍 Trabzon | 🔴🔵 Embracing the Game | Join the journey #TrabzonKanuniUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f20%2f671%2fkanunispor-1.png	20	0
-66	Adliyespor FK	⚽ Ankara Adliyespor FK | 🔴⚪ Where Justice Meets Joy of the Game | Est. 1952 | 📍 Ankara | Upholding Values, Breaking Boundaries | On the move: #AdliyesporRising	https://i.goalzz.com/?i=ash04%2fadliyespor+.jpg	12	0
 29	Patnos Gençlikspor	⚽ Patnos Gençlik Spor FC | Est. 1984 | Raising Stars in Patnos | 📍 Patnos, Ağrı | Uniting 🟦⭐ for the beautiful game | Follow our story: #PatnosGençlikRising 🔝	https://i.goalzz.com/?i=o%2ft%2f20%2f679%2fpatnos-genclik-spor-1.png	20	0
 53	Sidespor FK	⚽ Side Spor FC | United in Strength | Est. 1968 | 📍 Manavgat, Antalya | ⚪🟡 Celebrating Heritage, Creating Future | Follow our path: #SideSporRising 🔝	https://i.goalzz.com/?i=o%2ft%2f2%2f980%2fsidespor-1.png	20	0
 46	Gölcükspor FK	⚽ Gölcükspor FC | Strength In Stripes | Est. 1964 | 📍 Gölcük, Kocaeli | ⚫🔴 Triumph through Teamwork | Join the journey: #GölcüksporUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f20%2f666%2fgolcukspor-1.png	20	0
@@ -982,11 +977,17 @@ COPY public."Club" ("clubId", name, description, "logoPath", "leagueId", "cupCou
 47	Hendek Spor	⚽ Hendekspor FC | Embracing the Green Spirit | Established 1958 | 📍 Hendek, Sakarya | ⚪🟢 Building Tomorrow's Champions | Stand with us: #HendekUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f41%2f35%2fhendek-spor-1.png	15	0
 61	Boyabat 1868 SK	⚽ Boyabat 1868 SK | Unity in Blue, Yellow, White | Est. 1970 | 📍 Boyabat, Sinop | 🔵🟡⚪ Where tradition & transformation meet | Join our journey: #Boyabat1868United 🔝	https://i.goalzz.com/?i=o%2ft%2f41%2f30%2fboyabat-1868-spor-1.png	15	0
 60	Çubuk SK	⚽ Çubuk SK | Forging Future in Blue & Yellow | Founded 1947 | 📍 Çubuk, Ankara | 🔵🟡 Growth, Grit, Glory | Keep pace with us: #ÇubukSKRising 🔝	https://i.goalzz.com/?i=o%2ft%2f41%2f26%2fcubuk-spor-kulubu-1.png	15	0
+17	Bucaspor FK	⚽ Bucaspor FC | Est. 1928 | 📍 Buca, Izmir | 🏆 Grit & Glory | 🔵🟡 Empowering talent | Follow our journey #BucasporRising 🔝	https://i.goalzz.com/?i=-vitchmen-%2fbuca.jpg	\N	0
+66	Adliyespor FK	⚽ Ankara Adliyespor FK | 🔴⚪ Where Justice Meets Joy of the Game | Est. 1952 | 📍 Ankara | Upholding Values, Breaking Boundaries | On the move: #AdliyesporRising	https://i.goalzz.com/?i=ash04%2fadliyespor+.jpg	\N	0
 18	Darıca Gençler FK	⚽ Darıca Gençler FC | Young Hearts, Bold Spirits | Est. 1967 | 📍 Darıca, Kocaeli | Champions in Progress | 🟢🟡 | Join our journey 	https://i.goalzz.com/?i=o%2ft%2f2%2f982%2fdarica-genclerbirlig-1.png	20	0
 64	Fethiyespor	⚽ Fethiyespor FC | Red Passion, White Purity, Purple Pride | Founded 1933 | 📍 Fethiye, Muğla | 🔴⚪🟣 Ignite, Unite, Fight! | Rise with us: #FethiyesporUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f18%2f753%2ffethiyespor-1.png	20	0
 56	1074 Çankırıspor	⚽ 1074 Çankırıspor FC | ⚫🔴 Steadfast Spirit, Determined Play | Est. 1956 | 📍 Çankırı | Where Heart Beats for the Game | Join us: #ÇankırısporUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f2%2f979%2f1074-cankiri-spor-1.png	20	0
 19	Düzcespor FK	⚽ Düzce Spor FC | Passion Meets Powerful Play | Est. 1967 | 📍 Düzce City | Determination and Dedication | 🔵🔴 | #DüzceSporRising🔝	https://i.goalzz.com/?i=o%2ft%2f28%2f640%2fduzce-spor-1.png	19	0
 63	Dudulluspor	⚽ Dudulluspor FC | Green Strength, White Spirit | Est. 1954 | 📍 Ümraniye, Istanbul | 🟢⚪ Fueling the Future of Football | Join the charge: #DudullusporUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f49%2f274%2fdudulluspor-1.png	15	0
+38	Galatasaray UA	⚽ Galatasaray UltraAslan | 🔴🟡 Roaring Spirit of Istanbul | Est. 1980 | 📍 Istanbul | Fan Power Unleashed | Stand with us: #UltraAslanUnited 🔝	https://i.goalzz.com/?i=katkotati%2fequipe%2ftur%2fgalatasaray.jpg	\N	0
+36	Araklıspor	⚽ Araklıspor FC | Strength in Stripes, Power in Play | Est. 1954 | 📍 Araklı, Trabzon | ⚫🟢 Where Passion Thrives | Gear up for glory: #AraklısporUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f11%2f116%2faraklispor-1.png	\N	0
+16	Beykozspor FK	⚽ Beykozspor FC | Since 1908 |📍 Istanbul | 🏆 Passion & Talent | #Beykozspor 🔴🟡	https://i.goalzz.com/?i=o%2ft%2f12%2f406%2fbeykozspor-1.png	\N	0
+40	Aydınspor FK	⚽ Aydınspor FC | Unity in Black & White | Established 1923 | 📍 Aydın | ⚫⚪ Legacy, Passion, Power | All for the Game: #AydınsporRising 🔝	https://i.goalzz.com/?i=ash03%2faydinspor.jpg	\N	1
 \.
 
 
@@ -997,7 +998,6 @@ COPY public."Club" ("clubId", name, description, "logoPath", "leagueId", "cupCou
 --
 
 COPY public."Fixture" ("fixtureId", "leagueId", "homeClubId", "awayClubId", "homeTeamScore", "awayTeamScore", week, "refereeId", "venueId") FROM stdin;
-92	12	66	40	\N	\N	1	37	37
 93	12	37	21	\N	\N	1	12	8
 94	12	39	38	\N	\N	1	16	47
 95	12	24	16	\N	\N	1	35	31
@@ -1087,6 +1087,7 @@ COPY public."Fixture" ("fixtureId", "leagueId", "homeClubId", "awayClubId", "hom
 179	12	21	24	\N	\N	18	56	11
 180	12	38	16	\N	\N	18	37	37
 91	12	17	36	4	7	1	56	11
+92	12	66	40	4	10	1	37	37
 \.
 
 
@@ -1098,7 +1099,6 @@ COPY public."Fixture" ("fixtureId", "leagueId", "homeClubId", "awayClubId", "hom
 
 COPY public."League" ("leagueId", "organizerId", name, prize, description, "logoPath", state) FROM stdin;
 22	43	Yozgat Amatör Ligi	500000	⚽️ Official Yozgat Amatör Lig 🏆 | Fostering local football spirit since 2023 | Yozgat, Turkey 📍 🇹🇷 | #YozgatAmatorLigi 🏟️⚽	https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLGf-WbGNugQMM0ecDIPwFaWZDoNHhlTyesNC7u3XGAj0IC8ao0ubWtfP1h42ZlCtrxow&usqp=CAU	Not started
-12	33	Trendyol 1. Lig	9600000	⚽️ Official of Trendyol 1. Lig 🏆 | Unleashing amateur football passion since 2023 🥇 | Turkey 📍 🇹🇷 | #Trendyol1Lig 🔥	https://upload.wikimedia.org/wikipedia/commons/5/5c/Trendyol_1.Lig_Logo.png	In progress
 24	45	Fortis Türkiye Kupası	12000000	🏆 Official Fortis Türkiye Kupası | Showcasing the best of amateur football since 2023 | Turkey 📍🇹🇷 | #FortisTurkiyeKupasi ⚽️🏅	https://seeklogo.com/images/F/fortis-turkiye-kupasi-logo-DBA9CD55F6-seeklogo.com.png	Not started
 25	46	Turkcell Süper Kupa	8000000	🏆 Official Turkcell Super Kupa | Fueling amateur football excellence since 2023 | Turkey 📍🇹🇷 | #TurkcellSuperKupa ⚽️🔝	https://upload.wikimedia.org/wikipedia/tr/4/47/Türkiye_Süper_Kupası_2016.png	Not started
 10	31	İzmir U12 Cup	125000	🏆 Izmir U12 Cup Official 🚀 | Empowering young football talent 🌟 | Izmir, Turkey 📍 | #IzmirU12Cup ⚽️	https://play-lh.googleusercontent.com/N6N3m3iCj3Z4Wkbq-EDyzq2ad0dICdG4hFqTJJCw-nGpxNT53hRMJiHfKZ9RUa77Q1I=w600-h300-pc0xffffff-pd	Not started
@@ -1116,6 +1116,7 @@ COPY public."League" ("leagueId", "organizerId", name, prize, description, "logo
 27	48	TFF Kadın Futbolu	1250000	⚽️ Official TFF Kadın Futbolu 🏆 | Shaping the future of women's amateur football since 2023 | Turkey 📍🇹🇷 | #TFFKadinFutbolu 👩⚽️💫	https://iconape.com/wp-content/png_logo_vector/tff-kadinlar-futbol-ligi-logo.png	Not started
 28	54	Bitci Türkiye Kupası	7500000	🏆 Official Bitci Türkiye Kupası | Pushing the boundary in amateur football since 2023 | Turkey 📍🇹🇷 | #BitciTurkiyeKupasi ⚽️🥇	https://upload.wikimedia.org/wikipedia/tr/c/ca/2022_Türkiye_basketbol_kupası_logo.jpg	Not started
 29	55	11. Fetih Kupası	100000	🏆 Official 11. Fetih Kupası | Honoring football conquests since 2023 | Turkey 📍🇹🇷 | #11FetihKupasi ⚽️🎖️	https://extranet.worldarchery.sport/CompetitionLogos/25739.png	Not started
+12	33	Trendyol 1. Lig	9600000	⚽️ Official of Trendyol 1. Lig 🏆 | Unleashing amateur football passion since 2023 🥇 | Turkey 📍 🇹🇷 | #Trendyol1Lig 🔥	https://upload.wikimedia.org/wikipedia/commons/5/5c/Trendyol_1.Lig_Logo.png	Finished
 23	44	Trendyol SüperLig	32000000	⚽️ Official Trendyol SüperLig 🏆 | Igniting the amateur football scene since 2023 | Turkey 📍🇹🇷 | #TrendyolSuperLig 🔥⚽️	https://www.tff.org/Resources/TFF/Images/0000000015/TFF/TFF-Logolar/2023-trendyol/trendyol-super-lig-dikey.png	Not started
 \.
 
@@ -1531,6 +1532,18 @@ COPY public."Performance" ("playerId", "fixtureId", "goalCount", "assistCount") 
 176	91	0	1
 314	91	2	1
 318	91	2	0
+84	92	0	1
+94	92	0	2
+181	92	1	3
+210	92	1	3
+247	92	1	0
+319	92	0	1
+217	92	1	0
+23	92	1	1
+155	92	0	1
+214	92	3	1
+226	92	4	0
+346	92	2	1
 \.
 
 
@@ -1966,11 +1979,11 @@ COPY public."Statistics" ("clubId", "leagueId", "winCount", "drawCount", "loseCo
 16	12	0	0	0	0	0
 38	12	0	0	0	0	0
 21	12	0	0	0	0	0
-40	12	0	0	0	0	0
-66	12	0	0	0	0	0
 37	12	0	0	0	0	0
 17	12	0	0	1	4	7
 36	12	1	0	0	7	4
+66	12	0	0	1	4	10
+40	12	1	0	0	10	4
 \.
 
 
@@ -2367,7 +2380,7 @@ ALTER TABLE ONLY public."Statistics"
     ADD CONSTRAINT statistics_league_fk FOREIGN KEY ("leagueId") REFERENCES public."League"("leagueId");
 
 
--- Completed on 2024-01-03 23:01:57 +03
+-- Completed on 2024-01-03 23:22:26 +03
 
 --
 -- PostgreSQL database dump complete

@@ -127,7 +127,7 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
 
   public async isMyLeagueEditable(leagueId: number): Promise<boolean> {
     const existsRes: QueryResult = await pool.query(
-      MyLeaguesQueries.IS_MY_LEAGUE_IN_STATE_$PRID_$STATES,
+      MyLeaguesQueries.IS_MY_LEAGUE_IN_STATE_$LGID_$STATES,
       [leagueId, EDITABLE_LEAGUE_STATES],
     );
     const existsRec: unknown = existsRes.rows[0];
@@ -178,7 +178,7 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
 
   public async isMyLeagueDeletable(leagueId: number): Promise<boolean> {
     const existsRes: QueryResult = await pool.query(
-      MyLeaguesQueries.IS_MY_LEAGUE_IN_STATE_$PRID_$STATES,
+      MyLeaguesQueries.IS_MY_LEAGUE_IN_STATE_$LGID_$STATES,
       [leagueId, DELETABLE_LEAGUE_STATES],
     );
     const existsRec: unknown = existsRes.rows[0];
@@ -320,7 +320,7 @@ export class MyLeaguesProvider implements IMyLeaguesProvider {
 
   public async isMyLeagueStartable(leagueId: number): Promise<boolean> {
     const existsRes: QueryResult = await pool.query(
-      MyLeaguesQueries.IS_MY_LEAGUE_IN_STATE_$PRID_$STATES,
+      MyLeaguesQueries.IS_MY_LEAGUE_IN_STATE_$LGID_$STATES,
       [leagueId, STARTABLE_LEAGUE_STATES],
     );
     const existsRec: unknown = existsRes.rows[0];
