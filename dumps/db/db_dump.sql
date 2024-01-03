@@ -5,7 +5,7 @@
 -- Dumped from database version 16.1
 -- Dumped by pg_dump version 16.1
 
--- Started on 2024-01-02 20:36:13 +03
+-- Started on 2024-01-03 17:49:48 +03
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1086,7 +1086,7 @@ COPY public."Fixture" ("fixtureId", "leagueId", "homeClubId", "awayClubId", "hom
 178	12	40	39	\N	\N	18	39	21
 179	12	21	24	\N	\N	18	56	11
 180	12	38	16	\N	\N	18	37	37
-91	12	17	36	3	6	1	56	11
+91	12	17	36	4	7	1	56	11
 \.
 
 
@@ -1521,18 +1521,16 @@ COPY public."Participant" ("participantId", username, password, email, "playerId
 --
 
 COPY public."Performance" ("playerId", "fixtureId", "goalCount", "assistCount") FROM stdin;
-87	91	0	1
-258	91	1	1
-325	91	1	2
-354	91	1	1
-365	91	0	1
-58	91	1	0
-71	91	1	0
-99	91	1	0
-176	91	0	2
-314	91	2	0
-318	91	1	0
-310	91	0	1
+54	91	1	1
+31	91	0	3
+258	91	1	3
+325	91	1	0
+365	91	1	0
+58	91	0	2
+71	91	3	0
+176	91	0	1
+314	91	2	1
+318	91	2	0
 \.
 
 
@@ -1963,16 +1961,16 @@ COPY public."Referee" ("refereeId", "fullName", birthday, email, "imgPath", "lic
 --
 
 COPY public."Statistics" ("clubId", "leagueId", "winCount", "drawCount", "loseCount", scored, conceded) FROM stdin;
-37	12	0	0	0	0	0
 39	12	0	0	0	0	0
 24	12	0	0	0	0	0
 16	12	0	0	0	0	0
 38	12	0	0	0	0	0
 21	12	0	0	0	0	0
 40	12	0	0	0	0	0
-36	12	0	0	0	0	0
 66	12	0	0	0	0	0
-17	12	0	0	0	0	0
+37	12	0	0	0	0	0
+17	12	0	0	1	4	7
+36	12	1	0	0	7	4
 \.
 
 
@@ -2369,7 +2367,7 @@ ALTER TABLE ONLY public."Statistics"
     ADD CONSTRAINT statistics_league_fk FOREIGN KEY ("leagueId") REFERENCES public."League"("leagueId");
 
 
--- Completed on 2024-01-02 20:36:13 +03
+-- Completed on 2024-01-03 17:49:48 +03
 
 --
 -- PostgreSQL database dump complete

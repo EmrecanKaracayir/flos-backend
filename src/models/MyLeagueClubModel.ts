@@ -34,7 +34,15 @@ export class MyLeagueClubModel
       return false;
     }
     const model: IMyLeagueClubModel = obj as IMyLeagueClubModel;
-    return typeof model.leagueId === "number";
+    return (
+      typeof model.leagueId === "number" &&
+      typeof model.played === "number" &&
+      typeof model.wins === "number" &&
+      typeof model.draws === "number" &&
+      typeof model.losses === "number" &&
+      typeof model.average === "number" &&
+      typeof model.points === "number"
+    );
   }
 
   public static override areValidModels(
