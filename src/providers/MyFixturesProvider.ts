@@ -1,6 +1,5 @@
 import { QueryResult } from "pg";
 import { pool } from "../core/database/pool";
-import { FixtureState } from "../core/enums/fixtureState";
 import { LeagueState } from "../core/enums/leagueState";
 import { AVAILABLE_FIXTURE_STATES } from "../core/rules/fixtureRules";
 import { IMyClubPlayerModel } from "../interfaces/models/IMyClubPlayerModel";
@@ -74,7 +73,7 @@ export class MyFixturesProvider implements IMyFixturesProvider {
   public async isMyFixtureAvailable(fixtureId: number): Promise<boolean> {
     const existsRes: QueryResult = await pool.query(
       MyFixturesQueries.IS_FIXTURE_IN_STATE_$FXID_$STATES,
-      [fixtureId, [FixtureState.NOT_PLAYED]],
+      [fixtureId, AVAILABLE_FIXTURE_STATES],
     );
     const existsRec: unknown = existsRes.rows[0];
     if (!existsRec) {
@@ -142,7 +141,7 @@ export class MyFixturesProvider implements IMyFixturesProvider {
 
   public async wasTheLastFixtureOfSeason(leagueId: number): Promise<boolean> {
     const existsRes: QueryResult = await pool.query(
-      MyFixturesQueries.IS_FIXTURE_IN_STATE_$FXID_$STATES,
+      MyFixturesQueries.IS_ALL_FIXTURES_IN_STATE_$LGID_$STATES,
       [leagueId, AVAILABLE_FIXTURE_STATES],
     );
     const existsRec: unknown = existsRes.rows[0];

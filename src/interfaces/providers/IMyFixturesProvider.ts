@@ -57,6 +57,7 @@ export enum MyFixturesQueries {
   UPDATE_STATISTICS_$CLID_$LGID_$WCOUNT_$DCOUNT_$LCOUNT_$SCORED_$CONCEDED = `UPDATE "Statistics" SET "winCount" = "winCount" + $3, "drawCount" = "drawCount" + $4, "loseCount" = "loseCount" + $5, "scored" = "scored" + $6, "conceded" = "conceded" + $7 WHERE "clubId" = $1 AND "leagueId" = $2`,
   GET_WINNER_CLUB_ID_$LGID = `SELECT "clubId" FROM "MyLeagueClubView" WHERE "leagueId" = $1 LIMIT 1`,
   UPDATE_CUP_COUNT_$CLID = `UPDATE "Club" SET "cupCount" = "cupCount" + 1 WHERE "clubId" = $1`,
+  IS_ALL_FIXTURES_IN_STATE_$LGID_$STATES = `SELECT EXISTS (SELECT "state" FROM "FixtureView" WHERE "leagueId" = $1 AND "state" = ANY($2::"FixtureState"[])) AS "exists"`,
   SET_LEAGUE_STATE_$LGID_$STATE = `UPDATE "League" SET "state" = $2::"LeagueState" WHERE "leagueId" = $1`,
   FREE_LEAGUE_FROM_CLUBS_$LGID = `UPDATE "Club" SET "leagueId" = NULL WHERE "leagueId" = $1`,
 }

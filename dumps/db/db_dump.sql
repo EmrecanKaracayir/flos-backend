@@ -5,7 +5,7 @@
 -- Dumped from database version 16.1
 -- Dumped by pg_dump version 16.1
 
--- Started on 2024-01-03 23:22:26 +03
+-- Started on 2024-01-03 23:45:41 +03
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -19,7 +19,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 919 (class 1247 OID 16792)
+-- TOC entry 913 (class 1247 OID 16792)
 -- Name: ClubState; Type: TYPE; Schema: public; Owner: Emrecan
 --
 
@@ -34,7 +34,7 @@ CREATE TYPE public."ClubState" AS ENUM (
 ALTER TYPE public."ClubState" OWNER TO "Emrecan";
 
 --
--- TOC entry 931 (class 1247 OID 16896)
+-- TOC entry 919 (class 1247 OID 16896)
 -- Name: FixtureState; Type: TYPE; Schema: public; Owner: Emrecan
 --
 
@@ -47,7 +47,7 @@ CREATE TYPE public."FixtureState" AS ENUM (
 ALTER TYPE public."FixtureState" OWNER TO "Emrecan";
 
 --
--- TOC entry 902 (class 1247 OID 16607)
+-- TOC entry 899 (class 1247 OID 16607)
 -- Name: LeagueState; Type: TYPE; Schema: public; Owner: Emrecan
 --
 
@@ -61,7 +61,7 @@ CREATE TYPE public."LeagueState" AS ENUM (
 ALTER TYPE public."LeagueState" OWNER TO "Emrecan";
 
 --
--- TOC entry 905 (class 1247 OID 16615)
+-- TOC entry 902 (class 1247 OID 16615)
 -- Name: PlayerState; Type: TYPE; Schema: public; Owner: Emrecan
 --
 
@@ -74,7 +74,7 @@ CREATE TYPE public."PlayerState" AS ENUM (
 ALTER TYPE public."PlayerState" OWNER TO "Emrecan";
 
 --
--- TOC entry 908 (class 1247 OID 16595)
+-- TOC entry 905 (class 1247 OID 16595)
 -- Name: RefereeLicenseCategory; Type: TYPE; Schema: public; Owner: Emrecan
 --
 
@@ -122,7 +122,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- TOC entry 231 (class 1259 OID 16674)
+-- TOC entry 230 (class 1259 OID 16674)
 -- Name: Club; Type: TABLE; Schema: public; Owner: Emrecan
 --
 
@@ -193,7 +193,7 @@ CREATE TABLE public."Player" (
 ALTER TABLE public."Player" OWNER TO "Emrecan";
 
 --
--- TOC entry 237 (class 1259 OID 16831)
+-- TOC entry 243 (class 1259 OID 16976)
 -- Name: ClubView; Type: VIEW; Schema: public; Owner: Emrecan
 --
 
@@ -224,7 +224,7 @@ CREATE VIEW public."ClubView" AS
 ALTER VIEW public."ClubView" OWNER TO "Emrecan";
 
 --
--- TOC entry 230 (class 1259 OID 16673)
+-- TOC entry 229 (class 1259 OID 16673)
 -- Name: Club_clubId_seq; Type: SEQUENCE; Schema: public; Owner: Emrecan
 --
 
@@ -241,7 +241,7 @@ ALTER SEQUENCE public."Club_clubId_seq" OWNER TO "Emrecan";
 
 --
 -- TOC entry 3814 (class 0 OID 0)
--- Dependencies: 230
+-- Dependencies: 229
 -- Name: Club_clubId_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Emrecan
 --
 
@@ -249,7 +249,7 @@ ALTER SEQUENCE public."Club_clubId_seq" OWNED BY public."Club"."clubId";
 
 
 --
--- TOC entry 234 (class 1259 OID 16714)
+-- TOC entry 233 (class 1259 OID 16714)
 -- Name: Fixture; Type: TABLE; Schema: public; Owner: Emrecan
 --
 
@@ -303,7 +303,7 @@ CREATE TABLE public."Venue" (
 ALTER TABLE public."Venue" OWNER TO "Emrecan";
 
 --
--- TOC entry 240 (class 1259 OID 16920)
+-- TOC entry 236 (class 1259 OID 16920)
 -- Name: FixtureView; Type: VIEW; Schema: public; Owner: Emrecan
 --
 
@@ -341,7 +341,7 @@ CREATE VIEW public."FixtureView" AS
 ALTER VIEW public."FixtureView" OWNER TO "Emrecan";
 
 --
--- TOC entry 233 (class 1259 OID 16713)
+-- TOC entry 232 (class 1259 OID 16713)
 -- Name: Fixture_fixtureId_seq; Type: SEQUENCE; Schema: public; Owner: Emrecan
 --
 
@@ -358,7 +358,7 @@ ALTER SEQUENCE public."Fixture_fixtureId_seq" OWNER TO "Emrecan";
 
 --
 -- TOC entry 3815 (class 0 OID 0)
--- Dependencies: 233
+-- Dependencies: 232
 -- Name: Fixture_fixtureId_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: Emrecan
 --
 
@@ -381,7 +381,7 @@ CREATE TABLE public."Organizer" (
 ALTER TABLE public."Organizer" OWNER TO "Emrecan";
 
 --
--- TOC entry 229 (class 1259 OID 16664)
+-- TOC entry 241 (class 1259 OID 16968)
 -- Name: LeagueView; Type: VIEW; Schema: public; Owner: Emrecan
 --
 
@@ -450,7 +450,7 @@ ALTER SEQUENCE public."League_organizerId_seq" OWNED BY public."League"."organiz
 
 
 --
--- TOC entry 235 (class 1259 OID 16745)
+-- TOC entry 234 (class 1259 OID 16745)
 -- Name: Performance; Type: TABLE; Schema: public; Owner: Emrecan
 --
 
@@ -465,7 +465,7 @@ CREATE TABLE public."Performance" (
 ALTER TABLE public."Performance" OWNER TO "Emrecan";
 
 --
--- TOC entry 244 (class 1259 OID 16942)
+-- TOC entry 240 (class 1259 OID 16942)
 -- Name: MyClubPlayerView; Type: VIEW; Schema: public; Owner: Emrecan
 --
 
@@ -497,7 +497,7 @@ CREATE VIEW public."MyClubPlayerView" AS
 ALTER VIEW public."MyClubPlayerView" OWNER TO "Emrecan";
 
 --
--- TOC entry 238 (class 1259 OID 16837)
+-- TOC entry 244 (class 1259 OID 16981)
 -- Name: MyClubView; Type: VIEW; Schema: public; Owner: Emrecan
 --
 
@@ -529,7 +529,7 @@ CREATE VIEW public."MyClubView" AS
 ALTER VIEW public."MyClubView" OWNER TO "Emrecan";
 
 --
--- TOC entry 241 (class 1259 OID 16925)
+-- TOC entry 237 (class 1259 OID 16925)
 -- Name: MyFixtureView; Type: VIEW; Schema: public; Owner: Emrecan
 --
 
@@ -569,7 +569,7 @@ CREATE VIEW public."MyFixtureView" AS
 ALTER VIEW public."MyFixtureView" OWNER TO "Emrecan";
 
 --
--- TOC entry 232 (class 1259 OID 16693)
+-- TOC entry 231 (class 1259 OID 16693)
 -- Name: Statistics; Type: TABLE; Schema: public; Owner: Emrecan
 --
 
@@ -587,7 +587,7 @@ CREATE TABLE public."Statistics" (
 ALTER TABLE public."Statistics" OWNER TO "Emrecan";
 
 --
--- TOC entry 245 (class 1259 OID 16960)
+-- TOC entry 245 (class 1259 OID 16986)
 -- Name: MyLeagueClubView; Type: VIEW; Schema: public; Owner: Emrecan
 --
 
@@ -627,7 +627,7 @@ CREATE VIEW public."MyLeagueClubView" AS
 ALTER VIEW public."MyLeagueClubView" OWNER TO "Emrecan";
 
 --
--- TOC entry 236 (class 1259 OID 16810)
+-- TOC entry 242 (class 1259 OID 16972)
 -- Name: MyLeagueView; Type: VIEW; Schema: public; Owner: Emrecan
 --
 
@@ -647,7 +647,7 @@ CREATE VIEW public."MyLeagueView" AS
 ALTER VIEW public."MyLeagueView" OWNER TO "Emrecan";
 
 --
--- TOC entry 243 (class 1259 OID 16937)
+-- TOC entry 239 (class 1259 OID 16937)
 -- Name: MyPlayerView; Type: VIEW; Schema: public; Owner: Emrecan
 --
 
@@ -728,7 +728,7 @@ ALTER SEQUENCE public."Participant_participantId_seq" OWNED BY public."Participa
 
 
 --
--- TOC entry 242 (class 1259 OID 16930)
+-- TOC entry 238 (class 1259 OID 16930)
 -- Name: PlayerView; Type: VIEW; Schema: public; Owner: Emrecan
 --
 
@@ -783,7 +783,7 @@ ALTER SEQUENCE public."Player_playerId_seq" OWNED BY public."Player"."playerId";
 
 
 --
--- TOC entry 239 (class 1259 OID 16842)
+-- TOC entry 235 (class 1259 OID 16842)
 -- Name: RefereeView; Type: VIEW; Schema: public; Owner: Emrecan
 --
 
@@ -933,14 +933,18 @@ ALTER TABLE ONLY public."Venue" ALTER COLUMN "venueId" SET DEFAULT nextval('publ
 
 --
 -- TOC entry 3804 (class 0 OID 16674)
--- Dependencies: 231
+-- Dependencies: 230
 -- Data for Name: Club; Type: TABLE DATA; Schema: public; Owner: Emrecan
 --
 
 COPY public."Club" ("clubId", name, description, "logoPath", "leagueId", "cupCount") FROM stdin;
 25	Karşıyaka FK	⚽ Karşıyaka FC | Heart & Hustle | Est. 1912 | 📍 Karşıyaka, Izmir | 🔴🟢 Where Legacy Lives On | Be part of the journey: #KarşıyakaUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f2%2f393%2fkarsiyaka-1.png	20	0
+21	Esenler Erokspor	⚽ Esenler Erokspor FC | Unity in Football | Established 1984 | 📍 Esenler, Istanbul | 💚💛 Fierce on the Field | Tag along: #EroksporRising 🔝	https://i.goalzz.com/?i=medalss%2f45269.jpg	12	0
 44	Çayırova Spor	⚽ Çayırova Spor FC | Green Power, Black Strength | Established 1980 | 📍 Çayırova, Kocaeli | 🟢⚫ Where Passion Plays | Share our journey: #ÇayırovaRising 🔝	https://i.goalzz.com/?i=o%2ft%2f37%2f219%2fcayirova-spor-1.png	10	0
+39	Beşiktaş Çarşı	⚽ Beşiktaş Çarşı | The Heartbeat of Beşiktaş | Est. 1982 | 📍 İstanbul | ⚫⚪ Where Fan Passion Meets Football | Join the chorus: #ÇarşıUnited 🔝	https://i.goalzz.com/?i=katkotati%2fequipe%2ftur%2fbesiktas.gif	12	0
 27	Kurtalan Spor	⚽ Kurtalan Spor FC | Power & Persistence | Est. 1957 | 📍 Kurtalan, Siirt | 🟦⚪ Where passion takes the lead | We are #KurtalanSporUnite 🔝	https://i.goalzz.com/?i=o%2ft%2f24%2f559%2fkurtalan-spor-1.png	19	0
+24	Hacettepe Spor	⚽ Hacettepe Spor | Est. 1954 | 📍 Ankara | 🟪⚪ Passion & Precision | Empowering Youth | Share our journey: #HacettepeRising 🔝	https://i.goalzz.com/?i=4_safi_only%2fturk%2fhacettepelogo.gif	12	0
+37	Fenerbahçe GFB	⚽ Fenerbahçe GFB | 💙💛 Passion Burns Here | Founded 1907 | 📍 Istanbul | Rising to Every Challenge | Follow the Flame: #FenerbahçeGFB 	https://i.goalzz.com/?i=katkotati%2fequipe%2ftur%2ffenerbahce.gif	12	0
 34	Tirespor 1922	⚽ Tirespor 1922 FC | Rooted in Tradition, Reaching for Triumph | Est. 1922 | 📍 Tire, Izmir | 🔴⚪ Upholding Legacy | Be part of the story: #Tire1922Rise 🔝	https://i.goalzz.com/?i=o%2ft%2f24%2f602%2ftirespor-1922-1.png	19	0
 41	Bergama BS	⚽ Bergama Belediyespor FC | Red Heart, Blue Spirit | Founded 1959 | 📍 Bergama, Izmir | 🔴🔵 Building a Better Game | Stand with us: #BergamaUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f22%2f160%2fbergama-belediyespor-1.png	19	0
 28	Merzifonspor FK	⚽ Merzifonspor FC | Born to Play, Built to Win | Est. 1954 | 📍 Merzifon, Amasya | 🔵⚪ Marching Forward with Harmony | Experience our journey #MerzifonsporPride 🔝	https://i.goalzz.com/?i=o%2ft%2f22%2f180%2fmerzifonspor-1.png	19	0
@@ -953,10 +957,6 @@ COPY public."Club" ("clubId", name, description, "logoPath", "leagueId", "cupCou
 30	Pazarspor FK	⚽ Pazarspor FC | Fuelled by Passion, Driven by Ambition | Est. 1968 | 📍 Pazar, Rize | 🔵⚪ Wave of the Northern Black Sea | Join the wave: #PazarsporUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f7%2f536%2fpazarspor-1.png	15	0
 22	Foça Belediyespor	⚽ Foça Belediyespor FC | Football & Community | Est. 1959 | 📍 Foça, Izmir | 🟢🔵 United Under One Goal | Join the journey: #FoçaVictoryRise 🔝	https://i.goalzz.com/?i=zizzzo%2f50732.jpg	15	0
 23	Gebzespor FK	⚽ Gebzespor FC | Founded 1955 | 📍 Gebze, Kocaeli | 🟣⚪ Celebrating Our Colors | Strength in Unity | Follow Our Stride: #GebzesporStrong 🔝	https://i.goalzz.com/?i=o%2ft%2f9%2f518%2fgebzespor-1.png	15	0
-24	Hacettepe Spor	⚽ Hacettepe Spor | Est. 1954 | 📍 Ankara | 🟪⚪ Passion & Precision | Empowering Youth | Share our journey: #HacettepeRising 🔝	https://i.goalzz.com/?i=4_safi_only%2fturk%2fhacettepelogo.gif	\N	0
-39	Beşiktaş Çarşı	⚽ Beşiktaş Çarşı | The Heartbeat of Beşiktaş | Est. 1982 | 📍 İstanbul | ⚫⚪ Where Fan Passion Meets Football | Join the chorus: #ÇarşıUnited 🔝	https://i.goalzz.com/?i=katkotati%2fequipe%2ftur%2fbesiktas.gif	\N	0
-37	Fenerbahçe GFB	⚽ Fenerbahçe GFB | 💙💛 Passion Burns Here | Founded 1907 | 📍 Istanbul | Rising to Every Challenge | Follow the Flame: #FenerbahçeGFB 	https://i.goalzz.com/?i=katkotati%2fequipe%2ftur%2ffenerbahce.gif	\N	0
-21	Esenler Erokspor	⚽ Esenler Erokspor FC | Unity in Football | Established 1984 | 📍 Esenler, Istanbul | 💚💛 Fierce on the Field | Tag along: #EroksporRising 🔝	https://i.goalzz.com/?i=medalss%2f45269.jpg	\N	0
 54	Soma Spor FK	⚽ Somaspor FC | Established 1979 | 📍 Soma, Manisa | ⚫⚪ Where Tradition Meets Tenacity | Be part of the journey: #SomasporUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f40%2f146%2fsoma-spor-dernegi-1.png	10	0
 33	Torbalıspor FK	⚽ Torbalıspor FC | Heritage and Heart | Est. 1954 | 📍 Torbalı, Izmir | 🔴⚪ Fueling Passion | Chart our journey: #TorbalısporRising 🔝	https://i.goalzz.com/?i=o%2ft%2f16%2f649%2ftorbalispor-1.png	20	0
 32	Trabzon Kanuni FK	⚽ Trabzon Kanuni FC | Tradition Meets Triumph | Est. 1982 | 📍 Trabzon | 🔴🔵 Embracing the Game | Join the journey #TrabzonKanuniUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f20%2f671%2fkanunispor-1.png	20	0
@@ -977,29 +977,28 @@ COPY public."Club" ("clubId", name, description, "logoPath", "leagueId", "cupCou
 47	Hendek Spor	⚽ Hendekspor FC | Embracing the Green Spirit | Established 1958 | 📍 Hendek, Sakarya | ⚪🟢 Building Tomorrow's Champions | Stand with us: #HendekUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f41%2f35%2fhendek-spor-1.png	15	0
 61	Boyabat 1868 SK	⚽ Boyabat 1868 SK | Unity in Blue, Yellow, White | Est. 1970 | 📍 Boyabat, Sinop | 🔵🟡⚪ Where tradition & transformation meet | Join our journey: #Boyabat1868United 🔝	https://i.goalzz.com/?i=o%2ft%2f41%2f30%2fboyabat-1868-spor-1.png	15	0
 60	Çubuk SK	⚽ Çubuk SK | Forging Future in Blue & Yellow | Founded 1947 | 📍 Çubuk, Ankara | 🔵🟡 Growth, Grit, Glory | Keep pace with us: #ÇubukSKRising 🔝	https://i.goalzz.com/?i=o%2ft%2f41%2f26%2fcubuk-spor-kulubu-1.png	15	0
-17	Bucaspor FK	⚽ Bucaspor FC | Est. 1928 | 📍 Buca, Izmir | 🏆 Grit & Glory | 🔵🟡 Empowering talent | Follow our journey #BucasporRising 🔝	https://i.goalzz.com/?i=-vitchmen-%2fbuca.jpg	\N	0
-66	Adliyespor FK	⚽ Ankara Adliyespor FK | 🔴⚪ Where Justice Meets Joy of the Game | Est. 1952 | 📍 Ankara | Upholding Values, Breaking Boundaries | On the move: #AdliyesporRising	https://i.goalzz.com/?i=ash04%2fadliyespor+.jpg	\N	0
+66	Adliyespor FK	⚽ Ankara Adliyespor FK | 🔴⚪ Where Justice Meets Joy of the Game | Est. 1952 | 📍 Ankara | Upholding Values, Breaking Boundaries | On the move: #AdliyesporRising	https://i.goalzz.com/?i=ash04%2fadliyespor+.jpg	12	0
+17	Bucaspor FK	⚽ Bucaspor FC | Est. 1928 | 📍 Buca, Izmir | 🏆 Grit & Glory | 🔵🟡 Empowering talent | Follow our journey #BucasporRising 🔝	https://i.goalzz.com/?i=-vitchmen-%2fbuca.jpg	12	0
 18	Darıca Gençler FK	⚽ Darıca Gençler FC | Young Hearts, Bold Spirits | Est. 1967 | 📍 Darıca, Kocaeli | Champions in Progress | 🟢🟡 | Join our journey 	https://i.goalzz.com/?i=o%2ft%2f2%2f982%2fdarica-genclerbirlig-1.png	20	0
 64	Fethiyespor	⚽ Fethiyespor FC | Red Passion, White Purity, Purple Pride | Founded 1933 | 📍 Fethiye, Muğla | 🔴⚪🟣 Ignite, Unite, Fight! | Rise with us: #FethiyesporUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f18%2f753%2ffethiyespor-1.png	20	0
 56	1074 Çankırıspor	⚽ 1074 Çankırıspor FC | ⚫🔴 Steadfast Spirit, Determined Play | Est. 1956 | 📍 Çankırı | Where Heart Beats for the Game | Join us: #ÇankırısporUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f2%2f979%2f1074-cankiri-spor-1.png	20	0
 19	Düzcespor FK	⚽ Düzce Spor FC | Passion Meets Powerful Play | Est. 1967 | 📍 Düzce City | Determination and Dedication | 🔵🔴 | #DüzceSporRising🔝	https://i.goalzz.com/?i=o%2ft%2f28%2f640%2fduzce-spor-1.png	19	0
 63	Dudulluspor	⚽ Dudulluspor FC | Green Strength, White Spirit | Est. 1954 | 📍 Ümraniye, Istanbul | 🟢⚪ Fueling the Future of Football | Join the charge: #DudullusporUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f49%2f274%2fdudulluspor-1.png	15	0
-38	Galatasaray UA	⚽ Galatasaray UltraAslan | 🔴🟡 Roaring Spirit of Istanbul | Est. 1980 | 📍 Istanbul | Fan Power Unleashed | Stand with us: #UltraAslanUnited 🔝	https://i.goalzz.com/?i=katkotati%2fequipe%2ftur%2fgalatasaray.jpg	\N	0
-36	Araklıspor	⚽ Araklıspor FC | Strength in Stripes, Power in Play | Est. 1954 | 📍 Araklı, Trabzon | ⚫🟢 Where Passion Thrives | Gear up for glory: #AraklısporUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f11%2f116%2faraklispor-1.png	\N	0
-16	Beykozspor FK	⚽ Beykozspor FC | Since 1908 |📍 Istanbul | 🏆 Passion & Talent | #Beykozspor 🔴🟡	https://i.goalzz.com/?i=o%2ft%2f12%2f406%2fbeykozspor-1.png	\N	0
-40	Aydınspor FK	⚽ Aydınspor FC | Unity in Black & White | Established 1923 | 📍 Aydın | ⚫⚪ Legacy, Passion, Power | All for the Game: #AydınsporRising 🔝	https://i.goalzz.com/?i=ash03%2faydinspor.jpg	\N	1
+40	Aydınspor FK	⚽ Aydınspor FC | Unity in Black & White | Established 1923 | 📍 Aydın | ⚫⚪ Legacy, Passion, Power | All for the Game: #AydınsporRising 🔝	https://i.goalzz.com/?i=ash03%2faydinspor.jpg	12	1
+16	Beykozspor FK	⚽ Beykozspor FC | Since 1908 |📍 Istanbul | 🏆 Passion & Talent | #Beykozspor 🔴🟡	https://i.goalzz.com/?i=o%2ft%2f12%2f406%2fbeykozspor-1.png	12	0
+36	Araklıspor	⚽ Araklıspor FC | Strength in Stripes, Power in Play | Est. 1954 | 📍 Araklı, Trabzon | ⚫🟢 Where Passion Thrives | Gear up for glory: #AraklısporUnited 🔝	https://i.goalzz.com/?i=o%2ft%2f11%2f116%2faraklispor-1.png	12	0
+38	Galatasaray UA	⚽ Galatasaray UltraAslan | 🔴🟡 Roaring Spirit of Istanbul | Est. 1980 | 📍 Istanbul | Fan Power Unleashed | Stand with us: #UltraAslanUnited 🔝	https://i.goalzz.com/?i=katkotati%2fequipe%2ftur%2fgalatasaray.jpg	12	0
 \.
 
 
 --
 -- TOC entry 3807 (class 0 OID 16714)
--- Dependencies: 234
+-- Dependencies: 233
 -- Data for Name: Fixture; Type: TABLE DATA; Schema: public; Owner: Emrecan
 --
 
 COPY public."Fixture" ("fixtureId", "leagueId", "homeClubId", "awayClubId", "homeTeamScore", "awayTeamScore", week, "refereeId", "venueId") FROM stdin;
 93	12	37	21	\N	\N	1	12	8
-94	12	39	38	\N	\N	1	16	47
 95	12	24	16	\N	\N	1	35	31
 96	12	17	40	\N	\N	2	37	37
 97	12	36	21	\N	\N	2	12	8
@@ -1086,8 +1085,9 @@ COPY public."Fixture" ("fixtureId", "leagueId", "homeClubId", "awayClubId", "hom
 178	12	40	39	\N	\N	18	39	21
 179	12	21	24	\N	\N	18	56	11
 180	12	38	16	\N	\N	18	37	37
-91	12	17	36	4	7	1	56	11
-92	12	66	40	4	10	1	37	37
+91	12	17	36	\N	\N	1	56	11
+92	12	66	40	\N	\N	1	37	37
+94	12	39	38	10	10	1	16	47
 \.
 
 
@@ -1116,8 +1116,8 @@ COPY public."League" ("leagueId", "organizerId", name, prize, description, "logo
 27	48	TFF Kadın Futbolu	1250000	⚽️ Official TFF Kadın Futbolu 🏆 | Shaping the future of women's amateur football since 2023 | Turkey 📍🇹🇷 | #TFFKadinFutbolu 👩⚽️💫	https://iconape.com/wp-content/png_logo_vector/tff-kadinlar-futbol-ligi-logo.png	Not started
 28	54	Bitci Türkiye Kupası	7500000	🏆 Official Bitci Türkiye Kupası | Pushing the boundary in amateur football since 2023 | Turkey 📍🇹🇷 | #BitciTurkiyeKupasi ⚽️🥇	https://upload.wikimedia.org/wikipedia/tr/c/ca/2022_Türkiye_basketbol_kupası_logo.jpg	Not started
 29	55	11. Fetih Kupası	100000	🏆 Official 11. Fetih Kupası | Honoring football conquests since 2023 | Turkey 📍🇹🇷 | #11FetihKupasi ⚽️🎖️	https://extranet.worldarchery.sport/CompetitionLogos/25739.png	Not started
-12	33	Trendyol 1. Lig	9600000	⚽️ Official of Trendyol 1. Lig 🏆 | Unleashing amateur football passion since 2023 🥇 | Turkey 📍 🇹🇷 | #Trendyol1Lig 🔥	https://upload.wikimedia.org/wikipedia/commons/5/5c/Trendyol_1.Lig_Logo.png	Finished
 23	44	Trendyol SüperLig	32000000	⚽️ Official Trendyol SüperLig 🏆 | Igniting the amateur football scene since 2023 | Turkey 📍🇹🇷 | #TrendyolSuperLig 🔥⚽️	https://www.tff.org/Resources/TFF/Images/0000000015/TFF/TFF-Logolar/2023-trendyol/trendyol-super-lig-dikey.png	Not started
+12	33	Trendyol 1. Lig	9600000	⚽️ Official of Trendyol 1. Lig 🏆 | Unleashing amateur football passion since 2023 🥇 | Turkey 📍 🇹🇷 | #Trendyol1Lig 🔥	https://upload.wikimedia.org/wikipedia/commons/5/5c/Trendyol_1.Lig_Logo.png	In progress
 \.
 
 
@@ -1517,33 +1517,24 @@ COPY public."Participant" ("participantId", username, password, email, "playerId
 
 --
 -- TOC entry 3808 (class 0 OID 16745)
--- Dependencies: 235
+-- Dependencies: 234
 -- Data for Name: Performance; Type: TABLE DATA; Schema: public; Owner: Emrecan
 --
 
 COPY public."Performance" ("playerId", "fixtureId", "goalCount", "assistCount") FROM stdin;
-54	91	1	1
-31	91	0	3
-258	91	1	3
-325	91	1	0
-365	91	1	0
-58	91	0	2
-71	91	3	0
-176	91	0	1
-314	91	2	1
-318	91	2	0
-84	92	0	1
-94	92	0	2
-181	92	1	3
-210	92	1	3
-247	92	1	0
-319	92	0	1
-217	92	1	0
-23	92	1	1
-155	92	0	1
-214	92	3	1
-226	92	4	0
-346	92	2	1
+121	94	1	1
+127	94	1	2
+151	94	2	1
+225	94	2	0
+238	94	1	2
+350	94	3	4
+62	94	1	0
+113	94	3	1
+251	94	1	0
+257	94	0	2
+268	94	2	3
+326	94	0	3
+316	94	3	1
 \.
 
 
@@ -1969,21 +1960,21 @@ COPY public."Referee" ("refereeId", "fullName", birthday, email, "imgPath", "lic
 
 --
 -- TOC entry 3805 (class 0 OID 16693)
--- Dependencies: 232
+-- Dependencies: 231
 -- Data for Name: Statistics; Type: TABLE DATA; Schema: public; Owner: Emrecan
 --
 
 COPY public."Statistics" ("clubId", "leagueId", "winCount", "drawCount", "loseCount", scored, conceded) FROM stdin;
-39	12	0	0	0	0	0
 24	12	0	0	0	0	0
 16	12	0	0	0	0	0
-38	12	0	0	0	0	0
 21	12	0	0	0	0	0
 37	12	0	0	0	0	0
-17	12	0	0	1	4	7
-36	12	1	0	0	7	4
-66	12	0	0	1	4	10
-40	12	1	0	0	10	4
+66	12	0	0	0	0	0
+17	12	0	0	0	0	0
+40	12	0	0	0	0	0
+36	12	0	0	0	0	0
+39	12	0	1	0	10	10
+38	12	0	1	0	10	10
 \.
 
 
@@ -2049,7 +2040,7 @@ COPY public."Venue" ("venueId", name, capacity, address, "imgPath", email) FROM 
 
 --
 -- TOC entry 3823 (class 0 OID 0)
--- Dependencies: 230
+-- Dependencies: 229
 -- Name: Club_clubId_seq; Type: SEQUENCE SET; Schema: public; Owner: Emrecan
 --
 
@@ -2058,7 +2049,7 @@ SELECT pg_catalog.setval('public."Club_clubId_seq"', 66, true);
 
 --
 -- TOC entry 3824 (class 0 OID 0)
--- Dependencies: 233
+-- Dependencies: 232
 -- Name: Fixture_fixtureId_seq; Type: SEQUENCE SET; Schema: public; Owner: Emrecan
 --
 
@@ -2380,7 +2371,7 @@ ALTER TABLE ONLY public."Statistics"
     ADD CONSTRAINT statistics_league_fk FOREIGN KEY ("leagueId") REFERENCES public."League"("leagueId");
 
 
--- Completed on 2024-01-03 23:22:26 +03
+-- Completed on 2024-01-03 23:45:42 +03
 
 --
 -- PostgreSQL database dump complete
